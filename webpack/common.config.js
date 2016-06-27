@@ -7,11 +7,9 @@ const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const development = require('./dev.config.js');
 const production = require('./prod.config.js');
 
-
 require('babel-polyfill').default;
 
 const TARGET = process.env.npm_lifecycle_event;
-
 const PATHS = {
   app: path.join(__dirname, '../src'),
   build: path.join(__dirname, '../dist'),
