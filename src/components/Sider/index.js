@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Icon, Switch } from 'antd';
+import { Menu, Icon } from 'antd';
 import _ from 'lodash';
 
 import './index.less';

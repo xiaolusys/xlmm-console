@@ -1,5 +1,6 @@
 const path = require('path');
 const merge = require('webpack-merge');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const LessNpmImportPlugin = require('less-plugin-npm-import');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 
@@ -26,7 +27,6 @@ const common = {
   output: {
     path: PATHS.build,
     filename: 'app.js',
-    chunkFilename: '[name].chunk.js',
   },
 
   resolve: {
@@ -36,9 +36,6 @@ const common = {
 
   module: {
     loaders: [{
-      test: /\.less$/,
-      loader: 'style!css!less',
-    }, {
       test: /assets\/javascripts\//,
       loader: 'imports?jQuery=jquery',
     }, {

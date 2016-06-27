@@ -4,13 +4,20 @@ const ReplacePlugin = require('replace-webpack-plugin');
 const LessPluginCleanCSS = require('less-plugin-clean-css');
 
 const publicPath = '/console/';
+const extractLESS = new ExtractTextPlugin('app-[hash].css');
 
 module.exports = {
-  devtool: 'source-map',
 
   output: {
     publicPath: publicPath,
     filename: 'app-[hash].js',
+  },
+
+  module: {
+    loaders: [{
+      test: /\.less$/i,
+      loader: extractLESS.extract(['css', 'less']),
+    }],
   },
 
   lessLoader: {
@@ -26,7 +33,6 @@ module.exports = {
       },
       __DEVELOPMENT__: false,
     }),
-    new ExtractTextPlugin('app-[hash].css'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
@@ -38,6 +44,7 @@ module.exports = {
         module.resource.indexOf('.css') === -1
       ),
     }),
+    extractLESS,
     new ReplacePlugin({
       skip: process.env.NODE_ENV === 'development',
       entry: 'index.html',
