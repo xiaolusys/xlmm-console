@@ -1,34 +1,43 @@
 import React, { Component } from 'react';
 import { Menu, Icon, Switch } from 'antd';
+import _ from 'lodash';
 
 import './index.less';
-
-const SubMenu = Menu.SubMenu;
 
 export class Sider extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     theme: React.PropTypes.any,
     location: React.PropTypes.any,
+    menu: React.PropTypes.array,
+    selectedKeys: React.PropTypes.string,
+    defaultOpenKeys: React.PropTypes.array,
+    onMenuClick: React.PropTypes.func,
   };
 
   static defaultProps = {
     prefixCls: 'sider-menu',
     theme: 'dark',
+    onMenuClick: _.noop,
   };
 
-  state = {
-    current: 'schedule',
-  }
-
   render() {
-    const { prefixCls, theme } = this.props;
+    const { prefixCls, theme, menu, selectedKeys, defaultOpenKeys, onMenuClick } = this.props;
     return (
-      <side className={`${prefixCls}`}>
-        <Menu theme={theme} defaultOpenKeys={['sub1']} selectedKeys={[this.state.current]} mode="inline" onClick={this.onMenuClick}>
-          <Menu.Item key="schedule"><Icon type="calendar" /><span>排期管理</span></Menu.Item>
+      <aside className={`${prefixCls}`}>
+        <Menu theme={theme} defaultOpenKeys={defaultOpenKeys} selectedKeys={selectedKeys} mode="inline" onClick={onMenuClick}>
+          {menu.map((item) => {
+            if (!item.sub) {
+              return (<Menu.Item key={item.link} ><Icon type={item.icon} /><span>{item.name}</span></Menu.Item>);
+            }
+            return (
+              <Menu.SubMenu key={item.link} title={<span><Icon type={item.icon} /><span>{item.name}</span></span>}>
+                {item.sub.map((sub) => (<Menu.Item key={sub.link}>{sub.name}</Menu.Item>))}
+              </Menu.SubMenu>
+            );
+          })}
         </Menu>
-      </side>
+      </aside>
     );
   }
 }

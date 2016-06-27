@@ -1,15 +1,18 @@
+@import "../../modules/app/styles/antd-theme.less";
+
 .header-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 50px;
-  background-color: #fff;
+  height: @header-height;
+  background-color: @white;
   &-logo {
-    height: 56px;
-    padding: 16px 16px;
+    height: @header-height;
+    padding: 16px;
     > img {
-      width: 40%
+      height: 100%;
+      width: auto;
     }
   }
 }

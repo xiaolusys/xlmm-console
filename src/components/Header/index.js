@@ -17,13 +17,13 @@ export class Header extends Component {
   render() {
     const { prefixCls } = this.props;
     return (
-      <div className={`${prefixCls}`}>
+      <header className={`${prefixCls}`}>
         <Row type="flex">
           <Col span="3">
-            <div className={`${prefixCls}-logo clearfix`}><img src={logo} alt="小鹿美美" /></div>
+            <div className={`${prefixCls}-logo`}><img src={logo} alt="小鹿美美" /></div>
           </Col>
         </Row>
-      </div>
+      </header>
     );
   }
 }

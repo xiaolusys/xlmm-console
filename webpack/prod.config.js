@@ -8,13 +8,11 @@ const publicPath = '/console/';
 module.exports = {
   devtool: 'source-map',
 
-  entry: ['bootstrap-loader/extractStyles'],
-
   output: {
     publicPath: publicPath,
     filename: 'app-[hash].js',
   },
-  
+
   lessLoader: {
     lessPlugins: [
       new LessPluginCleanCSS({ advanced: false }),
@@ -31,6 +29,15 @@ module.exports = {
     new ExtractTextPlugin('app-[hash].css'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'framework-[hash].js',
+      minChunks: (module) => (
+        module.resource &&
+        module.resource.indexOf('node_modules') !== -1 &&
+        module.resource.indexOf('.css') === -1
+      ),
+    }),
     new ReplacePlugin({
       skip: process.env.NODE_ENV === 'development',
       entry: 'index.html',
@@ -38,7 +45,7 @@ module.exports = {
       output: 'dist/index.html',
       data: {
         css: `<link type="text/css" rel="stylesheet" href="${publicPath}app-[hash].css">`,
-        js: `<script src="${publicPath}app-[hash].js"></script>`,
+        js: `<script src="${publicPath}framework-[hash].js"></script><script src="${publicPath}app-[hash].js"></script>`,
       },
     }),
     new webpack.ProvidePlugin({

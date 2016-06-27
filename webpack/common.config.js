@@ -26,6 +26,7 @@ const common = {
   output: {
     path: PATHS.build,
     filename: 'app.js',
+    chunkFilename: '[name].chunk.js',
   },
 
   resolve: {

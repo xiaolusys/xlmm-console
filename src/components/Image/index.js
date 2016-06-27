@@ -13,11 +13,12 @@ export class Image extends Component {
   static defaultProps = {
     quality: 100,
     interlace: 1,
+
   }
 
   render() {
     const { src, thumbnail, crop, quality, interlace, ...restProps } = this.props;
-    const imgSrc = `${src}?imageMogr2/strip/format/jpg/quality/${quality}/interlace/${interlace}/` + (thumbnail ? `thumbnail/${thumbnail}/` : '') + (crop ? `crop/${crop}` : '');
-    return (<img {...restProps} src= {imgSrc} onLoad={this.onLoad} />);
+    const imgSrc = `${src}?imageMogr2/strip/format/jpg/quality/${quality}/interlace/${interlace}/` + (thumbnail ? `thumbnail/${thumbnail}/` : '') + (crop ? `crop/${crop}` : ''); // eslint-disable-line
+    return (<img {...restProps} src={imgSrc} onLoad={this.onLoad} role="presentation" />);
   }
 }
