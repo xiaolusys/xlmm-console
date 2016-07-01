@@ -4,10 +4,8 @@ import { batchedSubscribe } from 'redux-batched-subscribe';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom'; // eslint-disable-line
 import createLogger from 'redux-logger';
 import reducer from './reducer';
-import { promiseMiddleware } from './middleware/promiseMiddleware';
+import promiseMiddleware from './middleware/promiseMiddleware';
 import { apiMiddleware } from './middleware/apiMiddleware';
-
-const __PRODUCTION__ = __PRODUCTION__ || process.env.NODE_ENV === 'production'; // eslint-disable-line
 
 const logger = createLogger({
   collapsed: true,
@@ -18,7 +16,7 @@ const logger = createLogger({
 const middlewares = [
   apiMiddleware,
   promiseMiddleware(),
-  thunkMiddleware, !__PRODUCTION__ && __CLIENT__ && logger, // eslint-disable-line
+  thunkMiddleware,
 ].filter(Boolean);
 
 const createStoreWithMiddleware = applyMiddleware(
@@ -26,7 +24,7 @@ const createStoreWithMiddleware = applyMiddleware(
 )(createStore);
 
 export default function configureStore(initialState) {
-  const store = createStoreWithMiddleware(reducer, initialState, batchedSubscribe(batchedUpdates));
+  const store = createStoreWithMiddleware(reducer, initialState, window.devToolsExtension && window.devToolsExtension());
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('../', () => {

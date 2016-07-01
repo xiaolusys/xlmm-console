@@ -1,36 +1,26 @@
 import axios from 'axios';
+import Qs from 'qs';
+import _ from 'lodash';
+import changeCaseKeys from 'change-case-keys';
+
+axios.defaults = _.assign(axios.defaults, {
+  transformRequest: [(data) => Qs.stringify(changeCaseKeys(data, 'underscored', 10), { arrayFormat: 'indices' })],
+  transformResponse: [(data) => changeCaseKeys(JSON.parse(data), 'camelize', 10)],
+  paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' }),
+  timeout: 1000,
+  maxRedirects: 3,
+  xsrfCookieName: 'csrftoken',
+  xsrfHeaderName: 'csrfmiddlewaretoken',
+});
+
 export const apiMiddleware = store => next => action => {
   if (action.url) {
-    const requestPromise = axios(action);
-    next({
+    return next({
       type: action.type,
       payload: {
-        promise: requestPromise
-          .promise()
-          .then(res => res.body)
-          .catch(res => {
-            const data = res.res;
-            if (action.always) {
-              action.always(data, store.dispatch);
-            }
-            if (action.failure) {
-              action.failure(data, store.dispatch);
-            }
-          })
-          .tap(resp => {
-            if (action.always) {
-              setTimeout(() => action.always(resp, store.dispatch), 10);
-            }
-          })
-          .tap(resp => {
-            if (action.done) {
-              action.done && action.done(resp, store.dispatch);
-            }
-          }),
-        data: { ...action.data },
+        promise: axios(action),
       },
     });
-  } else {
-    next(action);
   }
+  return next(action);
 };

@@ -1,6 +1,6 @@
 module.exports = {
   production: {
-    apiHost: 'm.xiaolumeimei.com',
+    apiHost: 'admin.xiaolumm.com',
     apiPort: 80,
     port: 7070,
   },

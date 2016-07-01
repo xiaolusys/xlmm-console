@@ -1,43 +1,39 @@
 import createReducer from 'redux/createReducer';
+import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
   items: [],
-  request: false,
-  success: false,
-  failure: false,
+  count: 0,
 };
 
-const types = { FETCH_SCHEDULE: 'FETCH_SCHEDULE' };
+const types = { FETCH_SCHEDULES: 'FETCH_SCHEDULES' };
 
 export default createReducer({
-  [`${types.FETCH_SCHEDULE}_REQUEST`]: (state, { payload }) => ({
+  [`${types.FETCH_SCHEDULES}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
-    request: true,
+    ...status,
   }),
-  [`${types.FETCH_SCHEDULE}_SUCCESS`]: (state, { payload }) => ({
+  [`${types.FETCH_SCHEDULES}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
-    items: payload,
-    success: true,
-    request: false,
+    ...status,
+    items: payload.data.results.map((item => {
+      const newItem = item;
+      newItem.scheduleTypeLable = scheduleTypes[item.scheduleType].lable;
+      return newItem;
+    })) || [],
+    count: payload.data.count,
   }),
-  [`${types.FETCH_SCHEDULE}_FAILURE`]: (state, { payload }) => ({
+  [`${types.FETCH_SCHEDULES}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
-    request: false,
-    failure: true,
+    ...status,
   }),
 }, initialState);
 
-export const fetchSchedule = (scheduleId) => ({
-  url: scheduleId ? `schedule/${scheduleId}` : 'schedule',
+export const fetchSchedules = (filters) => ({
+  url: `${apisBase.supply}saleschedule`,
   method: 'get',
-  type: types.FETCH_SCHEDULE,
-  done: (resp, dispatch) => {
-
-  },
-  failure: (resp, dispatch) => {
-
-  },
-  always: (resp, dispatch) => {
-
+  type: types.FETCH_SCHEDULES,
+  params: {
+    ...filters,
   },
 });

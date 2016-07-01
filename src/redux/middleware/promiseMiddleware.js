@@ -1,85 +1,71 @@
-import R from 'ramda';
+import _ from 'lodash';
 
 const isPromise = (value) =>
-  (value !== null && typeof value === 'object' && value.promise && typeof value.promise.then === 'function');
+  (value !== null && typeof value === 'object' && value && typeof value.then === 'function');
 
 const defaultTypes = ['REQUEST', 'SUCCESS', 'FAILURE'];
 
-export const promiseMiddleware = (config = {}) => {
+export default (config = {}) => {
   const promiseTypeSuffixes = config.promiseTypeSuffixes || defaultTypes;
-  return (refs) => {
-    const dispatch = refs.dispatch;
+  return (ref) => {
+    const { dispatch } = ref;
     return next => action => {
-      if (!isPromise(action.payload)) {
-        return action;
+      if (action.payload) {
+        if (!isPromise(action.payload) && !isPromise(action.payload.promise)) {
+          return next(action);
+        }
+      } else {
+        return next(action);
       }
       const { type, payload, meta } = action;
-      const { promise, data } = payload;
+      const initialAction = { isLoading: true, success: false, failure: false };
       const [REQUEST, SUCCESS, FAILURE] = (meta || {}).promiseTypeSuffixes || promiseTypeSuffixes;
+      const getAction = (newPayload, isRejected) => ({
+        type: `${type}_${isRejected ? FAILURE : SUCCESS}`,
+        ...newPayload ? { payload: newPayload } : {},
+        ...!!meta ? { meta } : {},
+        status: isRejected ? { isLoading: false, failure: true, success: false } : { isLoading: false, failure: false, success: true },
+      });
+
       /**
-       * Dispatch the first async handler. This tells the
-       * reducer that an async action has been dispatched.
+       * Assign values for promise and data variables. In the case the payload
+       * is an object with a `promise` and `data` property, the values of those
+       * properties will be used. In the case the payload is a promise, the
+       * value of the payload will be used and data will be null.
+       */
+      let promise;
+      let data;
+      if (!isPromise(action.payload) && typeof action.payload === 'object') {
+        promise = payload.promise;
+        data = payload.data;
+      } else {
+        promise = payload;
+        data = null;
+      }
+
+      /**
+       * First, dispatch the pending action. This flux standard action object
+       * describes the pending state of a promise and will include any data
+       * (for optimistic updates) and/or meta from the original action.
        */
       next({
         type: `${type}_${REQUEST}`,
-        ...!!data ? {
-          payload: data,
-        } : {},
+        status: initialAction,
+        ...action.payload || {},
         ...!!meta ? { meta } : {},
       });
 
-      const isAction = resolved => resolved && (resolved.meta || resolved.payload);
-      const isThunk = resolved => typeof resolved === 'function';
-      const getResolveAction = isError => ({
-        type: `${type}_${isError ? FAILURE : SUCCESS}`,
-        ...!!meta ? { meta } : {},
-        ...!!isError ? { error: true } : {},
-      });
-
-      /**
-       * Re-dispatch one of:
-       *  1. a thunk, bound to a resolved/rejected object containing ?meta and type
-       *  2. the resolved/rejected object, if it looks like an action, merged into action
-       *  3. a resolve/rejected action with the resolve/rejected object as a payload
-       */
-      const newAction = action;
-      newAction.payload.promise = promise.then(
-        (resolved = {}) => {
-          let resolveAction = getResolveAction();
-          if (!R.isEmpty(resolved)) {
-            return dispatch(isThunk(resolved) ? resolved.bind(null, resolveAction) : {
-              ...resolveAction,
-              ...isAction(resolved) ? resolved : {
-                ...!!resolved && {
-                  payload: resolved,
-                },
-              },
-            });
-          }
-          resolveAction = getResolveAction(true);
-          return dispatch(isThunk(resolved) ? resolved.bind(null, resolveAction) : {
-            ...resolveAction,
-            ...isAction(resolved) ? resolved : {
-              ...!!resolved && {
-                payload: resolved,
-              },
-            },
-          });
-        },
-        (rejected = {}) => {
-          const resolveAction = getResolveAction(true);
-          return dispatch(isThunk(rejected) ? rejected.bind(null, resolveAction) : {
-            ...resolveAction,
-            ...isAction(rejected) ? rejected : {
-              ...!!rejected && {
-                payload: rejected,
-              },
-            },
-          });
-        },
-      );
-
-      return newAction;
+      return promise
+        .then((resolved = null) => {
+          const resolvedAction = getAction(resolved, false);
+          dispatch(resolvedAction);
+          return { resolved, action: resolvedAction };
+        })
+        .catch((rejected) => {
+          const rejectedAction = getAction(rejected, true);
+          dispatch(rejectedAction);
+          return { rejected, action: rejectedAction };
+        });
     };
   };
 };
