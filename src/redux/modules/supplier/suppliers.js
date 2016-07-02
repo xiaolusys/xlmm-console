@@ -2,7 +2,7 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
 
-const type = 'FETCH_SCHEDULE';
+const type = 'FETCH_SUPPLIERS';
 
 export default createReducer({
   [`${type}_REQUEST`]: (state, { payload, status }) => ({
@@ -20,8 +20,11 @@ export default createReducer({
   }),
 }, {});
 
-export const fetchSchedule = (scheduleId) => ({
-  url: `${apisBase.supply}saleschedule/${scheduleId}`,
+export const fetchSuppliers = (filters) => ({
+  url: `${apisBase.supply}supplier`,
   method: 'get',
   type: type,
+  params: {
+    ...filters,
+  },
 });

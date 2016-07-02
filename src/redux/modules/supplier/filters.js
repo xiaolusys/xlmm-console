@@ -1,8 +1,13 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
+const initialState = {
+  categorys: [],
+  supplierType: [],
+  supplierZone: [],
+};
 
-const type = 'FETCH_SCHEDULE';
+const type = 'FETCH_SUPPLIERS_FILTERS';
 
 export default createReducer({
   [`${type}_REQUEST`]: (state, { payload, status }) => ({
@@ -18,10 +23,10 @@ export default createReducer({
     ...state,
     ...status,
   }),
-}, {});
+}, initialState);
 
-export const fetchSchedule = (scheduleId) => ({
-  url: `${apisBase.supply}saleschedule/${scheduleId}`,
+export const fetchFilters = () => ({
+  url: `${apisBase.supply}supplier/list_filters`,
   method: 'get',
   type: type,
 });
