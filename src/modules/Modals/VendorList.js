@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table } from 'antd';
 import * as constants from 'constants';
-import * as suppliersAction from 'redux/modules/supplier/suppliers';
-import * as filtersAction from 'redux/modules/supplier/filters';
+import { fetchSuppliers } from 'redux/modules/supplyChain/suppliers';
+import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import _ from 'lodash';
 
-const actionCreators = _.merge(suppliersAction, filtersAction);
+const actionCreators = { fetchSuppliers: fetchSuppliers, fetchFilters: fetchFilters };
 
 @connect(
   state => ({
     filters: state.supplierFilters,
-    suppliers: state.supplier,
+    suppliers: state.suppliers,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -23,6 +23,8 @@ class VendorList extends Component {
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     visible: React.PropTypes.bool,
+    onCancel: React.PropTypes.func,
+    onOk: React.PropTypes.func,
     fetchFilters: React.PropTypes.func,
     fetchSuppliers: React.PropTypes.func,
     filters: React.PropTypes.object,
@@ -35,7 +37,9 @@ class VendorList extends Component {
   };
 
   static defaultProps = {
-    prefixCls: 'schedule-edit',
+    prefixCls: 'supplier-list',
+    onOk: _.noop,
+    onCancel: _.noop,
   };
 
   constructor(props, context) {
@@ -48,6 +52,7 @@ class VendorList extends Component {
       pageSize: 10,
       page: 1,
     },
+    selected: [],
   }
 
   componentWillMount() {
@@ -60,8 +65,16 @@ class VendorList extends Component {
     this.props.fetchSuppliers(this.getFilters());
   }
 
+  onOk = () => {
+    this.props.onOk(this.state.selected);
+  }
+
   setFilters = (filters) => {
     this.setState(_.assign(this.state.filters, filters));
+  }
+
+  setSelected = (selected) => {
+    this.setState(_.assign(this.state.selected, selected));
   }
 
   getFilters = () => (this.state.filters)
@@ -71,11 +84,51 @@ class VendorList extends Component {
     wrapperCol: { span: 14 },
   })
 
+  columns = () => ([{
+    title: '名称',
+    dataIndex: 'supplierName',
+  }, {
+    title: '状态',
+    dataIndex: 'status',
+  }, {
+    title: '进度',
+    dataIndex: 'progress',
+  }])
+
+  rowSelection = () => {
+    const self = this;
+    return {
+      onChange: (selectedRowKeys, selectedRows) => {
+        const selected = _.map(selectedRows, (row) => ({ id: row.id, name: row.supplierName }));
+        self.setSelected(selected);
+      },
+    };
+  }
+
+  pagination = () => {
+    const { suppliers } = this.props;
+    const self = this;
+    return {
+      total: suppliers.count || 0,
+      showTotal: total => `共 ${total} 条`,
+      showSizeChanger: true,
+      onShowSizeChange(current, pageSize) {
+        self.setFilters({ pageSize: pageSize, page: current });
+        self.props.fetchSuppliers(self.getFilters());
+      },
+      onChange(current) {
+        self.setFilters({ page: current });
+        self.props.fetchSuppliers(self.getFilters());
+      },
+    };
+  }
+
+
   render() {
-    const { visible, filters, suppliers } = this.props;
+    const { visible, filters, suppliers, onCancel } = this.props;
     const { getFieldProps } = this.props.form;
     return (
-      <Modal title="供应商列表" width="800" visible={visible} onOk={this.handleOk} onCancel={this.handleCancel}>
+      <Modal title="供应商列表" width="800" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
         <Form horizontal className="ant-advanced-search-form">
           <Row gutter={2}>
             <Col sm={8}>
@@ -113,6 +166,7 @@ class VendorList extends Component {
             </Col>
           </Row>
         </Form>
+        <Table rowKey={(record) => (record.id)} rowSelection={this.rowSelection()} columns={this.columns()} pagination={this.pagination()} loading={suppliers.isLoading} dataSource={suppliers.items} />
       </Modal>
     );
   }

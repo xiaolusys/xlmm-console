@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table } from 'antd';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/schedule/schedules';
+import * as actionCreators from 'redux/modules/supplyChain/schedules';
 import _ from 'lodash';
 
 @connect(

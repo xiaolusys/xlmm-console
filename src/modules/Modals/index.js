@@ -1,5 +1,5 @@
 import VendorList from './VendorList';
 
-export const Modals = {
+export default {
   VendorList: VendorList,
 };
