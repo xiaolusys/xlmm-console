@@ -23,7 +23,7 @@ deploy:
     host: 
       - staging.xiaolumm.com
     when:
-      branch: staging
+      branch: [staging,master]
     user: root
     commands:
       - docker pull registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console
