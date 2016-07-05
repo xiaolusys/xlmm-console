@@ -6,20 +6,20 @@ const initialState = {
   count: 0,
 };
 
-const type = 'FETCH_SUPPLIERS';
+const name = 'SUPPLIERS';
 
 export default createReducer({
-  [`${type}_REQUEST`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`${type}_SUCCESS`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     count: payload.data.count,
     items: payload.data.results,
   }),
-  [`${type}_FAILURE`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
@@ -28,7 +28,7 @@ export default createReducer({
 export const fetchSuppliers = (filters) => ({
   url: `${apisBase.supply}supplier`,
   method: 'get',
-  type: type,
+  type: `FETCH_${name}`,
   params: {
     ...filters,
   },

@@ -6,7 +6,7 @@ const initialState = {
   count: 0,
 };
 
-const name = 'SCHEDULES';
+const name = 'SCHEDULE_PRODUCTS';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -16,12 +16,8 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    items: payload.data.results.map((item => {
-      const newItem = item;
-      newItem.scheduleTypeLable = scheduleTypes[item.scheduleType].lable;
-      return newItem;
-    })) || [],
     count: payload.data.count,
+    items: payload.data.results,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -29,8 +25,8 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchSchedules = (filters) => ({
-  url: `${apisBase.supply}saleschedule`,
+export const fetchProducts = (scheduleId, filters) => ({
+  url: `${apisBase.supply}saleschedule/${scheduleId}/product`,
   method: 'get',
   type: `FETCH_${name}`,
   params: {

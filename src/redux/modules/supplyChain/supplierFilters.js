@@ -7,19 +7,19 @@ const initialState = {
   supplierZone: [],
 };
 
-const type = 'FETCH_SUPPLIERS_FILTERS';
+const name = 'SUPPLIERS_FILTERS';
 
 export default createReducer({
-  [`${type}_REQUEST`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`${type}_SUCCESS`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     ...payload.data,
   }),
-  [`${type}_FAILURE`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
@@ -28,5 +28,5 @@ export default createReducer({
 export const fetchFilters = () => ({
   url: `${apisBase.supply}supplier/list_filters`,
   method: 'get',
-  type: type,
+  type: `FETCH_${name}`,
 });

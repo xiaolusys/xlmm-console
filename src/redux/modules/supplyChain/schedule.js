@@ -2,49 +2,51 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 import _ from 'lodash';
 
-const types = {
-  FETCH_SCHEDULE: 'FETCH_SCHEDULE',
-  SAVE_CHEDULE: 'SAVE_CHEDULE',
-};
+const name = 'SCHEDULE';
 
 export default createReducer({
-  [`${types.FETCH_SCHEDULE}_REQUEST`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`${types.FETCH_SCHEDULE}_SUCCESS`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     ...payload.data,
   }),
-  [`${types.FETCH_SCHEDULE}_FAILURE`]: (state, { payload, status }) => ({
+  [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`${types.SAVE_CHEDULE}_REQUEST`]: (state, { payload, status }) => ({
+  [`SAVE_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`${types.SAVE_CHEDULE}_SUCCESS`]: (state, { payload, status }) => ({
+  [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     updated: !_.isEmpty(payload.data),
   }),
-  [`${types.SAVE_CHEDULE}_FAILURE`]: (state, { payload, status }) => ({
+  [`SAVE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+  }),
+  [`RESET_${name}`]: (state, { payload, status }) => ({
+
   }),
 }, {});
 
 export const fetchSchedule = (scheduleId) => ({
   url: `${apisBase.supply}saleschedule/${scheduleId}`,
   method: 'get',
-  type: types.FETCH_SCHEDULE,
+  type: `FETCH_${name}`,
 });
 
 export const saveSchedule = (id, params) => ({
   url: id ? `${apisBase.supply}saleschedule/${id}` : `${apisBase.supply}saleschedule`,
   method: id ? 'patch' : 'post',
-  type: types.SAVE_CHEDULE,
+  type: `SAVE_${name}`,
   data: params,
 });
+
+export const resetSchedule = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));

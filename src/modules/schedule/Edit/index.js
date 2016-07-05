@@ -22,6 +22,7 @@ class EditSchedule extends Component {
     location: React.PropTypes.any,
     fetchSchedule: React.PropTypes.func,
     saveSchedule: React.PropTypes.func,
+    resetSchedule: React.PropTypes.func,
     schedule: React.PropTypes.object,
     form: React.PropTypes.object,
   };
@@ -61,6 +62,10 @@ class EditSchedule extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.resetSchedule();
+  }
+
   onOkClick = (selected) => {
     const unionSuppliers = _.unionWith(this.state.suppliers, selected, _.isEqual);
     this.setState({ suppliers: unionSuppliers });
@@ -90,7 +95,6 @@ class EditSchedule extends Component {
       scheduleType: params.scheduleType,
       lockStatus: params.lockStatus,
       saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
-      responsiblePersonName: 'qingxiao.xue',
     });
   }
 
