@@ -49,7 +49,7 @@ View -> Syntax -> Open all with current extension as ... -> Babel -> JavaScript(
 ```
 ## Installation
 ```shell
-$ git clone ssh://git@dev.huyi.so:10022/xiaolumm/xlmm-mall.git
+$ git clone ssh://git@git.xiaolumm.com:10022/XLMM-FE/xlmm-console.git
 $ cd xlmm-mall
 $ npm install babel-eslint -g
 $ npm install eslint -g
