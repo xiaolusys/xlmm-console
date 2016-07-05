@@ -7,6 +7,7 @@ import Modals from 'modules/Modals';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedule';
 import _ from 'lodash';
+import moment from 'moment';
 
 @connect(
   state => ({
@@ -20,6 +21,7 @@ class EditSchedule extends Component {
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     fetchSchedule: React.PropTypes.func,
+    saveSchedule: React.PropTypes.func,
     schedule: React.PropTypes.object,
     form: React.PropTypes.object,
   };
@@ -51,8 +53,11 @@ class EditSchedule extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { schedule } = nextProps;
+    if (!schedule.isLoading && schedule.success && schedule.updated) {
+      this.context.router.goBack();
+    }
     if (!schedule.isLoading && schedule.success) {
-      this.setState({ suppliers: schedule.saleSuppliers });
+      this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
     }
   }
 
@@ -78,6 +83,14 @@ class EditSchedule extends Component {
       if (!!errors) {
         return;
       }
+    });
+    const params = this.props.form.getFieldsValue();
+    this.props.saveSchedule(this.props.schedule.id, {
+      saleTime: moment(params.saleTime).format('YYYY-MM-DD'),
+      scheduleType: params.scheduleType,
+      lockStatus: params.lockStatus,
+      saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
+      responsiblePersonName: 'qingxiao.xue',
     });
   }
 
@@ -110,7 +123,7 @@ class EditSchedule extends Component {
             <Button style={{ margin: '4px 0' }} size="small" type="dashed" onClick={this.toggleModalVisible}>+ 添加供应商</Button>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="锁定">
-            <Switch {...getFieldProps('scheduleType')} checked={_.isBoolean(getFieldValue('lockStatus')) ? getFieldValue('lockStatus') : schedule.lockStatus} onChange={this.onSwitchChange} required />
+            <Switch {...getFieldProps('lockStatus')} checked={_.isBoolean(getFieldValue('lockStatus')) ? getFieldValue('lockStatus') : schedule.lockStatus} onChange={this.onSwitchChange} required />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>

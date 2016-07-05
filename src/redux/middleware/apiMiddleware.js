@@ -4,7 +4,13 @@ import _ from 'lodash';
 import changeCaseKeys from 'change-case-keys';
 
 axios.defaults = _.assign(axios.defaults, {
-  transformRequest: [(data) => Qs.stringify(changeCaseKeys(data, 'underscored', 10), { arrayFormat: 'indices' })],
+  headers: {
+    get: { 'Content-Type': 'application/json, text/plain, */*' },
+    patch: { 'Content-Type': 'application/json' },
+    post: { 'Content-Type': 'application/json' },
+    put: { 'Content-Type': 'application/json' },
+  },
+  transformRequest: [(data) => JSON.stringify(changeCaseKeys(data, 'underscored', 10))],
   transformResponse: [(data) => changeCaseKeys(JSON.parse(data), 'camelize', 10)],
   paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' }),
   timeout: 1000,

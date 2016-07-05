@@ -10,7 +10,7 @@ module.exports = {
     port: 7070,
   },
   local: {
-    apiHost: '192.168.1.1',
+    apiHost: '192.168.1.31',
     apiPort: 9000,
     port: 7070,
   },

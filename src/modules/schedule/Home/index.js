@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table } from 'antd';
+import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Popover, Badge } from 'antd';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedules';
 import _ from 'lodash';
+import moment from 'moment';
 
 @connect(
   state => ({
@@ -39,17 +40,24 @@ export class Home extends Component {
     filters: {
       pageSize: 10,
       page: 1,
-      // scheduleType: '',
-      // saleSuppliers: '',
+      ordering: '-sale_time',
     },
   }
 
   componentWillMount() {
-    this.props.fetchSchedules();
+    this.props.fetchSchedules(this.getFilters());
   }
 
   onScheduleTypesMenuClick = (e) => {
     this.setFilters({ scheduleType: e.key });
+    this.props.fetchSchedules(this.getFilters());
+  }
+
+  onRangeChange = (date) => {
+    this.setFilters({
+      saleTimeStart: moment(date[0]).format('YYYY-MM-DD'),
+      saleTimeEnd: moment(date[1]).format('YYYY-MM-DD'),
+    });
     this.props.fetchSchedules(this.getFilters());
   }
 
@@ -63,55 +71,66 @@ export class Home extends Component {
 
   getFilters = () => (this.state.filters)
 
-  getDropdownTitle = () => {
+  columns = () => {
+    const self = this;
+    return [{
+      title: '日期',
+      dataIndex: 'saleTime',
+      key: 'date',
+    }, {
+      title: '类型',
+      dataIndex: 'scheduleTypeLable',
+      key: 'scheduleTypeLable',
+    }, {
+      title: '商品',
+      dataIndex: 'productNum',
+      key: 'productNum',
+
+    }, {
+      title: '供应商',
+      dataIndex: 'saleSuppliers',
+      key: 'saleSuppliers',
+      render: (suppliers) => (
+        <Popover content={self.popoverContent(suppliers)} title="供应商" trigger="hover">
+          <a>{suppliers.length}</a>
+        </Popover>
+      ),
+    }, {
+      title: '负责人',
+      dataIndex: 'responsiblePersonName',
+      key: 'responsiblePersonName',
+    }, {
+      title: '锁定',
+      dataIndex: 'lockStatus',
+      key: 'lockStatus',
+      render: (lockStatus) => (
+        <span>
+          <Icon className={lockStatus ? 'icon-success' : 'icon-error'} type={lockStatus ? 'lock' : 'unlock'} />
+          <span> {lockStatus ? '已锁定' : '未锁定'}</span>
+        </span>
+      ),
+    }, {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'operation',
+      render: (id) => (
+        <span>
+          <Link to={`schedule/edit?id=${id}`}>编辑</Link>
+          <span className="ant-divider"></span>
+          <Link to={`schedule/products?id=${id}`}>商品</Link>
+        </span>
+      ),
+    }];
+  }
+
+  popoverContent = (suppliers) => (
+    suppliers.length > 0 ? _.map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
+  )
+
+  dropdownTitle = () => {
     const { filters } = this.state;
     return filters.scheduleType ? constants.scheduleTypes[filters.scheduleType].lable : '排期类型';
   }
-
-  columns = () => ([{
-    title: '日期',
-    dataIndex: 'saleTime',
-    key: 'date',
-  }, {
-    title: '类型',
-    dataIndex: 'scheduleTypeLable',
-    key: 'scheduleTypeLable',
-  }, {
-    title: '商品',
-    dataIndex: 'productNum',
-    key: 'productNum',
-
-  }, {
-    title: '供应商',
-    dataIndex: 'saleSupplierNum',
-    key: 'saleSupplierNum',
-  }, {
-    title: '负责人',
-    dataIndex: 'responsiblePersonName',
-    key: 'responsiblePersonName',
-  }, {
-    title: '锁定',
-    dataIndex: 'lockStatus',
-    key: 'lockStatus',
-    render: (lockStatus) => (
-      <span>
-        <Icon className={lockStatus ? 'icon-success' : 'icon-error'} type={lockStatus ? 'lock' : 'unlock'} />
-        <span> {lockStatus ? '已锁定' : '未锁定'}</span>
-      </span>),
-  }, {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'operation',
-    render: (id) => (
-      <span>
-        <Link to={`schedule/edit?id=${id}`}>编辑</Link>
-        <span className="ant-divider"></span>
-        <Link to={`schedule/products?id=${id}`}>商品</Link>
-        <span className="ant-divider"></span>
-        <Link to="">供应商</Link>
-      </span>
-    ),
-  }])
 
   scheduleTypesMenu = () =>
     (<Menu onClick={this.onScheduleTypesMenuClick}>
@@ -148,10 +167,10 @@ export class Home extends Component {
             <Button type="primary" onClick={this.onCreateScheduleClick}>新建排期</Button>
           </Col>
           <Col span={3} >
-            <Dropdown.Button overlay={this.scheduleTypesMenu()} type="ghost">{this.getDropdownTitle()}</Dropdown.Button>
+            <Dropdown.Button overlay={this.scheduleTypesMenu()} type="ghost">{this.dropdownTitle()}</Dropdown.Button>
           </Col>
           <Col span={3} >
-            <DatePicker.RangePicker />
+            <DatePicker.RangePicker onChange={this.onRangeChange} />
           </Col>
         </Row>
         <Table className="margin-top-sm" columns={this.columns()} loading={schedules.isLoading} dataSource={schedules.items} pagination={this.pagination()} />
