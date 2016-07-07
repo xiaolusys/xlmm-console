@@ -173,7 +173,7 @@ export class Home extends Component {
             <DatePicker.RangePicker onChange={this.onRangeChange} />
           </Col>
         </Row>
-        <Table className="margin-top-sm" columns={this.columns()} loading={schedules.isLoading} dataSource={schedules.items} pagination={this.pagination()} />
+        <Table className="margin-top-sm" columns={this.columns()} pagination={this.pagination()} loading={schedules.isLoading} dataSource={schedules.items} />
       </div>
     );
   }

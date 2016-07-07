@@ -133,7 +133,7 @@ class EditSchedule extends Component {
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
           </Row>
         </Form>
-        <Modals.VendorList visible={this.state.modalVisible} onCancel={this.toggleModalVisible} onOk={this.onOkClick} />
+        <Modals.SupplierLib visible={this.state.modalVisible} onCancel={this.toggleModalVisible} onOk={this.onOkClick} />
       </div>
     );
   }

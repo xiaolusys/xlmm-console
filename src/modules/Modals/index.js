@@ -1,5 +1,7 @@
-import VendorList from './VendorList';
+import SupplierLib from './SupplierLib';
+import ProductLib from './ProductLib';
 
 export default {
-  VendorList: VendorList,
+  SupplierLib: SupplierLib,
+  ProductLib: ProductLib,
 };

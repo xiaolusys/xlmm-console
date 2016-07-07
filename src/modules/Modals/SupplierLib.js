@@ -17,7 +17,7 @@ const actionCreators = { fetchSuppliers: fetchSuppliers, fetchFilters: fetchFilt
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class VendorList extends Component {
+class SupplierLib extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
@@ -84,51 +84,57 @@ class VendorList extends Component {
     wrapperCol: { span: 14 },
   })
 
-  columns = () => ([{
-    title: '名称',
-    dataIndex: 'supplierName',
-  }, {
-    title: '状态',
-    dataIndex: 'status',
-  }, {
-    title: '进度',
-    dataIndex: 'progress',
-  }])
-
-  rowSelection = () => {
+  tableProps = () => {
     const self = this;
-    return {
-      onChange: (selectedRowKeys, selectedRows) => {
-        const selected = _.map(selectedRows, (row) => ({ id: row.id, name: row.supplierName }));
-        self.setSelected(selected);
-      },
-    };
-  }
-
-  pagination = () => {
     const { suppliers } = this.props;
-    const self = this;
     return {
-      total: suppliers.count || 0,
-      showTotal: total => `共 ${total} 条`,
-      showSizeChanger: true,
-      onShowSizeChange(current, pageSize) {
-        self.setFilters({ pageSize: pageSize, page: current });
-        self.props.fetchSuppliers(self.getFilters());
+      className: 'margin-top-sm',
+      rowKey: (record) => (record.id),
+      columns: [{
+        title: '名称',
+        key: 'supplierName',
+        dataIndex: 'supplierName',
+        width: 200,
+      }, {
+        title: '状态',
+        key: 'status',
+        dataIndex: 'status',
+        width: 200,
+      }, {
+        title: '进度',
+        key: 'progress',
+        dataIndex: 'progress',
+        width: 200,
+      }],
+      rowSelection: {
+        onChange: (selectedRowKeys, selectedRows) => {
+          const selected = _.map(selectedRows, (row) => ({ id: row.id, name: row.supplierName }));
+          self.setSelected(selected);
+        },
       },
-      onChange(current) {
-        self.setFilters({ page: current });
-        self.props.fetchSuppliers(self.getFilters());
+      pagination: {
+        total: suppliers.count || 0,
+        showTotal: total => `共 ${total} 条`,
+        showSizeChanger: true,
+        onShowSizeChange(current, pageSize) {
+          self.setFilters({ pageSize: pageSize, page: current });
+          self.props.fetchSuppliers(self.getFilters());
+        },
+        onChange(current) {
+          self.setFilters({ page: current });
+          self.props.fetchSuppliers(self.getFilters());
+        },
       },
+      useFixedHeader: true,
+      scroll: { y: 400 },
     };
   }
-
 
   render() {
     const { visible, filters, suppliers, onCancel } = this.props;
     const { getFieldProps } = this.props.form;
     return (
-      <Modal title="供应商列表" width="800" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
+      <Modal title="供应商" width="800" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
         <Form horizontal className="ant-advanced-search-form">
           <Row gutter={2}>
             <Col sm={8}>
@@ -166,10 +172,10 @@ class VendorList extends Component {
             </Col>
           </Row>
         </Form>
-        <Table rowKey={(record) => (record.id)} rowSelection={this.rowSelection()} columns={this.columns()} pagination={this.pagination()} loading={suppliers.isLoading} dataSource={suppliers.items} />
+        <Table {...this.tableProps()} loading={suppliers.isLoading} dataSource={suppliers.items} />
       </Modal>
     );
   }
 }
 
-export default Form.create()(VendorList);
+export default Form.create()(SupplierLib);
