@@ -55,7 +55,6 @@ export const updateProduct = (scheduleId, productId, params, filters) => ({
     ...params,
   },
   success: (resp, dispatch) => {
-    console.log(resp, dispatch);
     dispatch(fetchProducts(scheduleId, filters));
   },
 });
