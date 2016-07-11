@@ -68,7 +68,7 @@ class ProductLib extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
-  onOk = () => {
+  onOk = (e) => {
     this.props.onOk(this.state.selected);
   }
 
@@ -91,6 +91,7 @@ class ProductLib extends Component {
     const self = this;
     const { products } = this.props;
     return {
+      rowKey: (record) => (record.id),
       columns: [{
         title: '图片',
         key: 'picUrl',

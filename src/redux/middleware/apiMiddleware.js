@@ -26,6 +26,8 @@ export const apiMiddleware = store => next => action => {
       payload: {
         promise: axios(action),
       },
+      success: action.success || _.noop,
+      error: action.error || _.noop,
     });
   }
   return next(action);

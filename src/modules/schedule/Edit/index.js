@@ -92,6 +92,8 @@ class EditSchedule extends Component {
     const params = this.props.form.getFieldsValue();
     this.props.saveSchedule(this.props.schedule.id, {
       saleTime: moment(params.saleTime).format('YYYY-MM-DD'),
+      upshelfTime: moment(params.saleTime).format('YYYY-MM-DD hh:mm:ss'),
+      offshelfTime: moment(params.endTime).format('YYYY-MM-DD hh:mm:ss'),
       scheduleType: params.scheduleType,
       lockStatus: params.lockStatus,
       saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
@@ -114,8 +116,11 @@ class EditSchedule extends Component {
     return (
       <div className={`${prefixCls}`} >
         <Form horizontal onSubmit={this.onSubmitCliick}>
-          <Form.Item {...this.formItemLayout()} label="日期">
-            <DatePicker {...getFieldProps('saleTime')} value={getFieldValue('saleTime') || schedule.saleTime} required />
+          <Form.Item {...this.formItemLayout()} label="开始时间">
+            <DatePicker {...getFieldProps('saleTime')} value={getFieldValue('saleTime') || schedule.saleTime} format="yyyy-MM-dd HH:mm:ss" showTime required />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="结束时间">
+            <DatePicker {...getFieldProps('endTime')} value={getFieldValue('endTime') || schedule.endTime} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类型" >
             <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType') || schedule.scheduleType} required>
