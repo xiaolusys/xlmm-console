@@ -223,7 +223,7 @@ export class Products extends Component {
         dataIndex: 'upload',
         key: 'upload',
         width: 80,
-        render: (text, record) => (<a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`}>上传图片</a>),
+        render: (text, record) => (<a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>),
       }],
       pagination: {
         total: scheduleProducts.count || 0,
