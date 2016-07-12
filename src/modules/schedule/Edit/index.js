@@ -117,10 +117,10 @@ class EditSchedule extends Component {
       <div className={`${prefixCls}`} >
         <Form horizontal onSubmit={this.onSubmitCliick}>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('saleTime')} value={getFieldValue('saleTime') || schedule.saleTime} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('saleTime')} value={getFieldValue('saleTime') || moment(schedule.upshelfTime).format('YYYY-MM-DD hh:mm:ss')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="结束时间">
-            <DatePicker {...getFieldProps('endTime')} value={getFieldValue('endTime') || schedule.endTime} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('endTime')} value={getFieldValue('endTime') || moment(schedule.offshelfTime).format('YYYY-MM-DD hh:mm:ss')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类型" >
             <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType') || schedule.scheduleType} required>
