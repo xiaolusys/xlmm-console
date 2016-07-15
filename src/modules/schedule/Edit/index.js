@@ -96,7 +96,6 @@ class EditSchedule extends Component {
       }
     });
     const params = this.props.form.getFieldsValue();
-    debugger;
     this.props.saveSchedule(this.props.schedule.id, {
       saleTime: moment(params.saleTime).format('YYYY-MM-DD'),
       upshelfTime: moment(params.saleTime).format('YYYY-MM-DD hh:mm:ss'),
