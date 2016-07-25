@@ -58,6 +58,12 @@ class EditSchedule extends Component {
       this.context.router.goBack();
     }
     if (!schedule.isLoading && schedule.success) {
+      this.props.form.setFieldsInitialValue({
+        upshelfTime: moment(schedule.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+        offshelfTime: moment(schedule.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+        scheduleType: schedule.scheduleType,
+        lockStatus: schedule.lockStatus,
+      });
       this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
     }
   }
@@ -91,9 +97,9 @@ class EditSchedule extends Component {
     });
     const params = this.props.form.getFieldsValue();
     this.props.saveSchedule(this.props.schedule.id, {
-      saleTime: moment(params.saleTime).format('YYYY-MM-DD'),
-      upshelfTime: moment(params.saleTime).format('YYYY-MM-DD hh:mm:ss'),
-      offshelfTime: moment(params.endTime).format('YYYY-MM-DD hh:mm:ss'),
+      saleTime: moment(params.upshelfTime).format('YYYY-MM-DD'),
+      upshelfTime: moment(params.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+      offshelfTime: moment(params.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
       scheduleType: params.scheduleType,
       lockStatus: params.lockStatus,
       saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
@@ -117,13 +123,13 @@ class EditSchedule extends Component {
       <div className={`${prefixCls}`} >
         <Form horizontal onSubmit={this.onSubmitCliick}>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('saleTime')} value={getFieldValue('saleTime') || moment(schedule.upshelfTime).format('YYYY-MM-DD hh:mm:ss')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('upshelfTime')} value={getFieldValue('upshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="结束时间">
-            <DatePicker {...getFieldProps('endTime')} value={getFieldValue('endTime') || moment(schedule.offshelfTime).format('YYYY-MM-DD hh:mm:ss')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('offshelfTime')} value={getFieldValue('offshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类型" >
-            <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType') || schedule.scheduleType} required>
+            <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType')} required>
             {_.map(constants.scheduleTypes, (type) => (<Select.Option value={type.id}>{type.lable}</Select.Option>))}
             </Select>
           </Form.Item>
@@ -132,7 +138,7 @@ class EditSchedule extends Component {
             <Button style={{ margin: '4px 0' }} size="small" type="dashed" onClick={this.toggleModalVisible}>+ 添加供应商</Button>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="锁定">
-            <Switch {...getFieldProps('lockStatus')} checked={_.isBoolean(getFieldValue('lockStatus')) ? getFieldValue('lockStatus') : schedule.lockStatus} onChange={this.onSwitchChange} required />
+            <Switch {...getFieldProps('lockStatus')} checked={getFieldValue('lockStatus')} onChange={this.onSwitchChange} required />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>

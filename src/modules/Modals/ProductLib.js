@@ -114,7 +114,7 @@ class ProductLib extends Component {
         key: 'saleCategory',
         dataIndex: 'saleCategory',
         width: 80,
-        render: (saleCategory) => (<p>{saleCategory.fullName}</p>),
+        render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
       }, {
         title: '供应商',
         key: 'saleSupplier',
