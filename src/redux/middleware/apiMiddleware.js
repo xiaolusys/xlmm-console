@@ -11,7 +11,16 @@ axios.defaults = _.assign(axios.defaults, {
     put: { 'Content-Type': 'application/json' },
   },
   transformRequest: [(data) => (data ? JSON.stringify(changeCaseKeys(data, 'underscored', 10)) : {})],
-  transformResponse: [(data) => (data ? changeCaseKeys(JSON.parse(data), 'camelize', 10) : {})],
+  transformResponse: [(data) => {
+    let payload = {};
+    try {
+      payload = JSON.parse(data);
+      payload = changeCaseKeys(payload, 'camelize', 10);
+    } catch (e) {
+      payload = data;
+    }
+    return payload;
+  }],
   paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' }),
   timeout: 1000,
   maxRedirects: 3,
