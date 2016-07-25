@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Popover, Badge } from 'antd';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedules';
-import _ from 'lodash';
+import { assign, map } from 'lodash';
 import moment from 'moment';
 
 @connect(
@@ -66,7 +66,7 @@ export class Home extends Component {
   }
 
   setFilters = (filters) => {
-    this.setState(_.assign(this.state.filters, filters));
+    this.setState(assign(this.state.filters, filters));
   }
 
   getFilters = () => (this.state.filters)
@@ -124,7 +124,7 @@ export class Home extends Component {
   }
 
   popoverContent = (suppliers) => (
-    suppliers.length > 0 ? _.map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
+    suppliers.length > 0 ? map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
   )
 
   dropdownTitle = () => {
@@ -134,7 +134,7 @@ export class Home extends Component {
 
   scheduleTypesMenu = () =>
     (<Menu onClick={this.onScheduleTypesMenuClick}>
-      {_.map(constants.scheduleTypes, (type) =>
+      {map(constants.scheduleTypes, (type) =>
         (<Menu.Item key={type.id}>{type.lable}</Menu.Item>)
       )}
     </Menu>)

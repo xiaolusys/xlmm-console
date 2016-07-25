@@ -95,6 +95,7 @@
     "react-router": "^2.5.1",
     "redux": "^3.5.2",
     "redux-promise-middleware": "^3.3.0",
-    "rx": "^4.1.0"
+    "rx": "^4.1.0",
+    "stringcase": "^3.0.1"
   }
 }

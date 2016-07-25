@@ -7,10 +7,10 @@ import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
 import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
-import { fetchProducts, addProduct, updateProduct } from 'redux/modules/supplyChain/scheduleProducts';
-import _ from 'lodash';
+import { fetchProducts, addProduct, updateProduct, updatePosition, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
+import { assign, map } from 'lodash';
 
-const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct };
+const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, deleteProduct };
 
 @connect(
   state => ({
@@ -29,6 +29,8 @@ export class Products extends Component {
     fetchProducts: React.PropTypes.func,
     addProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
+    updatePosition: React.PropTypes.func,
+    deleteProduct: React.PropTypes.func,
     schedule: React.PropTypes.object,
     scheduleProducts: React.PropTypes.object,
   };
@@ -53,7 +55,7 @@ export class Products extends Component {
       ordering: 'order_weight',
     },
     modalVisible: false,
-    productWeight: 1,
+    distance: 1,
   }
 
   componentWillMount() {
@@ -76,61 +78,56 @@ export class Products extends Component {
     }, this.getFilters());
   }
 
-  onPositionClick = (e) => {
+  onUpdatePositionClick = (e) => {
     const { id } = this.props.location.query;
-    const { type, productid, weight } = e.currentTarget.dataset;
-    let orderWeight = Number(weight);
-    switch (type) {
-      case 'up':
-        orderWeight = Number(weight) - this.state.productWeight;
-        break;
-      case 'down':
-        orderWeight = Number(weight) + this.state.productWeight;
-        break;
-      default:
-        break;
-    }
-    this.props.updateProduct(id, productid, {
-      orderWeight: orderWeight,
+    const { direction, productid } = e.currentTarget.dataset;
+    this.props.updatePosition(id, productid, {
+      direction: direction,
+      distance: this.state.distance,
     }, this.getFilters());
+  }
+
+  onDeleteClick = (e) => {
+    const { id } = this.props.location.query;
+    const { productid } = e.currentTarget.dataset;
+    this.props.deleteProduct(id, productid, this.getFilters());
+
   }
 
   getFilters = () => (this.state.filters)
 
   setFilters = (filters) => {
-    this.setState(_.assign(this.state.filters, filters));
+    this.setState(assign(this.state.filters, filters));
   }
 
-  setProductWeight = (e) => {
-    console.log(e);
-    this.setState(_.assign(this.state, { productWeight: Number(e.target.value) }));
+  setDistance = (e) => {
+    this.setState(assign(this.state, { distance: Number(e.target.value) }));
   }
 
   supplierIds = () => {
     const { schedule } = this.props;
-    return _.map(schedule.saleSuppliers, (supplier) => (supplier.id)).join(',');
+    return map(schedule.saleSuppliers, (supplier) => (supplier.id)).join(',');
   }
 
   toggleModalVisible = (e) => {
-    this.setState(_.assign(this.state, { modalVisible: !this.state.modalVisible }));
+    this.setState(assign(this.state, { modalVisible: !this.state.modalVisible }));
   }
 
-  popover = (type, productId, weight) => {
+  popover = (productId, direction) => {
     const { schedule } = this.props;
-    const types = {
-      up: {
+    const directions = {
+      minus: {
         icon: 'arrow-up',
         addonBefore: '向上移动',
       },
-      down: {
+      plus: {
         icon: 'arrow-down',
         addonBefore: '向下移动',
       },
     };
     const buttonProps = {
       'data-productid': productId,
-      'data-type': type,
-      'data-weight': weight,
+      'data-direction': direction,
       className: 'pull-right',
       style: { marginTop: 10 },
       size: 'small',
@@ -138,14 +135,14 @@ export class Products extends Component {
     };
     const content = (
       <div className="clearfix" style={{ width: 200 }}>
-        <Input type="number" addonBefore={types[type].addonBefore} addonAfter="个位置" defaultValue={1} onChange={this.setProductWeight} />
-        <Button {...buttonProps} onClick={this.onPositionClick}>确认</Button>
+        <Input type="number" addonBefore={directions[direction].addonBefore} addonAfter="个位置" defaultValue={1} onChange={this.setDistance} />
+        <Button {...buttonProps} onClick={this.onUpdatePositionClick}>确认</Button>
       </div>
     );
 
     return (
       <Popover trigger="click" content={content} title="调整位置">
-        <Button size="small" type="primary" shape="circle" icon={types[type].icon} disabled={schedule.lockStatus} />
+        <Button size="small" type="primary" shape="circle" icon={directions[direction].icon} disabled={schedule.lockStatus} />
       </Popover>
     );
   }
@@ -158,39 +155,39 @@ export class Products extends Component {
         title: '图片',
         dataIndex: 'productPic',
         key: 'productPic',
-        width: 80,
+        // width: 80,
         render: (productPic, record) => (<img style={{ height: '80px' }} src={productPic} role="presentation" />),
       }, {
         title: '名称',
         dataIndex: 'productName',
         key: 'productName',
-        width: 200,
+        // width: 200,
         render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
       }, {
         title: '吊牌价',
         dataIndex: 'productOriginPrice',
         key: 'productOriginPrice',
-        width: 80,
+        // width: 80,
       }, {
         title: '售价',
         dataIndex: 'productSalePrice',
         key: 'productSalePrice',
-        width: 80,
+        // width: 80,
       }, {
         title: '采购价',
         dataIndex: 'productPurchasePrice',
         key: 'productPurchasePrice',
-        width: 80,
+        // width: 80,
       }, {
         title: '分类',
         dataIndex: 'saleCategory',
         key: 'saleCategory',
-        width: 80,
+        // width: 80,
       }, {
         title: '每日推送商品',
         dataIndex: 'id',
         key: 'id',
-        width: 160,
+        // width: 160,
         render: (productId, record) => {
           const checkboxProps = {
             checked: record.isPromotion,
@@ -206,24 +203,29 @@ export class Products extends Component {
         title: '调整位置',
         dataIndex: 'orderWeight',
         key: 'orderWeight',
-        width: 160,
+        // width: 160,
         render: (orderWeight, record) => (
-          <div style={{ width: 80, textAlign: 'center' }}>
+          <div style={{ width: 60, textAlign: 'center' }}>
             <div className="pull-left">
-              {this.popover('up', record.id, record.orderWeight)}
+              {this.popover(record.id, 'plus')}
             </div>
-            <span>{record.orderWeight}</span>
             <div className="pull-right">
-              {this.popover('down', record.id, record.orderWeight)}
+              {this.popover(record.id, 'minus')}
             </div>
           </div>
         ),
       }, {
-        title: '传图',
-        dataIndex: 'upload',
-        key: 'upload',
-        width: 80,
-        render: (text, record) => (<a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>),
+        title: '操作',
+        dataIndex: 'operating',
+        key: 'operating',
+        // width: 200,
+        render: (text, record) => (
+          <div>
+            <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+            <span className="ant-divider"></span>
+            <a data-productid={record.id} onClick={this.onDeleteClick}>删除商品</a>
+          </div>
+        ),
       }],
       pagination: {
         total: scheduleProducts.count || 0,

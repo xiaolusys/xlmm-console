@@ -97,9 +97,9 @@ class EditSchedule extends Component {
     });
     const params = this.props.form.getFieldsValue();
     this.props.saveSchedule(this.props.schedule.id, {
-      saleTime: moment(params.saleTime).format('YYYY-MM-DD'),
-      upshelfTime: moment(params.saleTime).format('YYYY-MM-DD hh:mm:ss'),
-      offshelfTime: moment(params.endTime).format('YYYY-MM-DD hh:mm:ss'),
+      saleTime: moment(params.upshelfTime).format('YYYY-MM-DD'),
+      upshelfTime: moment(params.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+      offshelfTime: moment(params.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
       scheduleType: params.scheduleType,
       lockStatus: params.lockStatus,
       saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),

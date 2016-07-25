@@ -58,3 +58,24 @@ export const updateProduct = (scheduleId, productId, params, filters) => ({
     dispatch(fetchProducts(scheduleId, filters));
   },
 });
+
+export const updatePosition = (scheduleId, productId, params, filters) => ({
+  url: `${apisBase.supply}saleschedule/${scheduleId}/adjust_order_weight/${productId}`,
+  method: 'patch',
+  type: `UPDATE_${name}`,
+  data: {
+    ...params,
+  },
+  success: (resp, dispatch) => {
+    dispatch(fetchProducts(scheduleId, filters));
+  },
+});
+
+export const deleteProduct = (scheduleId, productId, filters) => ({
+  url: `${apisBase.supply}saleschedule/${scheduleId}/product/${productId}`,
+  method: 'delete',
+  type: `DELETE_${name}`,
+  success: (resp, dispatch) => {
+    dispatch(fetchProducts(scheduleId, filters));
+  },
+});
