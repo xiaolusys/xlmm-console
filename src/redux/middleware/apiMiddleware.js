@@ -22,7 +22,7 @@ axios.defaults = _.assign(axios.defaults, {
     return payload;
   }],
   paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' }),
-  timeout: 1000,
+  timeout: 1000 * 5,
   maxRedirects: 3,
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'csrfmiddlewaretoken',

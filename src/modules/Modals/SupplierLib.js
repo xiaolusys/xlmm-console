@@ -65,9 +65,11 @@ class SupplierLib extends Component {
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
-    filters.createdStart = moment(filters.dataRange[0]).format('YYYY-MM-DD');
-    filters.createdEnd = moment(filters.dataRange[1]).format('YYYY-MM-DD');
-    delete filters.dataRange;
+    if (filters.dataRange) {
+      filters.createdStart = moment(filters.dataRange[0]).format('YYYY-MM-DD');
+      filters.createdEnd = moment(filters.dataRange[1]).format('YYYY-MM-DD');
+      delete filters.dataRange;
+    }
     this.setFilters(filters);
     this.props.fetchSuppliers(this.getFilters());
   }

@@ -6,7 +6,8 @@ import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table } 
 import * as constants from 'constants';
 import { fetchProducts } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
-import _ from 'lodash';
+import { assign, isNaN, map, noop } from 'lodash';
+import moment from 'moment';
 
 const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilters };
 
@@ -38,9 +39,9 @@ class ProductLib extends Component {
   };
 
   static defaultProps = {
-    prefixCls: 'supplier-list',
-    onOk: _.noop,
-    onCancel: _.noop,
+    prefixCls: 'product-list',
+    onOk: noop,
+    onCancel: noop,
   };
 
   constructor(props, context) {
@@ -58,13 +59,23 @@ class ProductLib extends Component {
 
   componentWillMount() {
     const { supplierIds } = this.props;
-    this.setFilters({ saleSupplier: supplierIds });
+    if (supplierIds) {
+      this.setFilters({ saleSupplier: supplierIds });
+    }
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
   }
 
   onSubmitClick = (e) => {
-    this.setFilters(this.props.form.getFieldsValue());
+    const filters = this.props.form.getFieldsValue();
+    if (!isNaN(Number(filters.priceRange.split(',')[0]))) {
+      filters.minPrice = Number(filters.priceRange.split(',')[0]);
+    }
+    if (!isNaN(Number(filters.priceRange.split(',')[1]))) {
+      filters.maxPrice = Number(filters.priceRange.split(',')[1]);
+    }
+    delete filters.priceRange;
+    this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
   }
 
@@ -73,18 +84,18 @@ class ProductLib extends Component {
   }
 
   setFilters = (filters) => {
-    this.setState(_.assign(this.state.filters, filters));
+    this.setState(assign(this.state.filters, filters));
   }
 
   setSelected = (selected) => {
-    this.setState(_.assign(this.state.selected, selected));
+    this.setState(assign(this.state.selected, selected));
   }
 
   getFilters = () => (this.state.filters)
 
   formItemLayout = () => ({
-    labelCol: { span: 10 },
-    wrapperCol: { span: 14 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   })
 
   tableProps = () => {
@@ -96,14 +107,33 @@ class ProductLib extends Component {
         title: '图片',
         key: 'picUrl',
         dataIndex: 'picUrl',
-        width: 80,
+        width: 140,
         render: (picUrl) => (<img style={{ height: '80px' }} src={picUrl} role="presentation" />),
       }, {
-        title: '名称',
-        key: 'title',
-        dataIndex: 'title',
+        title: '价格信息',
+        key: 'allPrice',
+        dataIndex: 'allPrice',
+        width: 140,
+        render: (text, record) => (
+          <div>
+            <p><span>售价：￥</span><span>{record.price}</span></p>
+            <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
+            <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
+          </div>
+        ),
+      }, {
+        title: '销售信息',
+        key: 'latestFigures',
         width: 200,
-        render: (title, record) => (<a target="_blank" href={record.productLink}>{title}</a>),
+        dataIndex: 'latestFigures',
+        render: (figures) => (
+          <div>
+            <p><span>销售额：</span><span>{figures ? `￥${figures.payment.toFixed(2)}` : '-'}</span></p>
+            <p><span>退货率：</span><span>{figures ? figures.returnGoodRate : '-'}</span></p>
+            <p><span>销售件数：</span><span>{figures ? figures.payNum : '-'}</span></p>
+            <p><span>最后上架：</span>{figures ? moment(figures.upshelfTime).format('YYYY-MM-DD') : '-'}</p>
+          </div>
+        ),
       }, {
         title: '状态',
         key: 'status',
@@ -113,7 +143,7 @@ class ProductLib extends Component {
         title: '类目',
         key: 'saleCategory',
         dataIndex: 'saleCategory',
-        width: 80,
+        width: 120,
         render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
       }, {
         title: '供应商',
@@ -159,8 +189,15 @@ class ProductLib extends Component {
           <Row type="flex" justify="start" align="middle">
             <Col sm={8}>
               <Form.Item label="类目" {...this.formItemLayout()} >
-                <Select {...getFieldProps('category')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
-                  {_.map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
+                <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
+                  {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={8}>
+              <Form.Item label="价格范围" {...this.formItemLayout()} >
+                <Select {...getFieldProps('priceRange')} allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
+                  {map(constants.priceRanges, (range) => (<Select.Option value={range.value}>{range.lable}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>

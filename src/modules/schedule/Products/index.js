@@ -155,39 +155,32 @@ export class Products extends Component {
         title: '图片',
         dataIndex: 'productPic',
         key: 'productPic',
-        // width: 80,
         render: (productPic, record) => (<img style={{ height: '80px' }} src={productPic} role="presentation" />),
       }, {
         title: '名称',
         dataIndex: 'productName',
         key: 'productName',
-        // width: 200,
         render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
       }, {
         title: '吊牌价',
         dataIndex: 'productOriginPrice',
         key: 'productOriginPrice',
-        // width: 80,
       }, {
         title: '售价',
         dataIndex: 'productSalePrice',
         key: 'productSalePrice',
-        // width: 80,
       }, {
         title: '采购价',
         dataIndex: 'productPurchasePrice',
         key: 'productPurchasePrice',
-        // width: 80,
       }, {
         title: '分类',
         dataIndex: 'saleCategory',
         key: 'saleCategory',
-        // width: 80,
       }, {
         title: '每日推送商品',
         dataIndex: 'id',
         key: 'id',
-        // width: 160,
         render: (productId, record) => {
           const checkboxProps = {
             checked: record.isPromotion,
@@ -203,7 +196,6 @@ export class Products extends Component {
         title: '调整位置',
         dataIndex: 'orderWeight',
         key: 'orderWeight',
-        // width: 160,
         render: (orderWeight, record) => (
           <div style={{ width: 60, textAlign: 'center' }}>
             <div className="pull-left">
@@ -218,12 +210,11 @@ export class Products extends Component {
         title: '操作',
         dataIndex: 'operating',
         key: 'operating',
-        // width: 200,
         render: (text, record) => (
           <div>
             <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             <span className="ant-divider"></span>
-            <a data-productid={record.id} onClick={this.onDeleteClick}>删除商品</a>
+            <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
           </div>
         ),
       }],
