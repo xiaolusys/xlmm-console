@@ -85,6 +85,7 @@ export class Products extends Component {
       direction: direction,
       distance: this.state.distance,
     }, this.getFilters());
+    this.setState({ distance: 1 });
   }
 
   onDeleteClick = (e) => {
@@ -212,6 +213,8 @@ export class Products extends Component {
         key: 'operating',
         render: (text, record) => (
           <div>
+            <a target="_blank"  href={`/apis/items/v1/product/health?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
+            <span className="ant-divider"></span>
             <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             <span className="ant-divider"></span>
             <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
