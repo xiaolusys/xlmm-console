@@ -213,7 +213,7 @@ export class Products extends Component {
         key: 'operating',
         render: (text, record) => (
           <div>
-            <a target="_blank"  href={`/apis/items/v1/product/health?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
+            <a target="_blank" href={`/apis/items/v1/product/health?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
             <span className="ant-divider"></span>
             <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             <span className="ant-divider"></span>
