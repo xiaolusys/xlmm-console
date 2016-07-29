@@ -105,9 +105,9 @@ export class Products extends Component {
     this.setState(assign(this.state, { distance: Number(e.target.value) }));
   }
 
-  supplierIds = () => {
+  suppliers = () => {
     const { schedule } = this.props;
-    return map(schedule.saleSuppliers, (supplier) => (supplier.id)).join(',');
+    return map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName }));
   }
 
   toggleModalVisible = (e) => {
@@ -147,6 +147,7 @@ export class Products extends Component {
       </Popover>
     );
   }
+
   tableProps = () => {
     const self = this;
     const { id } = this.props.location.query;
@@ -249,7 +250,7 @@ export class Products extends Component {
         </Row>
         <Table {...this.tableProps()} className="margin-top-sm" loading={scheduleProducts.isLoading} dataSource={scheduleProducts.items} />
         <If condition={schedule.success}>
-          <Modals.ProductLib visible={this.state.modalVisible} supplierIds={this.supplierIds()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
+          <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
         </If>
       </div>
     );
