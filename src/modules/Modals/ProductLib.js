@@ -6,8 +6,9 @@ import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table } 
 import * as constants from 'constants';
 import { fetchProducts } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
-import { assign, isNaN, map, noop } from 'lodash';
+import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import moment from 'moment';
+import stringcase from 'stringcase';
 
 const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilters };
 
@@ -26,7 +27,7 @@ class ProductLib extends Component {
     visible: React.PropTypes.bool,
     onCancel: React.PropTypes.func,
     onOk: React.PropTypes.func,
-    supplierIds: React.PropTypes.string,
+    suppliers: React.PropTypes.array,
     fetchFilters: React.PropTypes.func,
     fetchProducts: React.PropTypes.func,
     filters: React.PropTypes.object,
@@ -58,22 +59,30 @@ class ProductLib extends Component {
   }
 
   componentWillMount() {
-    const { supplierIds } = this.props;
-    if (supplierIds) {
-      this.setFilters({ saleSupplier: supplierIds });
-    }
+    this.setFilters({ saleSupplier: this.supplierIds() });
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
   }
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
-    if (!isNaN(Number(filters.priceRange.split(',')[0]))) {
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[0]))) {
       filters.minPrice = Number(filters.priceRange.split(',')[0]);
     }
-    if (!isNaN(Number(filters.priceRange.split(',')[1]))) {
+
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[1]))) {
       filters.maxPrice = Number(filters.priceRange.split(',')[1]);
     }
+
+    if (!filters.priceRange) {
+      filters.minPrice = undefined;
+      filters.maxPrice = undefined;
+    }
+
+    if (!filters.saleSupplier) {
+      filters.saleSupplier = this.supplierIds();
+    }
+
     delete filters.priceRange;
     this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
@@ -81,6 +90,23 @@ class ProductLib extends Component {
 
   onOk = (e) => {
     this.props.onOk(this.state.selected);
+  }
+
+  onTableChange = (pagination, filters, sorter) => {
+    console.log(pagination, filters, sorter);
+    let ordering = this.state.filters.ordering;
+    switch (sorter.order) {
+      case 'ascend':
+        ordering = stringcase.snakecase(sorter.column.key);
+        break;
+      case 'descend':
+        ordering = `-${stringcase.snakecase(sorter.column.key)}`;
+        break;
+      default:
+        break;
+    }
+    this.setFilters({ ordering: ordering });
+    this.props.fetchProducts(this.getFilters());
   }
 
   setFilters = (filters) => {
@@ -92,6 +118,11 @@ class ProductLib extends Component {
   }
 
   getFilters = () => (this.state.filters)
+
+  supplierIds = () => {
+    const { suppliers } = this.props;
+    return map(suppliers, (supplier) => (supplier.id)).join(',');
+  }
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -107,13 +138,19 @@ class ProductLib extends Component {
         title: '图片',
         key: 'picUrl',
         dataIndex: 'picUrl',
-        width: 140,
+        width: 100,
         render: (picUrl) => (<img style={{ height: '80px' }} src={picUrl} role="presentation" />),
+      }, {
+        title: '商品名称',
+        key: 'title',
+        dataIndex: 'title',
+        width: 200,
+        render: (title, record) => (<a target="_blank" href={record.productLink}>{title}</a>),
       }, {
         title: '价格信息',
         key: 'allPrice',
         dataIndex: 'allPrice',
-        width: 140,
+        width: 200,
         render: (text, record) => (
           <div>
             <p><span>售价：￥</span><span>{record.price}</span></p>
@@ -137,19 +174,19 @@ class ProductLib extends Component {
       }, {
         title: '状态',
         key: 'status',
-        width: 80,
+        width: 100,
         dataIndex: 'status',
       }, {
         title: '类目',
         key: 'saleCategory',
         dataIndex: 'saleCategory',
-        width: 120,
+        width: 100,
         render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
       }, {
         title: '供应商',
         key: 'saleSupplier',
         dataIndex: 'saleSupplier',
-        width: 260,
+        width: 200,
         render: (saleSupplier) => (
           <div>
             <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
@@ -157,6 +194,13 @@ class ProductLib extends Component {
             <p><span>进度：</span><span>{saleSupplier.progress}</span></p>
           </div>
         ),
+      }, {
+        title: '录入日期',
+        key: 'created',
+        dataIndex: 'created',
+        width: 100,
+        render: (date) => (moment(date).format('YYYY-MM-DD')),
+        sorter: true,
       }],
       rowSelection: {
         onChange: (selectedRowKeys, selectedRows) => {
@@ -176,15 +220,15 @@ class ProductLib extends Component {
           self.props.fetchProducts(self.getFilters());
         },
       },
-      scroll: { y: 400 },
+      scroll: { y: 500 },
     };
   }
 
   render() {
-    const { visible, filters, products, onCancel } = this.props;
+    const { visible, filters, products, onCancel, suppliers } = this.props;
     const { getFieldProps } = this.props.form;
     return (
-      <Modal title="商品" width="800" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
+      <Modal title="商品" width="1200" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col sm={8}>
@@ -201,14 +245,21 @@ class ProductLib extends Component {
                 </Select>
               </Form.Item>
             </Col>
+            <Col sm={8}>
+              <Form.Item label="供应商" {...this.formItemLayout()} >
+                <Select {...getFieldProps('saleSupplier')} allowClear placeholder="请选择供应商" notFoundContent="无可选项">
+                  {map(suppliers, (supplier) => (<Select.Option value={supplier.id}>{supplier.name}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
           </Row>
           <Row type="flex" justify="end" align="middle">
-            <Col sm={4}>
+            <Col sm={2}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
             </Col>
           </Row>
         </Form>
-        <Table {...this.tableProps()} className="margin-top-sm" dataSource={products.items} />
+        <Table {...this.tableProps()} className="margin-top-sm" dataSource={products.items} onChange={this.onTableChange} />
       </Modal>
     );
   }
