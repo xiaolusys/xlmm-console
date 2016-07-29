@@ -93,7 +93,6 @@ class ProductLib extends Component {
   }
 
   onTableChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
     let ordering = this.state.filters.ordering;
     switch (sorter.order) {
       case 'ascend':
@@ -103,6 +102,7 @@ class ProductLib extends Component {
         ordering = `-${stringcase.snakecase(sorter.column.key)}`;
         break;
       default:
+        ordering = undefined;
         break;
     }
     this.setFilters({ ordering: ordering });
