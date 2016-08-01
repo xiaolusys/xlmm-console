@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Popover, Badge } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedules';
 import { assign, map } from 'lodash';
@@ -14,11 +14,12 @@ import moment from 'moment';
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-export class Home extends Component {
+class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
     location: React.PropTypes.any,
+    form: React.PropTypes.object,
     fetchSchedules: React.PropTypes.func,
     schedules: React.PropTypes.object,
   };
@@ -48,16 +49,14 @@ export class Home extends Component {
     this.props.fetchSchedules(this.getFilters());
   }
 
-  onScheduleTypesMenuClick = (e) => {
-    this.setFilters({ scheduleType: e.key });
-    this.props.fetchSchedules(this.getFilters());
-  }
-
-  onRangeChange = (date) => {
-    this.setFilters({
-      saleTimeStart: moment(date[0]).format('YYYY-MM-DD'),
-      saleTimeEnd: moment(date[1]).format('YYYY-MM-DD'),
-    });
+  onSubmitClick = (e) => {
+    const filters = this.props.form.getFieldsValue();
+    if (filters.dateRange) {
+      filters.saleTimeStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
+      filters.saleTimeEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
+      delete filters.dateRange;
+    }
+    this.setFilters(filters);
     this.props.fetchSchedules(this.getFilters());
   }
 
@@ -70,6 +69,11 @@ export class Home extends Component {
   }
 
   getFilters = () => (this.state.filters)
+
+  formItemLayout = () => ({
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  })
 
   columns = () => {
     const self = this;
@@ -127,18 +131,6 @@ export class Home extends Component {
     suppliers.length > 0 ? map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
   )
 
-  dropdownTitle = () => {
-    const { filters } = this.state;
-    return filters.scheduleType ? constants.scheduleTypes[filters.scheduleType].lable : '排期类型';
-  }
-
-  scheduleTypesMenu = () =>
-    (<Menu onClick={this.onScheduleTypesMenuClick}>
-      {map(constants.scheduleTypes, (type) =>
-        (<Menu.Item key={type.id}>{type.lable}</Menu.Item>)
-      )}
-    </Menu>)
-
   pagination = () => {
     const { schedules } = this.props;
     const self = this;
@@ -158,23 +150,39 @@ export class Home extends Component {
   }
 
   render() {
-    const { prefixCls } = this.props;
-    const { schedules } = this.props;
+    const { prefixCls, schedules } = this.props;
+    const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <Row gutter={2} type="flex" align="middle" justify="start">
-          <Col span={2}>
-            <Button type="primary" onClick={this.onCreateScheduleClick}>新建排期</Button>
-          </Col>
-          <Col span={3} >
-            <Dropdown.Button overlay={this.scheduleTypesMenu()} type="ghost">{this.dropdownTitle()}</Dropdown.Button>
-          </Col>
-          <Col span={3} >
-            <DatePicker.RangePicker onChange={this.onRangeChange} />
-          </Col>
-        </Row>
+        <Form horizontal className="ant-advanced-search-form">
+          <Row type="flex" justify="start" align="middle">
+            <Col sm={6}>
+              <Form.Item label="排期类型" {...this.formItemLayout()} >
+                <Select {...getFieldProps('scheduleType')} allowClear placeholder="请选择排期类型" notFoundContent="无可选项">
+                  {map(constants.scheduleTypes, (type) => (<Select.Option value={type.id}>{type.lable}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={6}>
+              <Form.Item label="日期" {...this.formItemLayout()} >
+                <DatePicker.RangePicker {...getFieldProps('dateRange')} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row type="flex" justify="start" align="middle">
+            <Col span={2}>
+              <Button type="primary" onClick={this.onCreateScheduleClick}>新建排期</Button>
+            </Col>
+            <Col span={2} offset={20}>
+              <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
+            </Col>
+          </Row>
+        </Form>
         <Table className="margin-top-sm" columns={this.columns()} pagination={this.pagination()} loading={schedules.isLoading} dataSource={schedules.items} />
       </div>
     );
   }
 }
+
+
+export const Home = Form.create()(List);

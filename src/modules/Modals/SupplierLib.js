@@ -65,10 +65,10 @@ class SupplierLib extends Component {
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
-    if (filters.dataRange) {
-      filters.createdStart = moment(filters.dataRange[0]).format('YYYY-MM-DD');
-      filters.createdEnd = moment(filters.dataRange[1]).format('YYYY-MM-DD');
-      delete filters.dataRange;
+    if (filters.dateRange) {
+      filters.createdStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
+      filters.createdEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
+      delete filters.dateRange;
     }
     this.setFilters(filters);
     this.props.fetchSuppliers(this.getFilters());
@@ -204,7 +204,7 @@ class SupplierLib extends Component {
           <Row>
             <Col sm={8}>
               <Form.Item label="录入时间" {...this.formItemLayout()} >
-                <DatePicker.RangePicker {...getFieldProps('dataRange')} />
+                <DatePicker.RangePicker {...getFieldProps('dateRange')} />
               </Form.Item>
             </Col>
             <Col sm={8}>
