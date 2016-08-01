@@ -65,6 +65,7 @@ class SupplierLib extends Component {
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
+    filters.page = 1;
     if (filters.dateRange) {
       filters.createdStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
       filters.createdEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
