@@ -223,7 +223,7 @@ export class Products extends Component {
     const content = (
       <div className="clearfix" style={{ width: 200 }}>
         <Select showSearch style={{ width: 200 }} placeholder="请选择人员" optionFilterProp="children" notFoundContent="无法找到该员工" onChange={onChange}>
-          {users.items.map((user) => (<Select.Option value={user.id}>{user.username}</Select.Option>))}
+          {users.items.map((user) => (<Select.Option value={user.id}>{`${user.lastName}${user.firstName}`}</Select.Option>))}
         </Select>
         <Button {...buttonProps} onClick={onOk}>确认</Button>
       </div>
