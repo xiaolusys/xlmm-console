@@ -50,7 +50,7 @@ export const addProduct = (scheduleId, productIds, filters) => ({
 export const updateProduct = (scheduleId, productId, params, filters) => ({
   url: `${apisBase.supply}saleschedule/${scheduleId}/modify_manage_detail/${productId}`,
   method: 'patch',
-  type: `UPDATE_${name}`,
+  type: `UPDATE_PRODUCT${name}`,
   data: {
     ...params,
   },
@@ -62,7 +62,19 @@ export const updateProduct = (scheduleId, productId, params, filters) => ({
 export const updatePosition = (scheduleId, productId, params, filters) => ({
   url: `${apisBase.supply}saleschedule/${scheduleId}/adjust_order_weight/${productId}`,
   method: 'patch',
-  type: `UPDATE_${name}`,
+  type: `UPDATE_POSITION_${name}`,
+  data: {
+    ...params,
+  },
+  success: (resp, dispatch) => {
+    dispatch(fetchProducts(scheduleId, filters));
+  },
+});
+
+export const updateAssignedWorker = (scheduleId, params, filters) => ({
+  url: `${apisBase.supply}saleschedule/${scheduleId}/update_assign_worker`,
+  method: 'post',
+  type: `UPDATE_ASSIGNED_WORKER_${name}`,
   data: {
     ...params,
   },
