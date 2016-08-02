@@ -154,6 +154,10 @@ export class Products extends Component {
     const { scheduleProducts, schedule } = this.props;
     return {
       columns: [{
+        title: 'id',
+        dataIndex: 'modelId',
+        key: 'modelId',
+      }, {
         title: '图片',
         dataIndex: 'productPic',
         key: 'productPic',
