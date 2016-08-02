@@ -2,20 +2,22 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover } from 'antd';
+import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select } from 'antd';
 import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
 import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
-import { fetchProducts, addProduct, updateProduct, updatePosition, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
+import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
+import { fetchUsers } from 'redux/modules/auth/users';
 import { assign, map } from 'lodash';
 
-const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, deleteProduct };
+const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct, fetchUsers };
 
 @connect(
   state => ({
     scheduleProducts: state.scheduleProducts,
     schedule: state.schedule,
+    users: state.users,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -30,9 +32,12 @@ export class Products extends Component {
     addProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
     updatePosition: React.PropTypes.func,
+    updateAssignedWorker: React.PropTypes.func,
     deleteProduct: React.PropTypes.func,
+    fetchUsers: React.PropTypes.func,
     schedule: React.PropTypes.object,
     scheduleProducts: React.PropTypes.object,
+    users: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -54,7 +59,12 @@ export class Products extends Component {
       page: 1,
       ordering: 'order_weight',
     },
+    selectedRowKeys: [],
     modalVisible: false,
+    desingerPopoverVisible: false,
+    maintainerPopoverVisible: false,
+    desinger: 0,
+    maintainer: 0,
     distance: 1,
   }
 
@@ -62,6 +72,21 @@ export class Products extends Component {
     const { id } = this.props.location.query;
     this.props.fetchSchedule(id);
     this.props.fetchProducts(id, this.getFilters());
+    this.props.fetchUsers({
+      isStaff: 'True',
+      page: 1,
+      pageSize: 100,
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.scheduleProducts.success) {
+      this.setState({
+        desinger: 0,
+        maintainer: 0,
+        selectedRowKeys: [],
+      });
+    }
   }
 
   onOkClick = (selected) => {
@@ -95,6 +120,36 @@ export class Products extends Component {
 
   }
 
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys });
+  }
+
+  onAssignDesingerClick = (e) => {
+    const { id } = this.props.location.query;
+    this.toggleDesingerPopoverVisble();
+    this.props.updateAssignedWorker(id, {
+      photoUser: this.state.desinger,
+      managerDetailIds: this.state.selectedRowKeys,
+    }, this.getFilters());
+  }
+
+  onDesingerChange = (userId) => {
+    this.setState({ desinger: userId });
+  }
+
+  onAssignMaintainerClick = (e) => {
+    const { id } = this.props.location.query;
+    this.toggleMaintainerPopoverVisible();
+    this.props.updateAssignedWorker(id, {
+      referenceUser: this.state.maintainer,
+      managerDetailIds: this.state.selectedRowKeys,
+    }, this.getFilters());
+  }
+
+  onMaintainerChange = (userId) => {
+    this.setState({ maintainer: userId });
+  }
+
   getFilters = () => (this.state.filters)
 
   setFilters = (filters) => {
@@ -114,7 +169,15 @@ export class Products extends Component {
     this.setState(assign(this.state, { modalVisible: !this.state.modalVisible }));
   }
 
-  popover = (productId, direction) => {
+  toggleDesingerPopoverVisble = () => {
+    this.setState({ desingerPopoverVisible: !this.state.desingerPopoverVisible });
+  }
+
+  toggleMaintainerPopoverVisible = () => {
+    this.setState({ maintainerPopoverVisible: !this.state.maintainerPopoverVisible });
+  }
+
+  ajustPositionPopover = (productId, direction) => {
     const { schedule } = this.props;
     const directions = {
       minus: {
@@ -148,84 +211,123 @@ export class Products extends Component {
     );
   }
 
+  usersPopover = (params) => {
+    const { title, visible, disabled, onClick, onOk, onChange } = params;
+    const { users } = this.props;
+    const buttonProps = {
+      className: 'pull-right',
+      style: { marginTop: 10 },
+      size: 'small',
+      type: 'primary',
+    };
+    const content = (
+      <div className="clearfix" style={{ width: 200 }}>
+        <Select showSearch style={{ width: 200 }} placeholder="请选择人员" optionFilterProp="children" notFoundContent="无法找到该员工" onChange={onChange}>
+          {users.items.map((user) => (<Select.Option value={user.id}>{user.username}</Select.Option>))}
+        </Select>
+        <Button {...buttonProps} onClick={onOk}>确认</Button>
+      </div>
+    );
+    return (
+      <Popover trigger="click" visible={visible} content={content} placement="bottom" title={title}>
+        <Button type="primary" onClick={onClick} disabled={disabled}>{title}</Button>
+      </Popover>
+    );
+  }
+
+  columns = () => {
+    const { scheduleProducts, schedule } = this.props;
+    return [{
+      title: 'id',
+      dataIndex: 'modelId',
+      key: 'modelId',
+    }, {
+      title: '图片',
+      dataIndex: 'productPic',
+      key: 'productPic',
+      render: (productPic, record) => (<img style={{ height: '80px' }} src={productPic} role="presentation" />),
+    }, {
+      title: '名称',
+      dataIndex: 'productName',
+      key: 'productName',
+      render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
+    }, {
+      title: '吊牌价',
+      dataIndex: 'productOriginPrice',
+      key: 'productOriginPrice',
+    }, {
+      title: '售价',
+      dataIndex: 'productSalePrice',
+      key: 'productSalePrice',
+    }, {
+      title: '采购价',
+      dataIndex: 'productPurchasePrice',
+      key: 'productPurchasePrice',
+    }, {
+      title: '分类',
+      dataIndex: 'saleCategory',
+      key: 'saleCategory',
+    }, {
+      title: '设计',
+      dataIndex: 'photoUsername',
+      key: 'photoUsername',
+      render: (username, record) => (username || '-'),
+    }, {
+      title: '资料录入',
+      dataIndex: 'referenceUsername',
+      key: 'referenceUsername',
+      render: (username, record) => (username || '-'),
+    }, {
+      title: '每日推送商品',
+      dataIndex: 'id',
+      key: 'id',
+      render: (productId, record) => {
+        const checkboxProps = {
+          checked: record.isPromotion,
+          onChange: this.onPromotionChange,
+          productId: productId,
+          disabled: schedule.lockStatus,
+        };
+        return (
+          <Checkbox {...checkboxProps}>设为推送</Checkbox>
+        );
+      },
+    }, {
+      title: '调整位置',
+      dataIndex: 'orderWeight',
+      key: 'orderWeight',
+      render: (orderWeight, record) => (
+        <div style={{ width: 60, textAlign: 'center' }}>
+          <div className="pull-left">
+            {this.ajustPositionPopover(record.id, 'plus')}
+          </div>
+          <div className="pull-right">
+            {this.ajustPositionPopover(record.id, 'minus')}
+          </div>
+        </div>
+      ),
+    }, {
+      title: '操作',
+      dataIndex: 'operating',
+      key: 'operating',
+      render: (text, record) => (
+        <div>
+          <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
+          <span className="ant-divider"></span>
+          <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+          <span className="ant-divider"></span>
+          <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
+        </div>
+      ),
+    }];
+  }
+
   tableProps = () => {
     const self = this;
     const { id } = this.props.location.query;
     const { scheduleProducts, schedule } = this.props;
+    const { selectedRowKeys } = this.state;
     return {
-      columns: [{
-        title: 'id',
-        dataIndex: 'modelId',
-        key: 'modelId',
-      }, {
-        title: '图片',
-        dataIndex: 'productPic',
-        key: 'productPic',
-        render: (productPic, record) => (<img style={{ height: '80px' }} src={productPic} role="presentation" />),
-      }, {
-        title: '名称',
-        dataIndex: 'productName',
-        key: 'productName',
-        render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
-      }, {
-        title: '吊牌价',
-        dataIndex: 'productOriginPrice',
-        key: 'productOriginPrice',
-      }, {
-        title: '售价',
-        dataIndex: 'productSalePrice',
-        key: 'productSalePrice',
-      }, {
-        title: '采购价',
-        dataIndex: 'productPurchasePrice',
-        key: 'productPurchasePrice',
-      }, {
-        title: '分类',
-        dataIndex: 'saleCategory',
-        key: 'saleCategory',
-      }, {
-        title: '每日推送商品',
-        dataIndex: 'id',
-        key: 'id',
-        render: (productId, record) => {
-          const checkboxProps = {
-            checked: record.isPromotion,
-            onChange: this.onPromotionChange,
-            productId: productId,
-            disabled: schedule.lockStatus,
-          };
-          return (
-            <Checkbox {...checkboxProps}>设为推送</Checkbox>
-          );
-        },
-      }, {
-        title: '调整位置',
-        dataIndex: 'orderWeight',
-        key: 'orderWeight',
-        render: (orderWeight, record) => (
-          <div style={{ width: 60, textAlign: 'center' }}>
-            <div className="pull-left">
-              {this.popover(record.id, 'plus')}
-            </div>
-            <div className="pull-right">
-              {this.popover(record.id, 'minus')}
-            </div>
-          </div>
-        ),
-      }, {
-        title: '操作',
-        dataIndex: 'operating',
-        key: 'operating',
-        render: (text, record) => (
-          <div>
-            <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
-            <span className="ant-divider"></span>
-            <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
-            <span className="ant-divider"></span>
-            <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
-          </div>
-        ),
-      }],
       pagination: {
         total: scheduleProducts.count || 0,
         showTotal: (total) => (`共 ${total} 条`),
@@ -239,20 +341,50 @@ export class Products extends Component {
           self.props.fetchProducts(id, self.getFilters());
         },
       },
+      rowSelection: {
+        selectedRowKeys,
+        onChange: this.onSelectChange,
+      },
+      rowKey: (record) => (record.id),
+      loading: scheduleProducts.isLoading,
+      dataSource: scheduleProducts.items,
+      className: 'margin-top-sm',
     };
   }
 
   render() {
     const { prefixCls } = this.props;
     const { schedule, scheduleProducts } = this.props;
+    const { selectedRowKeys } = this.state;
+    const hasSelected = selectedRowKeys.length > 0;
     return (
       <div className={`${prefixCls}`} >
-        <Row type="flex" justify="start">
-          <Col span={3}>
+        <Row type="flex" justify="start" align="middle">
+          <Col span={2}>
             <Button type="primary" onClick={this.toggleModalVisible} disabled={schedule.lockStatus}>添加商品</Button>
           </Col>
+          <Col span={2}>
+            {this.usersPopover({
+              title: '指定设计',
+              disabled: schedule.lockStatus || !hasSelected,
+              visible: this.state.desingerPopoverVisible,
+              onClick: this.toggleDesingerPopoverVisble,
+              onOk: this.onAssignDesingerClick,
+              onChange: this.onDesingerChange,
+            })}
+          </Col>
+          <Col span={2}>
+            {this.usersPopover({
+              title: '指定资料录入',
+              disabled: schedule.lockStatus || !hasSelected,
+              visible: this.state.maintainerPopoverVisible,
+              onClick: this.toggleMaintainerPopoverVisible,
+              onOk: this.onAssignMaintainerClick,
+              onChange: this.onMaintainerChange,
+            })}
+          </Col>
         </Row>
-        <Table {...this.tableProps()} className="margin-top-sm" loading={scheduleProducts.isLoading} dataSource={scheduleProducts.items} />
+        <Table {...this.tableProps()} columns={this.columns()} />
         <If condition={schedule.success}>
           <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
         </If>

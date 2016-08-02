@@ -1,18 +1,10 @@
 import { combineReducers } from 'redux';
-import schedules from './modules/supplyChain/schedules';
-import schedule from './modules/supplyChain/schedule';
-import suppliers from './modules/supplyChain/suppliers';
-import supplierFilters from './modules/supplyChain/supplierFilters';
-import scheduleProducts from './modules/supplyChain/scheduleProducts';
-import products from './modules/supplyChain/products';
+import supplyChain from './modules/supplyChain';
+import auth from './modules/auth';
 
 const reducer = combineReducers({
-  schedules,
-  schedule,
-  suppliers,
-  supplierFilters,
-  scheduleProducts,
-  products,
+  ...supplyChain,
+  ...auth,
 });
 
 export default reducer;
