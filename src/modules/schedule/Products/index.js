@@ -10,6 +10,7 @@ import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
 import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
 import { fetchUsers } from 'redux/modules/auth/users';
 import { assign, map } from 'lodash';
+import stringcase from 'stringcase';
 
 const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct, fetchUsers };
 
@@ -150,6 +151,24 @@ export class Products extends Component {
     this.setState({ maintainer: userId });
   }
 
+  onTableChange = (pagination, filters, sorter) => {
+    const { id } = this.props.location.query;
+    let ordering = this.state.filters.ordering;
+    switch (sorter.order) {
+      case 'ascend':
+        ordering = `${stringcase.snakecase(sorter.column.key)}`;
+        break;
+      case 'descend':
+        ordering = `-${stringcase.snakecase(sorter.column.key)}`;
+        break;
+      default:
+        ordering = undefined;
+        break;
+    }
+    this.setFilters({ ordering: ordering });
+    this.props.fetchProducts(id, this.getFilters());
+  }
+
   getFilters = () => (this.state.filters)
 
   setFilters = (filters) => {
@@ -264,19 +283,27 @@ export class Products extends Component {
       dataIndex: 'productPurchasePrice',
       key: 'productPurchasePrice',
     }, {
-      title: '分类',
-      dataIndex: 'saleCategory',
-      key: 'saleCategory',
+      title: '采购价',
+      dataIndex: 'productPurchasePrice',
+      key: 'productPurchasePrice',
+    }, {
+      title: '供应商',
+      dataIndex: 'supplierName',
+      key: 'supplierId',
+      render: (supplierName) => (supplierName || '-'),
+      sorter: true,
     }, {
       title: '设计',
       dataIndex: 'photoUsername',
       key: 'photoUsername',
       render: (username, record) => (username || '-'),
+      sorter: true,
     }, {
       title: '资料录入',
       dataIndex: 'referenceUsername',
       key: 'referenceUsername',
       render: (username, record) => (username || '-'),
+      sorter: true,
     }, {
       title: '每日推送商品',
       dataIndex: 'id',
@@ -349,6 +376,7 @@ export class Products extends Component {
       loading: scheduleProducts.isLoading,
       dataSource: scheduleProducts.items,
       className: 'margin-top-sm',
+      onChange: this.onTableChange,
     };
   }
 

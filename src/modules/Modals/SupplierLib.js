@@ -111,44 +111,45 @@ class SupplierLib extends Component {
     wrapperCol: { span: 18 },
   })
 
+  columns = () => ([{
+    title: '名称',
+    key: 'supplierName',
+    dataIndex: 'supplierName',
+    width: 200,
+  }, {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    width: 160,
+  }, {
+    title: '销售额',
+    key: 'payment',
+    dataIndex: 'figures',
+    width: 160,
+    sorter: true,
+    render: (figures) => (<span>{figures ? figures.payment : '-'}</span>),
+  }, {
+    title: '销售件数',
+    key: 'payNum',
+    dataIndex: 'figures',
+    width: 160,
+    sorter: true,
+    render: (figures) => (<span>{figures ? figures.payNum : '-'}</span>),
+  }, {
+    title: '退货率',
+    key: 'returnGoodRate',
+    dataIndex: 'figures',
+    width: 160,
+    sorter: true,
+    render: (figures) => (<span>{figures ? figures.returnGoodRate : '-'}</span>),
+  }]);
+
   tableProps = () => {
     const self = this;
     const { suppliers } = this.props;
     return {
       className: 'margin-top-sm',
       rowKey: (record) => (record.id),
-      columns: [{
-        title: '名称',
-        key: 'supplierName',
-        dataIndex: 'supplierName',
-        width: 200,
-      }, {
-        title: '状态',
-        key: 'status',
-        dataIndex: 'status',
-        width: 160,
-      }, {
-        title: '销售额',
-        key: 'payment',
-        dataIndex: 'figures',
-        width: 160,
-        sorter: true,
-        render: (figures) => (<span>{figures ? figures.payment : '-'}</span>),
-      }, {
-        title: '销售件数',
-        key: 'payNum',
-        dataIndex: 'figures',
-        width: 160,
-        sorter: true,
-        render: (figures) => (<span>{figures ? figures.payNum : '-'}</span>),
-      }, {
-        title: '退货率',
-        key: 'returnGoodRate',
-        dataIndex: 'figures',
-        width: 160,
-        sorter: true,
-        render: (figures) => (<span>{figures ? figures.returnGoodRate : '-'}</span>),
-      }],
       rowSelection: {
         onChange: (selectedRowKeys, selectedRows) => {
           const selected = map(selectedRows, (row) => ({ id: row.id, name: row.supplierName }));
@@ -168,6 +169,9 @@ class SupplierLib extends Component {
           self.props.fetchSuppliers(self.getFilters());
         },
       },
+      loading: suppliers.isLoading,
+      dataSource: suppliers.items,
+      onChange: this.onTableChange,
       useFixedHeader: true,
       scroll: { y: 400 },
     };
@@ -220,7 +224,7 @@ class SupplierLib extends Component {
             </Col>
           </Row>
         </Form>
-        <Table {...this.tableProps()} loading={suppliers.isLoading} dataSource={suppliers.items} onChange={this.onTableChange} />
+        <Table {...this.tableProps()} columns={this.columns()} />
       </Modal>
     );
   }

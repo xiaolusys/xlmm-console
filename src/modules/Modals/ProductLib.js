@@ -55,7 +55,7 @@ class ProductLib extends Component {
       pageSize: 10,
       page: 1,
     },
-    selected: [],
+    selectedRowKeys: [],
   }
 
   componentWillMount() {
@@ -89,7 +89,8 @@ class ProductLib extends Component {
   }
 
   onOk = (e) => {
-    this.props.onOk(this.state.selected);
+    this.props.onOk(this.state.selectedRowKeys);
+    this.setState({ selectedRowKeys: [] });
   }
 
   onTableChange = (pagination, filters, sorter) => {
@@ -109,13 +110,14 @@ class ProductLib extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRowKeys });
+  }
+
   setFilters = (filters) => {
     this.setState(assign(this.state.filters, filters));
   }
 
-  setSelected = (selected) => {
-    this.setState(assign(this.state.selected, selected));
-  }
 
   getFilters = () => (this.state.filters)
 
@@ -129,83 +131,84 @@ class ProductLib extends Component {
     wrapperCol: { span: 16 },
   })
 
+  columns = () => ([{
+    title: '图片',
+    key: 'picUrl',
+    dataIndex: 'picUrl',
+    width: 100,
+    render: (picUrl) => (<img style={{ height: '80px' }} src={picUrl} role="presentation" />),
+  }, {
+    title: '商品名称',
+    key: 'title',
+    dataIndex: 'title',
+    width: 200,
+    render: (title, record) => (<a target="_blank" href={record.productLink}>{title}</a>),
+  }, {
+    title: '价格信息',
+    key: 'allPrice',
+    dataIndex: 'allPrice',
+    width: 200,
+    render: (text, record) => (
+      <div>
+        <p><span>售价：￥</span><span>{record.price}</span></p>
+        <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
+        <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
+      </div>
+    ),
+  }, {
+    title: '销售信息',
+    key: 'latestFigures',
+    width: 200,
+    dataIndex: 'latestFigures',
+    render: (figures) => (
+      <div>
+        <p><span>销售额：</span><span>{figures ? `￥${figures.payment.toFixed(2)}` : '-'}</span></p>
+        <p><span>退货率：</span><span>{figures ? figures.returnGoodRate : '-'}</span></p>
+        <p><span>销售件数：</span><span>{figures ? figures.payNum : '-'}</span></p>
+        <p><span>最后上架：</span>{figures ? moment(figures.upshelfTime).format('YYYY-MM-DD') : '-'}</p>
+      </div>
+    ),
+  }, {
+    title: '状态',
+    key: 'status',
+    width: 100,
+    dataIndex: 'status',
+  }, {
+    title: '类目',
+    key: 'saleCategory',
+    dataIndex: 'saleCategory',
+    width: 100,
+    render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
+  }, {
+    title: '供应商',
+    key: 'saleSupplier',
+    dataIndex: 'saleSupplier',
+    width: 200,
+    render: (saleSupplier) => (
+      <div>
+        <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
+        <p><span>状态：</span><span>{saleSupplier.status}</span></p>
+        <p><span>进度：</span><span>{saleSupplier.progress}</span></p>
+      </div>
+    ),
+  }, {
+    title: '录入日期',
+    key: 'created',
+    dataIndex: 'created',
+    width: 100,
+    render: (date) => (moment(date).format('YYYY-MM-DD')),
+    sorter: true,
+  }])
+
   tableProps = () => {
     const self = this;
     const { products } = this.props;
+    const { selectedRowKeys } = this.state;
     return {
       rowKey: (record) => (record.id),
-      columns: [{
-        title: '图片',
-        key: 'picUrl',
-        dataIndex: 'picUrl',
-        width: 100,
-        render: (picUrl) => (<img style={{ height: '80px' }} src={picUrl} role="presentation" />),
-      }, {
-        title: '商品名称',
-        key: 'title',
-        dataIndex: 'title',
-        width: 200,
-        render: (title, record) => (<a target="_blank" href={record.productLink}>{title}</a>),
-      }, {
-        title: '价格信息',
-        key: 'allPrice',
-        dataIndex: 'allPrice',
-        width: 200,
-        render: (text, record) => (
-          <div>
-            <p><span>售价：￥</span><span>{record.price}</span></p>
-            <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
-            <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
-          </div>
-        ),
-      }, {
-        title: '销售信息',
-        key: 'latestFigures',
-        width: 200,
-        dataIndex: 'latestFigures',
-        render: (figures) => (
-          <div>
-            <p><span>销售额：</span><span>{figures ? `￥${figures.payment.toFixed(2)}` : '-'}</span></p>
-            <p><span>退货率：</span><span>{figures ? figures.returnGoodRate : '-'}</span></p>
-            <p><span>销售件数：</span><span>{figures ? figures.payNum : '-'}</span></p>
-            <p><span>最后上架：</span>{figures ? moment(figures.upshelfTime).format('YYYY-MM-DD') : '-'}</p>
-          </div>
-        ),
-      }, {
-        title: '状态',
-        key: 'status',
-        width: 100,
-        dataIndex: 'status',
-      }, {
-        title: '类目',
-        key: 'saleCategory',
-        dataIndex: 'saleCategory',
-        width: 100,
-        render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
-      }, {
-        title: '供应商',
-        key: 'saleSupplier',
-        dataIndex: 'saleSupplier',
-        width: 200,
-        render: (saleSupplier) => (
-          <div>
-            <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
-            <p><span>状态：</span><span>{saleSupplier.status}</span></p>
-            <p><span>进度：</span><span>{saleSupplier.progress}</span></p>
-          </div>
-        ),
-      }, {
-        title: '录入日期',
-        key: 'created',
-        dataIndex: 'created',
-        width: 100,
-        render: (date) => (moment(date).format('YYYY-MM-DD')),
-        sorter: true,
-      }],
       rowSelection: {
-        onChange: (selectedRowKeys, selectedRows) => {
-          self.setSelected(selectedRowKeys);
-        },
+        selectedRowKeys,
+        onChange: this.onSelectChange,
       },
       pagination: {
         total: products.count,
@@ -221,6 +224,9 @@ class ProductLib extends Component {
         },
       },
       scroll: { y: 500 },
+      className: 'margin-top-sm',
+      dataSource: products.items,
+      onChange: this.onTableChange,
     };
   }
 
@@ -259,7 +265,7 @@ class ProductLib extends Component {
             </Col>
           </Row>
         </Form>
-        <Table {...this.tableProps()} className="margin-top-sm" dataSource={products.items} onChange={this.onTableChange} />
+        <Table {...this.tableProps()} columns={this.columns()} />
       </Modal>
     );
   }
