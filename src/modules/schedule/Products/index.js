@@ -289,7 +289,7 @@ export class Products extends Component {
     }, {
       title: '供应商',
       dataIndex: 'supplierName',
-      key: 'supplierName',
+      key: 'supplierId',
       render: (supplierName) => (supplierName || '-'),
       sorter: true,
     }, {
