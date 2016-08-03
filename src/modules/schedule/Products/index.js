@@ -264,11 +264,19 @@ export class Products extends Component {
       title: '图片',
       dataIndex: 'productPic',
       key: 'productPic',
-      render: (productPic, record) => (<img style={{ height: '80px' }} src={productPic} role="presentation" />),
+      render: (productPic, record) => {
+        const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
+        return (
+          <Popover placement="right" content={conetnt} trigger="hover">
+            <img style={{ height: '80px' }} src={productPic} role="presentation" />
+          </Popover>
+        );
+      },
     }, {
       title: '名称',
       dataIndex: 'productName',
       key: 'productName',
+      width: 260,
       render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
     }, {
       title: '吊牌价',
@@ -278,10 +286,6 @@ export class Products extends Component {
       title: '售价',
       dataIndex: 'productSalePrice',
       key: 'productSalePrice',
-    }, {
-      title: '采购价',
-      dataIndex: 'productPurchasePrice',
-      key: 'productPurchasePrice',
     }, {
       title: '采购价',
       dataIndex: 'productPurchasePrice',

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table, Popover } from 'antd';
 import * as constants from 'constants';
 import { fetchProducts } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
@@ -136,7 +136,14 @@ class ProductLib extends Component {
     key: 'picUrl',
     dataIndex: 'picUrl',
     width: 100,
-    render: (picUrl) => (<img style={{ height: '80px' }} src={picUrl} role="presentation" />),
+    render: (productPic, record) => {
+      const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
+      return (
+        <Popover placement="right" content={conetnt} trigger="hover">
+          <img style={{ height: '80px' }} src={productPic} role="presentation" />
+        </Popover>
+      );
+    },
   }, {
     title: '商品名称',
     key: 'title',
