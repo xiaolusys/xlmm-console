@@ -127,7 +127,7 @@ export class Products extends Component {
     const { protocol, host } = window.location;
     this.setState({
       previewModalVisible: true,
-      previewLink: `http://admin.xiaolumm.com/mall/product/details/${productid}`,
+      previewLink: `${protocol}//${host}/mall/product/details/${productid}`,
     });
 
   }
