@@ -62,6 +62,8 @@ export class Products extends Component {
     },
     selectedRowKeys: [],
     modalVisible: false,
+    previewModalVisible: false,
+    previewLink: '',
     desingerPopoverVisible: false,
     maintainerPopoverVisible: false,
     desinger: 0,
@@ -118,6 +120,15 @@ export class Products extends Component {
     const { id } = this.props.location.query;
     const { productid } = e.currentTarget.dataset;
     this.props.deleteProduct(id, productid, this.getFilters());
+  }
+
+  onPreviewClick = (e) => {
+    const { productid } = e.currentTarget.dataset;
+    const { protocol, host } = window.location;
+    this.setState({
+      previewModalVisible: true,
+      previewLink: `http://admin.xiaolumm.com/mall/product/details/${productid}`,
+    });
 
   }
 
@@ -194,6 +205,10 @@ export class Products extends Component {
 
   toggleMaintainerPopoverVisible = () => {
     this.setState({ maintainerPopoverVisible: !this.state.maintainerPopoverVisible });
+  }
+
+  togglePreviewModalVisible = (e) => {
+    this.setState({ previewModalVisible: !this.state.previewModalVisible });
   }
 
   ajustPositionPopover = (productId, direction) => {
@@ -348,6 +363,8 @@ export class Products extends Component {
           <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
           <span className="ant-divider"></span>
           <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
+          <span className="ant-divider"></span>
+          <a data-productid={record.id} onClick={this.onPreviewClick}>预览商品</a>
         </div>
       ),
     }];
@@ -420,6 +437,7 @@ export class Products extends Component {
         <If condition={schedule.success}>
           <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
         </If>
+        <Modals.Preview visible={this.state.previewModalVisible} url={this.state.previewLink} onCancel={this.togglePreviewModalVisible} title="商品预览" />
       </div>
     );
   }
