@@ -27,7 +27,7 @@ export class App extends Component {
   }
 
   state = {
-    currentKey: constants.menu[0].link,
+    currentKey: this.props.location.pathname,
   }
 
   onMenuClick = (e) => {
