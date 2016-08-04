@@ -63,7 +63,7 @@ class HomeWithForm extends Component {
     this.props.fetchSuppliers(this.getFilters());
   }
 
-  createSupplierClick = (e) => {
+  onCreateSupplierClick = (e) => {
     this.context.router.push('supplier/edit');
   }
 
@@ -202,7 +202,7 @@ class HomeWithForm extends Component {
           </Row>
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
-              <Button type="primary" onClick={this.createSupplierClick}>添加供应商</Button>
+              <Button type="primary" onClick={this.onCreateSupplierClick}>添加供应商</Button>
             </Col>
             <Col span={2} offset={20}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
