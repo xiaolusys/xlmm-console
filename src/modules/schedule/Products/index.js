@@ -9,7 +9,7 @@ import * as constants from 'constants';
 import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
 import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
 import { fetchUsers } from 'redux/modules/auth/users';
-import { assign, map } from 'lodash';
+import { merge, map } from 'lodash';
 import stringcase from 'stringcase';
 
 const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct, fetchUsers };
@@ -109,6 +109,7 @@ export class Products extends Component {
   onUpdatePositionClick = (e) => {
     const { id } = this.props.location.query;
     const { direction, productid } = e.currentTarget.dataset;
+    this.setFilters({ ordering: 'order_weight' });
     this.props.updatePosition(id, productid, {
       direction: direction,
       distance: this.state.distance,
@@ -183,11 +184,11 @@ export class Products extends Component {
   getFilters = () => (this.state.filters)
 
   setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
+    this.setState(merge(this.state.filters, filters));
   }
 
   setDistance = (e) => {
-    this.setState(assign(this.state, { distance: Number(e.target.value) }));
+    this.setState(merge(this.state, { distance: Number(e.target.value) }));
   }
 
   suppliers = () => {
@@ -196,7 +197,7 @@ export class Products extends Component {
   }
 
   toggleModalVisible = (e) => {
-    this.setState(assign(this.state, { modalVisible: !this.state.modalVisible }));
+    this.setState(merge(this.state, { modalVisible: !this.state.modalVisible }));
   }
 
   toggleDesingerPopoverVisble = () => {
