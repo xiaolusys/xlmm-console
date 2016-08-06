@@ -274,8 +274,8 @@ export class Products extends Component {
     const { scheduleProducts, schedule } = this.props;
     return [{
       title: 'id',
-      dataIndex: 'modelId',
-      key: 'modelId',
+      dataIndex: 'saleProductId',
+      key: 'saleProductId',
     }, {
       title: '图片',
       dataIndex: 'productPic',
@@ -359,13 +359,13 @@ export class Products extends Component {
       key: 'operating',
       render: (text, record) => (
         <div>
-          <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.modelId}`} disabled={schedule.lockStatus}>资料录入</a>
+          <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus}>资料录入</a>
           <span className="ant-divider"></span>
-          <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+          <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.saleProductId}`} disabled={schedule.lockStatus}>上传图片</a>
           <span className="ant-divider"></span>
           <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
           <span className="ant-divider"></span>
-          <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
+          <a data-productid={record.saleProductId} onClick={this.onPreviewClick}>预览商品</a>
         </div>
       ),
     }];
