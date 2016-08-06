@@ -365,7 +365,7 @@ export class Products extends Component {
           <span className="ant-divider"></span>
           <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
           <span className="ant-divider"></span>
-          <a data-productid={record.saleProductId} onClick={this.onPreviewClick}>预览商品</a>
+          <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
         </div>
       ),
     }];
