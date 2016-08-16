@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedules';
-import { assign, map } from 'lodash';
+import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
 
 @connect(
@@ -89,16 +89,25 @@ class List extends Component {
       title: '商品',
       dataIndex: 'productNum',
       key: 'productNum',
-
+      render: (productNum, record) => (
+        <Popover content={self.categoryPopoverContent(record.figures.categoryProductNums)} title="类目&商品" trigger="hover">
+          <a>{productNum}</a>
+        </Popover>
+      ),
     }, {
       title: '供应商',
       dataIndex: 'saleSuppliers',
       key: 'saleSuppliers',
-      render: (suppliers) => (
-        <Popover content={self.popoverContent(suppliers)} title="供应商" trigger="hover">
+      render: (suppliers, record) => (
+        <Popover content={self.supplierPopoverContent(record.figures.supplierProductNums)} title="供应商&商品" trigger="hover">
           <a>{suppliers.length}</a>
         </Popover>
       ),
+    }, {
+      title: '价格&商品',
+      dataIndex: 'figures',
+      key: 'priceRangeProduct',
+      render: (figures) => (map(figures.priceZoneNum, (price) => (<p>{`${price.priceZone}元: 共${price.productNum}件`}</p>))),
     }, {
       title: '负责人',
       dataIndex: 'responsiblePersonName',
@@ -127,8 +136,12 @@ class List extends Component {
     }];
   }
 
-  popoverContent = (suppliers) => (
-    suppliers.length > 0 ? map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
+  supplierPopoverContent = (suppliers) => (
+    isEmpty(suppliers) ? '暂无供应商' : map(suppliers, (supplier) => (<p>{`${supplier.supplierName}: 共${supplier.productNum}件商品`}</p>))
+  )
+
+  categoryPopoverContent = (categories) => (
+    isEmpty(categories) ? '暂无' : map(categories, (category) => (<p>{`${category.categoryName}: 共${category.productNum}件商品`}</p>))
   )
 
   pagination = () => {
