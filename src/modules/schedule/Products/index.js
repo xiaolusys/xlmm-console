@@ -274,8 +274,8 @@ export class Products extends Component {
     const { scheduleProducts, schedule } = this.props;
     return [{
       title: 'id',
-      dataIndex: 'saleProductId',
-      key: 'saleProductId',
+      dataIndex: 'modelId',
+      key: 'modelId',
     }, {
       title: '图片',
       dataIndex: 'productPic',
