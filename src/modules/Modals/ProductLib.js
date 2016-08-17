@@ -165,7 +165,7 @@ class ProductLib extends Component {
   }, {
     title: '最后上架销售信息',
     key: 'latestFigures',
-    width: 180,
+    width: 160,
     dataIndex: 'latestFigures',
     render: (figures) => (
       <div>
@@ -178,7 +178,7 @@ class ProductLib extends Component {
   }, {
     title: '总销售信息',
     key: 'totalFigures',
-    width: 180,
+    width: 160,
     dataIndex: 'totalFigures',
     render: (figures) => (
       <div>
@@ -196,13 +196,13 @@ class ProductLib extends Component {
     title: '类目',
     key: 'saleCategory',
     dataIndex: 'saleCategory',
-    width: 80,
+    width: 100,
     render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
   }, {
     title: '供应商',
     key: 'saleSupplier',
     dataIndex: 'saleSupplier',
-    width: 20,
+    width: 200,
     render: (saleSupplier) => (
       <div>
         <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
