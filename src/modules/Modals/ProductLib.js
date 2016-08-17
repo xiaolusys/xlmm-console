@@ -163,9 +163,9 @@ class ProductLib extends Component {
       </div>
     ),
   }, {
-    title: '销售信息',
+    title: '最后上架销售信息',
     key: 'latestFigures',
-    width: 200,
+    width: 180,
     dataIndex: 'latestFigures',
     render: (figures) => (
       <div>
@@ -176,21 +176,33 @@ class ProductLib extends Component {
       </div>
     ),
   }, {
+    title: '总销售信息',
+    key: 'totalFigures',
+    width: 180,
+    dataIndex: 'totalFigures',
+    render: (figures) => (
+      <div>
+        <p><span>销售额：</span><span>{figures.totalPayment ? `￥${figures.totalPayment.toFixed(2)}` : '-'}</span></p>
+        <p><span>退货率：</span><span>{figures ? figures.totalRgRate : '-'}</span></p>
+        <p><span>销售件数：</span><span>{figures.totalPayNum ? figures.totalPayNum : '-'}</span></p>
+      </div>
+    ),
+  }, {
     title: '状态',
     key: 'status',
-    width: 100,
+    width: 80,
     dataIndex: 'status',
   }, {
     title: '类目',
     key: 'saleCategory',
     dataIndex: 'saleCategory',
-    width: 100,
+    width: 80,
     render: (saleCategory) => (<p>{saleCategory ? saleCategory.fullName : '-'}</p>),
   }, {
     title: '供应商',
     key: 'saleSupplier',
     dataIndex: 'saleSupplier',
-    width: 200,
+    width: 20,
     render: (saleSupplier) => (
       <div>
         <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
