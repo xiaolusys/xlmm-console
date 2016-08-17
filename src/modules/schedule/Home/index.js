@@ -131,6 +131,8 @@ class List extends Component {
           <Link to={`schedule/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
           <Link to={`schedule/products?id=${id}`}>商品</Link>
+          <span className="ant-divider"></span>
+          <a target="_blank" href={`/supplychain/supplier/schedule_detail/?schedule_id=${id}`}>核对库存</a>
         </span>
       ),
     }];
