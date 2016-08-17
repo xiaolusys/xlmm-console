@@ -83,7 +83,10 @@ class ProductLib extends Component {
       filters.saleSupplier = this.supplierIds();
     }
 
+    filters.page = 1;
+
     delete filters.priceRange;
+
     this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
   }
@@ -222,7 +225,7 @@ class ProductLib extends Component {
   tableProps = () => {
     const self = this;
     const { products } = this.props;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, pageSize, page } = this.state;
     return {
       rowKey: (record) => (record.id),
       rowSelection: {
@@ -231,10 +234,12 @@ class ProductLib extends Component {
       },
       pagination: {
         total: products.count,
+        pageSize: pageSize,
+        current: page,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
-        onShowSizeChange(current, pageSize) {
-          self.setFilters({ pageSize: pageSize, page: current });
+        onShowSizeChange(current, size) {
+          self.setFilters({ pageSize: size, page: current });
           self.props.fetchProducts(self.getFilters());
         },
         onChange(current) {
