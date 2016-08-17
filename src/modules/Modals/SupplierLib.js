@@ -147,7 +147,7 @@ class SupplierLib extends Component {
   tableProps = () => {
     const self = this;
     const { suppliers } = this.props;
-    const { pageSize, page } = this.state;
+    const { page } = this.state;
     return {
       className: 'margin-top-sm',
       rowKey: (record) => (record.id),
@@ -159,7 +159,6 @@ class SupplierLib extends Component {
       },
       pagination: {
         total: suppliers.count || 0,
-        pageSize: pageSize,
         current: page,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
