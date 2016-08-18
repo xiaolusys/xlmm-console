@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select } from 'antd';
+import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select, Form } from 'antd';
 import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
@@ -19,10 +19,11 @@ const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct
     scheduleProducts: state.scheduleProducts,
     schedule: state.schedule,
     users: state.users,
+    filters: state.supplierFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-export class Products extends Component {
+export class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
@@ -39,6 +40,7 @@ export class Products extends Component {
     schedule: React.PropTypes.object,
     scheduleProducts: React.PropTypes.object,
     users: React.PropTypes.object,
+    filters: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -133,6 +135,34 @@ export class Products extends Component {
 
   }
 
+  onSubmitClick = (e) => {
+    const { id } = this.props.location.query;
+    const filters = this.props.form.getFieldsValue();
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[0]))) {
+      filters.minPrice = Number(filters.priceRange.split(',')[0]);
+    }
+
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[1]))) {
+      filters.maxPrice = Number(filters.priceRange.split(',')[1]);
+    }
+
+    if (!filters.priceRange) {
+      filters.minPrice = undefined;
+      filters.maxPrice = undefined;
+    }
+
+    if (!filters.saleSupplier) {
+      filters.saleSupplier = this.supplierIds();
+    }
+
+    filters.page = 1;
+
+    delete filters.priceRange;
+
+    this.setFilters(filters);
+    this.props.fetchProducts(id, this.getFilters());
+  }
+
   onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
   }
@@ -189,6 +219,11 @@ export class Products extends Component {
 
   setDistance = (e) => {
     this.setState(merge(this.state, { distance: Number(e.target.value) }));
+  }
+
+  supplierIds = () => {
+    const suppliers = this.suppliers();
+    return map(suppliers, (supplier) => (supplier.id)).join(',');
   }
 
   suppliers = () => {
@@ -270,6 +305,11 @@ export class Products extends Component {
     );
   }
 
+  formItemLayout = () => ({
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  })
+
   columns = () => {
     const { scheduleProducts, schedule } = this.props;
     return [{
@@ -324,6 +364,18 @@ export class Products extends Component {
       key: 'referenceUsername',
       render: (username, record) => (username || '-'),
       sorter: true,
+    }, {
+      title: '负责人',
+      dataIndex: 'productContactor',
+      key: 'productContactor',
+      render: (username, record) => (username || '-'),
+      sorter: true,
+    }, {
+      title: '备注',
+      dataIndex: 'productMemo',
+      key: 'productMemo',
+      width: 200,
+      render: (memo) => (memo || '-'),
     }, {
       title: '每日推送商品',
       dataIndex: 'id',
@@ -404,36 +456,67 @@ export class Products extends Component {
 
   render() {
     const { prefixCls } = this.props;
-    const { schedule, scheduleProducts } = this.props;
+    const { schedule, scheduleProducts, filters } = this.props;
     const { selectedRowKeys } = this.state;
     const hasSelected = selectedRowKeys.length > 0;
+    const { getFieldProps } = this.props.form;
+    const desingerPopover = {
+      title: '指定设计',
+      disabled: schedule.lockStatus || !hasSelected,
+      visible: this.state.desingerPopoverVisible,
+      onClick: this.toggleDesingerPopoverVisble,
+      onOk: this.onAssignDesingerClick,
+      onChange: this.onDesingerChange,
+    };
+    const maintainerPopover = {
+      title: '指定资料录入',
+      disabled: schedule.lockStatus || !hasSelected,
+      visible: this.state.maintainerPopoverVisible,
+      onClick: this.toggleMaintainerPopoverVisible,
+      onOk: this.onAssignMaintainerClick,
+      onChange: this.onMaintainerChange,
+    };
     return (
       <div className={`${prefixCls}`} >
-        <Row type="flex" justify="start" align="middle">
-          <Col span={2}>
-            <Button type="primary" onClick={this.toggleModalVisible} disabled={schedule.lockStatus}>添加商品</Button>
-          </Col>
-          <Col span={2}>
-            {this.usersPopover({
-              title: '指定设计',
-              disabled: schedule.lockStatus || !hasSelected,
-              visible: this.state.desingerPopoverVisible,
-              onClick: this.toggleDesingerPopoverVisble,
-              onOk: this.onAssignDesingerClick,
-              onChange: this.onDesingerChange,
-            })}
-          </Col>
-          <Col span={2}>
-            {this.usersPopover({
-              title: '指定资料录入',
-              disabled: schedule.lockStatus || !hasSelected,
-              visible: this.state.maintainerPopoverVisible,
-              onClick: this.toggleMaintainerPopoverVisible,
-              onOk: this.onAssignMaintainerClick,
-              onChange: this.onMaintainerChange,
-            })}
-          </Col>
-        </Row>
+        <Form horizontal className="ant-advanced-search-form">
+          <Row type="flex" justify="start" align="middle">
+            <Col sm={6}>
+              <Form.Item label="类目" {...this.formItemLayout()} >
+                <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
+                  {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={6}>
+              <Form.Item label="价格范围" {...this.formItemLayout()} >
+                <Select {...getFieldProps('priceRange')} allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
+                  {map(constants.priceRanges, (range) => (<Select.Option value={range.value}>{range.lable}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={6}>
+              <Form.Item label="供应商" {...this.formItemLayout()} >
+                <Select {...getFieldProps('saleSupplier')} allowClear placeholder="请选择供应商" notFoundContent="无可选项">
+                  {map(this.suppliers(), (supplier) => (<Select.Option value={supplier.id}>{supplier.name}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row type="flex" justify="start" align="middle">
+            <Col span={2}>
+              <Button type="primary" onClick={this.toggleModalVisible} disabled={schedule.lockStatus}>添加商品</Button>
+            </Col>
+            <Col span={2}>
+              {this.usersPopover(desingerPopover)}
+            </Col>
+            <Col span={2}>
+              {this.usersPopover(maintainerPopover)}
+            </Col>
+            <Col span={2} offset={16}>
+              <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
+            </Col>
+          </Row>
+        </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
         <If condition={schedule.success}>
           <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
@@ -443,3 +526,6 @@ export class Products extends Component {
     );
   }
 }
+
+
+export const Products = Form.create()(ProductsWithForm);
