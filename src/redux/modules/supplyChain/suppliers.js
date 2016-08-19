@@ -33,3 +33,20 @@ export const fetchSuppliers = (filters) => ({
     ...filters,
   },
 });
+
+export const saveSupplier = (params) => ({
+  url: `${apisBase.supply}supplier`,
+  method: 'get',
+  type: `SAVE_${name}`,
+  params: {
+    ...params,
+  },
+});
+
+export const fetchSupplier = (id, params) => ({
+
+});
+
+export const updateSupplier = (id, params) => ({
+
+});

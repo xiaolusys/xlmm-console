@@ -3,8 +3,12 @@ import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
   categorys: [],
+  platform: [],
+  progress: [],
+  status: [],
   supplierType: [],
   supplierZone: [],
+  wareBy: [],
 };
 
 const name = 'SUPPLIERS_FILTERS';

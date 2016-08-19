@@ -4,6 +4,7 @@ import suppliers from './suppliers';
 import supplierFilters from './supplierFilters';
 import scheduleProducts from './scheduleProducts';
 import products from './products';
+import district from './district';
 
 
 export default {
@@ -13,4 +14,5 @@ export default {
   supplierFilters,
   scheduleProducts,
   products,
+  district,
 };
