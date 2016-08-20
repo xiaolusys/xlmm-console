@@ -74,7 +74,6 @@ class EditWithForm extends Component {
     console.log(this.props.form.getFieldsValue());
     this.props.form.validateFields((errors, values) => {
       if (!!errors) {
-        console.log(errors);
         return;
       }
       console.log(this.props.form.getFieldsValue());
