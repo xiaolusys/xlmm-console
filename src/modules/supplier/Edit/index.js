@@ -2,27 +2,34 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Col, Input, Form, FormItem, Row, Select, Table } from 'antd';
-import { isEmpty } from 'lodash';
+import { find, isEmpty } from 'lodash';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { fetchProvinces, fetchCities, fetchDistricts } from 'redux/modules/supplyChain/district';
+import { fetchSupplier, saveSupplier, updateSupplier } from 'redux/modules/supplyChain/supplier';
 
 const actionCreators = {
   fetchFilters: fetchFilters,
   fetchProvinces: fetchProvinces,
   fetchCities: fetchCities,
   fetchDistricts: fetchDistricts,
+  fetchSupplier: fetchSupplier,
+  saveSupplier: saveSupplier,
+  updateSupplier: updateSupplier,
 };
 
 @connect(
   state => ({
     filters: state.supplierFilters,
     district: state.district,
+    supplier: state.supplier,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
 class EditWithForm extends Component {
 
   static propTypes = {
+    location: React.PropTypes.object,
+    params: React.PropTypes.object,
     form: React.PropTypes.object,
     filters: React.PropTypes.object,
     district: React.PropTypes.object,
@@ -30,6 +37,9 @@ class EditWithForm extends Component {
     fetchProvinces: React.PropTypes.func,
     fetchCities: React.PropTypes.func,
     fetchDistricts: React.PropTypes.func,
+    fetchSupplier: React.PropTypes.func,
+    saveSupplier: React.PropTypes.func,
+    updateSupplier: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -47,10 +57,21 @@ class EditWithForm extends Component {
 
   componentWillMount() {
     const { filters } = this.props;
+    const { id } = this.props.location.query;
     if (isEmpty(filters.categorys)) {
       this.props.fetchFilters();
     }
     this.props.fetchProvinces();
+    this.props.fetchSupplier(id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { supplier } = nextProps;
+    if (!supplier.isLoading && supplier.success) {
+      this.props.form.setFieldsInitialValue({
+        ...supplier,
+      });
+    }
   }
 
   onProvinceChange = (value) => {
@@ -71,14 +92,27 @@ class EditWithForm extends Component {
   }
 
   onSubmitCliick = (e) => {
-    console.log(this.props.form.getFieldsValue());
     this.props.form.validateFields((errors, values) => {
       if (!!errors) {
         return;
       }
-      console.log(this.props.form.getFieldsValue());
     });
+
+    const { provinces, cities } = this.props.district;
+    const { id } = this.props.location.query;
+    const params = this.props.form.getFieldsValue();
+    params.zoneName = `${this.getValue(params.province, provinces)}/${this.getValue(params.city, cities)}/${params.district}`;
+    delete params.province;
+    delete params.city;
+    delete params.district;
+    if (Number(id) === 0) {
+      this.props.saveSupplier(params);
+    } else {
+      this.props.updateSupplier(id, params);
+    }
   }
+
+  getValue = (id, items) => (find(items, (item) => (item.id === id)).name);
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
@@ -136,8 +170,14 @@ class EditWithForm extends Component {
               {filters.wareBy.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
           </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="地址">
+            <Input {...getFieldProps('address', { rules: [{ required: true, message: '请输入地址！' }] })} value={getFieldValue('address')} placeholder="请输入地址" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="联系人">
+            <Input {...getFieldProps('contact', { rules: [{ required: true, message: '请输入联系人！' }] })} value={getFieldValue('contact')} placeholder="请输入联系人" />
+          </Form.Item>
           <Form.Item {...this.formItemLayout()} label="联系人手机">
-            <Input {...getFieldProps('phone', { rules: [{ required: true, min: 11, max: 11, message: '请输入11位手机号！' }] })} value={getFieldValue('phone')} placeholder="请输入联系人手机" />
+            <Input {...getFieldProps('mobile', { rules: [{ required: true, min: 11, max: 11, message: '请输入11位手机号！' }] })} value={getFieldValue('mobile')} placeholder="请输入联系人手机" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="联系人QQ">
             <Input {...getFieldProps('qq')} value={getFieldValue('qq')} placeholder="请输入联系人QQ" />

@@ -2,11 +2,10 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
-  items: [],
-  count: 0,
+
 };
 
-const name = 'SUPPLIERS';
+const name = 'SUPPLIER';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -16,8 +15,7 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    count: payload.data.count,
-    items: payload.data.results,
+    ...payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -25,20 +23,22 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchSuppliers = (filters) => ({
-  url: `${apisBase.supply}supplier`,
+export const fetchSupplier = (id) => ({
+  url: `${apisBase.supply}supplier/${id}`,
   method: 'get',
   type: `FETCH_${name}`,
-  params: {
-    ...filters,
-  },
 });
 
-export const deleteSupplier = (id, filters) => ({
+export const saveSupplier = (params) => ({
+  url: `${apisBase.supply}supplier`,
+  method: 'post',
+  type: `SAVE_${name}`,
+  data: params,
+});
+
+export const updateSupplier = (id, params) => ({
   url: `${apisBase.supply}supplier/${id}`,
-  method: 'delete',
-  type: `DELETE_${name}`,
-  success: (resp, dispatch) => {
-    dispatch(fetchSuppliers(filters));
-  },
+  method: 'PATCH',
+  type: `SAVE_${name}`,
+  data: params,
 });
