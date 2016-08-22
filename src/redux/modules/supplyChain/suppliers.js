@@ -33,3 +33,12 @@ export const fetchSuppliers = (filters) => ({
     ...filters,
   },
 });
+
+export const deleteSupplier = (id, filters) => ({
+  url: `${apisBase.supply}supplier/${id}`,
+  method: 'delete',
+  type: `DELETE_${name}`,
+  success: (resp, dispatch) => {
+    dispatch(fetchSuppliers(filters));
+  },
+});
