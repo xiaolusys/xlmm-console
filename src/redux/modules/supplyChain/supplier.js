@@ -2,16 +2,10 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
-  categorys: [],
-  platform: [],
-  progress: [],
-  status: [],
-  supplierType: [],
-  supplierZone: [],
-  wareBy: [],
+
 };
 
-const name = 'SUPPLIERS_FILTERS';
+const name = 'SUPPLIER';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -29,8 +23,22 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchFilters = () => ({
-  url: `${apisBase.supply}supplier/list_filters`,
+export const fetchSupplier = (id) => ({
+  url: `${apisBase.supply}supplier/${id}`,
   method: 'get',
   type: `FETCH_${name}`,
+});
+
+export const saveSupplier = (params) => ({
+  url: `${apisBase.supply}supplier`,
+  method: 'post',
+  type: `SAVE_${name}`,
+  data: params,
+});
+
+export const updateSupplier = (id, params) => ({
+  url: `${apisBase.supply}supplier/${id}`,
+  method: 'PATCH',
+  type: `SAVE_${name}`,
+  data: params,
 });

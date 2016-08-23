@@ -6,10 +6,14 @@ import { Button, Col, DatePicker, Input, Form, Row, Select, Table } from 'antd';
 import { assign, noop, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
-import { fetchSuppliers } from 'redux/modules/supplyChain/suppliers';
+import { fetchSuppliers, deleteSupplier } from 'redux/modules/supplyChain/suppliers';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 
-const actionCreators = { fetchSuppliers: fetchSuppliers, fetchFilters: fetchFilters };
+const actionCreators = {
+  fetchSuppliers: fetchSuppliers,
+  fetchFilters: fetchFilters,
+  deleteSupplier: deleteSupplier,
+};
 
 @connect(
   state => ({
@@ -24,6 +28,7 @@ class HomeWithForm extends Component {
     location: React.PropTypes.any,
     fetchFilters: React.PropTypes.func,
     fetchSuppliers: React.PropTypes.func,
+    deleteSupplier: React.PropTypes.func,
     filters: React.PropTypes.object,
     suppliers: React.PropTypes.object,
     form: React.PropTypes.object,
@@ -84,6 +89,11 @@ class HomeWithForm extends Component {
     this.props.fetchSuppliers(this.getFilters());
   }
 
+  onDeleteClick = (e) => {
+    const { supplierid } = e.currentTarget.dataset;
+    this.props.deleteSupplier(supplierid);
+  }
+
   setFilters = (filters) => {
     this.setState(assign(this.state.filters, filters));
   }
@@ -95,38 +105,52 @@ class HomeWithForm extends Component {
     wrapperCol: { span: 16 },
   })
 
-  columns = () => ([{
-    title: '名称',
-    key: 'supplierName',
-    dataIndex: 'supplierName',
-    width: 200,
-  }, {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    width: 160,
-  }, {
-    title: '销售额',
-    key: 'payment',
-    dataIndex: 'figures',
-    width: 160,
-    sorter: true,
-    render: (figures) => (<span>{figures ? figures.payment : '-'}</span>),
-  }, {
-    title: '销售件数',
-    key: 'payNum',
-    dataIndex: 'figures',
-    width: 160,
-    sorter: true,
-    render: (figures) => (<span>{figures ? figures.payNum : '-'}</span>),
-  }, {
-    title: '退货率',
-    key: 'returnGoodRate',
-    dataIndex: 'figures',
-    width: 160,
-    sorter: true,
-    render: (figures) => (<span>{figures ? figures.returnGoodRate : '-'}</span>),
-  }]);
+  columns = () => {
+    const self = this;
+    return [{
+      title: '名称',
+      key: 'supplierName',
+      dataIndex: 'supplierName',
+      width: 200,
+    }, {
+      title: '状态',
+      key: 'status',
+      dataIndex: 'status',
+      width: 160,
+    }, {
+      title: '销售额',
+      key: 'payment',
+      dataIndex: 'figures',
+      width: 160,
+      sorter: true,
+      render: (figures) => (<span>{figures ? figures.payment : '-'}</span>),
+    }, {
+      title: '销售件数',
+      key: 'payNum',
+      dataIndex: 'figures',
+      width: 160,
+      sorter: true,
+      render: (figures) => (<span>{figures ? figures.payNum : '-'}</span>),
+    }, {
+      title: '退货率',
+      key: 'returnGoodRate',
+      dataIndex: 'figures',
+      width: 160,
+      sorter: true,
+      render: (figures) => (<span>{figures ? figures.returnGoodRate : '-'}</span>),
+    }, {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'operation',
+      render: (id) => (
+        <span>
+          <Link to={`supplier/edit?id=${id}`}>编辑</Link>
+          <span className="ant-divider"></span>
+          <a data-supplierid={id} onClick={self.onDeleteClick}>删除</a>
+        </span>
+      ),
+    }];
+  };
 
   tableProps = () => {
     const self = this;
