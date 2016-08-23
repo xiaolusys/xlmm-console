@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/supplyChain/schedules';
+import * as actionCreators from 'redux/modules/supplyChain/categories';
 import { assign, map } from 'lodash';
 import moment from 'moment';
+var _ = require('lodash');
 
 @connect(
   state => ({
-    schedules: state.schedules,
+    categories: state.categories,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -20,8 +21,8 @@ class List extends Component {
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     form: React.PropTypes.object,
-    fetchSchedules: React.PropTypes.func,
-    schedules: React.PropTypes.object,
+    fetchCategories: React.PropTypes.func,
+    categories: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -29,7 +30,7 @@ class List extends Component {
   };
 
   static defaultProps = {
-    prefixCls: 'schedule-home',
+    prefixCls: 'categories-home',
   };
 
   constructor(props, context) {
@@ -41,27 +42,26 @@ class List extends Component {
     filters: {
       pageSize: 10,
       page: 1,
-      ordering: '-sale_time',
     },
   }
 
   componentWillMount() {
-    this.props.fetchSchedules(this.getFilters());
+    this.props.fetchCategories(this.getFilters());
   }
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
     if (filters.dateRange) {
-      filters.saleTimeStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
-      filters.saleTimeEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
+      filters.createdStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
+      filters.createdEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
       delete filters.dateRange;
     }
     this.setFilters(filters);
-    this.props.fetchSchedules(this.getFilters());
+    this.props.fetchCategories(this.getFilters());
   }
 
   onCreateScheduleClick = (e) => {
-    this.context.router.push('schedule/edit');
+    this.context.router.push('categories/edit');
   }
 
   setFilters = (filters) => {
@@ -78,52 +78,40 @@ class List extends Component {
   columns = () => {
     const self = this;
     return [{
-      title: '日期',
-      dataIndex: 'saleTime',
-      key: 'date',
+      title: '图片',
+      key: 'catPic',
+      dataIndex: 'catPic',
+      width: 100,
+      render: (catPic, record) => {
+        const conetnt = (<img style={{ height: '360px' }} src={catPic} role="presentation" />);
+        return (
+          <Popover placement="right" content={conetnt} trigger="hover">
+          <img style={{ height: '80px'}} src={catPic} role="presentation" />
+        </Popover>
+        );
+      },
     }, {
-      title: '类型',
-      dataIndex: 'scheduleTypeLable',
-      key: 'scheduleTypeLable',
+      title: '类目ID',
+      dataIndex: 'cid',
+      key: 'cid',
     }, {
-      title: '商品',
-      dataIndex: 'productNum',
-      key: 'productNum',
+      title: '父类目ID',
+      dataIndex: 'parentCid',
+      key: 'parentCid',
 
     }, {
-      title: '供应商',
-      dataIndex: 'saleSuppliers',
-      key: 'saleSuppliers',
-      render: (suppliers) => (
-        <Popover content={self.popoverContent(suppliers)} title="供应商" trigger="hover">
-          <a>{suppliers.length}</a>
-        </Popover>
-      ),
+      title: '商品',
+      dataIndex: 'fullName',
+      key: 'fullName',
     }, {
-      title: '负责人',
-      dataIndex: 'responsiblePersonName',
-      key: 'responsiblePersonName',
+      title: '状态',
+      dataIndex: 'normal',
+      key: 'normal',
     }, {
-      title: '锁定',
-      dataIndex: 'lockStatus',
-      key: 'lockStatus',
-      render: (lockStatus) => (
-        <span>
-          <Icon className={lockStatus ? 'icon-success' : 'icon-error'} type={lockStatus ? 'lock' : 'unlock'} />
-          <span> {lockStatus ? '已锁定' : '未锁定'}</span>
-        </span>
-      ),
-    }, {
-      title: '操作',
-      dataIndex: 'id',
-      key: 'operation',
-      render: (id) => (
-        <span>
-          <Link to={`schedule/edit?id=${id}`}>编辑</Link>
-          <span className="ant-divider"></span>
-          <Link to={`schedule/products?id=${id}`}>商品</Link>
-        </span>
-      ),
+      title: '创建日期',
+      dataIndex: 'created',
+      key: 'date',
+      render: (date) => (moment(date).format('YYYY-MM-DD hh:mm:ss')),
     }];
   }
 
@@ -132,25 +120,25 @@ class List extends Component {
   )
 
   pagination = () => {
-    const { schedules } = this.props;
+    const { categories } = this.props;
     const self = this;
     return {
-      total: schedules.count || 0,
+      total: categories.count || 0,
       showTotal: total => `共 ${total} 条`,
       showSizeChanger: true,
       onShowSizeChange(current, pageSize) {
         self.setFilters({ pageSize: pageSize, page: current });
-        self.props.fetchSchedules(self.getFilters());
+        self.props.fetchCategories(self.getFilters());
       },
       onChange(current) {
         self.setFilters({ page: current });
-        self.props.fetchSchedules(self.getFilters());
+        self.props.fetchCategories(self.getFilters());
       },
     };
   }
 
   render() {
-    const { prefixCls, schedules } = this.props;
+    const { prefixCls, categories } = this.props;
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
@@ -178,7 +166,7 @@ class List extends Component {
             </Col>
           </Row>
         </Form>
-        <Table className="margin-top-sm" columns={this.columns()} pagination={this.pagination()} loading={schedules.isLoading} dataSource={schedules.items} />
+        <Table className="margin-top-sm" columns={this.columns()} pagination={this.pagination()} loading={categories.isLoading} dataSource={categories.items} />
       </div>
     );
   }

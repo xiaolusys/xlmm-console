@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import { Home } from 'modules/schedule/Home';
-import { Edit } from 'modules/schedule/Edit';
-import { Products } from 'modules/schedule/Products';
+import { Home } from 'modules/categories/Home';
+import { Edit } from 'modules/categories/Edit';
+import { Products } from 'modules/categories/Products';
 
 export default (
-  <Route path="/schedule" breadcrumbName="排期">
+  <Route path="/categories" breadcrumbName="选品类目">
     <IndexRoute component={Home} />
-    <Route path="/schedule/edit" breadcrumbName="编辑" component={Edit} />
-    <Route path="/schedule/products" breadcrumbName="商品" component={Products} />
+    <Route path="/categories/edit" breadcrumbName="编辑" component={Edit} />
+    <Route path="/categories/products" breadcrumbName="商品" component={Products} />
   </Route>
 );

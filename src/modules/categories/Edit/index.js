@@ -11,7 +11,7 @@ import moment from 'moment';
 
 @connect(
   state => ({
-    schedule: state.schedule,
+    categories: state.categories,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -23,7 +23,7 @@ class EditSchedule extends Component {
     fetchSchedule: React.PropTypes.func,
     saveSchedule: React.PropTypes.func,
     resetSchedule: React.PropTypes.func,
-    schedule: React.PropTypes.object,
+    categories: React.PropTypes.object,
     form: React.PropTypes.object,
   };
 

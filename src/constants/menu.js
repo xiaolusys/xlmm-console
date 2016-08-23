@@ -7,6 +7,11 @@ export default [{
     link: '/supplier',
     icon: 'solution',
   },
+  {
+    name: '选品类目',
+    link: '/categories',
+    icon: 'solution',
+  },
   // {
   //  name: '订单',
   //  link: '/order',
