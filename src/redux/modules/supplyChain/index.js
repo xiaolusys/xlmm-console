@@ -6,9 +6,8 @@ import supplierFilters from './supplierFilters';
 import scheduleProducts from './scheduleProducts';
 import products from './products';
 import categories from './categories';
+import category from './category';
 import district from './district';
-
-
 
 export default {
   schedules,
@@ -19,5 +18,6 @@ export default {
   scheduleProducts,
   products,
   categories,
+  category,
   district,
 };

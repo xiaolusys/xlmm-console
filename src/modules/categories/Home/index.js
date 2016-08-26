@@ -7,7 +7,6 @@ import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/categories';
 import { assign, map } from 'lodash';
 import moment from 'moment';
-var _ = require('lodash');
 
 @connect(
   state => ({
@@ -60,7 +59,7 @@ class List extends Component {
     this.props.fetchCategories(this.getFilters());
   }
 
-  onCreateScheduleClick = (e) => {
+  onCreateCategoryClick = (e) => {
     this.context.router.push('categories/edit');
   }
 
@@ -86,14 +85,17 @@ class List extends Component {
         const conetnt = (<img style={{ height: '360px' }} src={catPic} role="presentation" />);
         return (
           <Popover placement="right" content={conetnt} trigger="hover">
-          <img style={{ height: '80px'}} src={catPic} role="presentation" />
-        </Popover>
+            <img style={{ height: '80px' }} src={catPic} role="presentation" />
+          </Popover>
         );
       },
     }, {
       title: '类目ID',
       dataIndex: 'cid',
       key: 'cid',
+      render: (cid) => (
+        <div style={{ marginLeft: '100px' }} >{cid}</div>
+      ),
     }, {
       title: '父类目ID',
       dataIndex: 'parentCid',
@@ -105,13 +107,27 @@ class List extends Component {
       key: 'fullName',
     }, {
       title: '状态',
-      dataIndex: 'normal',
-      key: 'normal',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <span> {status === 'normal' ? '正常' : '未使用'}</span>
+      ),
     }, {
       title: '创建日期',
       dataIndex: 'created',
       key: 'date',
       render: (date) => (moment(date).format('YYYY-MM-DD hh:mm:ss')),
+    }, {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'operation',
+      render: (id) => (
+        <span>
+          <Link to={`categories/edit?id=${id}`}>编辑</Link>
+          <span className="ant-divider"></span>
+          <a data-supplierid={id} onClick={self.onDeleteClick}>删除</a>
+        </span>
+      ),
     }];
   }
 
@@ -159,7 +175,7 @@ class List extends Component {
           </Row>
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
-              <Button type="primary" onClick={this.onCreateScheduleClick}>新建排期</Button>
+              <Button type="primary" onClick={this.onCreateCategoryClick}>新建类目</Button>
             </Col>
             <Col span={2} offset={20}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>

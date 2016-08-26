@@ -2,28 +2,27 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input } from 'antd';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/supplyChain/schedule';
+import * as actionCreators from 'redux/modules/supplyChain/category';
 import _ from 'lodash';
 import moment from 'moment';
 
 @connect(
   state => ({
-    categories: state.categories,
+    category: state.category,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class EditSchedule extends Component {
+class EditCategory extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
     location: React.PropTypes.any,
-    fetchSchedule: React.PropTypes.func,
-    saveSchedule: React.PropTypes.func,
-    resetSchedule: React.PropTypes.func,
-    categories: React.PropTypes.object,
+    fetchCategory: React.PropTypes.func,
+    saveCategory: React.PropTypes.func,
+    category: React.PropTypes.object,
     form: React.PropTypes.object,
   };
 
@@ -32,7 +31,7 @@ class EditSchedule extends Component {
   };
 
   static defaultProps = {
-    prefixCls: 'schedule-edit',
+    prefixCls: 'category-edit',
   };
 
   constructor(props, context) {
@@ -41,35 +40,32 @@ class EditSchedule extends Component {
   }
 
   state = {
-    suppliers: [],
+    categories: [],
     modalVisible: false,
   }
 
   componentWillMount() {
     const { id } = this.props.location.query;
     if (id) {
-      this.props.fetchSchedule(id);
+      this.props.fetchCategory(id);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { schedule } = nextProps;
-    if (!schedule.isLoading && schedule.success && schedule.updated) {
-      this.context.router.goBack();
-    }
-    if (!schedule.isLoading && schedule.success) {
-      this.props.form.setFieldsInitialValue({
-        upshelfTime: moment(schedule.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-        offshelfTime: moment(schedule.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-        scheduleType: schedule.scheduleType,
-        lockStatus: schedule.lockStatus,
-      });
-      this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
-    }
+    const { category } = nextProps;
+    console.log(category.cId);
+    this.props.form.setFieldsInitialValue({
+      cid: category.cid,
+      parentCid: category.parentCid,
+      catPic: category.catPic,
+      grade: category.grade,
+      created: moment(category.created).format('YYYY-MM-DD hh:mm:ss'),
+      modified: moment(category.modified).format('YYYY-MM-DD hh:mm:ss'),
+    });
   }
 
   componentWillUnmount() {
-    this.props.resetSchedule();
+
   }
 
   onOkClick = (selected) => {
@@ -96,13 +92,19 @@ class EditSchedule extends Component {
       }
     });
     const params = this.props.form.getFieldsValue();
-    this.props.saveSchedule(this.props.schedule.id, {
-      saleTime: moment(params.upshelfTime).format('YYYY-MM-DD'),
-      upshelfTime: moment(params.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-      offshelfTime: moment(params.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-      scheduleType: params.scheduleType,
-      lockStatus: params.lockStatus,
-      saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
+    this.props.saveCategory({
+      id: params.id,
+      cid: params.cid,
+      parentCid: params.parentCid,
+      name: params.name,
+      fullName: params.fullName,
+      catPic: params.catPic,
+      grade: params.grade,
+      isParent: params.isParent,
+      sortOrder: params.sortOrder,
+      status: params.status,
+      create: moment(params.create).format('YYYY-MM-DD hh:mm:ss'),
+      modified: moment(params.modified).format('YYYY-MM-DD hh:mm:ss'),
     });
   }
 
@@ -112,42 +114,50 @@ class EditSchedule extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 3 },
+    wrapperCol: { span: 5 },
   })
 
   render() {
-    const { prefixCls, schedule, form } = this.props;
+    const { prefixCls, category, form } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-    const { suppliers } = this.state;
+    const { categories } = this.state;
     return (
-      <div className={`${prefixCls}`} >
-        <Form horizontal onSubmit={this.onSubmitCliick}>
-          <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('upshelfTime')} value={getFieldValue('upshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+      <div>
+        <Form horizontal className={`${prefixCls}`}>
+          <Form.Item {...this.formItemLayout()} label="ID">
+            <Input {...getFieldProps('id', { rules: [{ required: true, message: '请输入ID！' }] })} value={getFieldValue('id')} placeholder="请输入类目ID" />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="结束时间">
-            <DatePicker {...getFieldProps('offshelfTime')} value={getFieldValue('offshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+          <Form.Item {...this.formItemLayout()} label="类目ID">
+            <Input {...getFieldProps('cid', { rules: [{ required: true, message: '请输入类目ID！' }] })} value={getFieldValue('cid')} placeholder="请输入类目ID" />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="类型" >
-            <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType')} required>
-            {_.map(constants.scheduleTypes, (type) => (<Select.Option value={type.id}>{type.lable}</Select.Option>))}
+          <Form.Item {...this.formItemLayout()} label="父类目ID">
+            <Input {...getFieldProps('parentCid', { rules: [{ required: true, message: '请输入父类目ID！' }] })} value={getFieldValue('parentCid')} placeholder="请输入父类目ID" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="展示图片">
+            <Input {...getFieldProps('catPic', { rules: [{ required: true, message: '请输入图片URL！' }] })} value={getFieldValue('catPic')} placeholder="请输入图片URL！" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="类目等级">
+            <Input {...getFieldProps('grade', { rules: [{ required: true, message: '请输入类目等级！' }] })} value={getFieldValue('grade')} placeholder="请输入类目等级！" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="状态" >
+            <Select style={{ width: 200 }} placeholder="状态" {...getFieldProps('status') === 'normal' ? '正常' : '未使用'} value={getFieldValue('status') === 'normal' ? '正常' : '未使用'} required>
+              <Option value="status">正常</Option>
+              <Option value="status">未使用</Option>
             </Select>
           </Form.Item>
-          <Form.Item labelCol={{ span: 2 }} wrapperCol={{ span: 10 }} label="供应商">
-            {_.map(suppliers, (supplier) => (<Tag closable key={supplier.id} data-id={supplier.id} onClose={this.onCloseTagClick} >{supplier.name}</Tag>))}
-            <Button style={{ margin: '4px 0' }} size="small" type="dashed" onClick={this.toggleModalVisible}>+ 添加供应商</Button>
+          <Form.Item {...this.formItemLayout()} label="创建时间">
+            <DatePicker {...getFieldProps('created')} value={getFieldValue('created')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="锁定">
-            <Switch {...getFieldProps('lockStatus')} checked={getFieldValue('lockStatus')} onChange={this.onSwitchChange} required />
+          <Form.Item {...this.formItemLayout()} label="修改时间">
+            <DatePicker {...getFieldProps('modified')} value={getFieldValue('modified')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
           </Row>
         </Form>
-        <Modals.SupplierLib visible={this.state.modalVisible} onCancel={this.toggleModalVisible} onOk={this.onOkClick} />
       </div>
     );
   }
 }
 
-export const Edit = Form.create()(EditSchedule);
+export const Edit = Form.create()(EditCategory);
