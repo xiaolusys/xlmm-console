@@ -355,14 +355,24 @@ export class ProductsWithForm extends Component {
     }, {
       title: '设计',
       dataIndex: 'photoUsername',
-      key: 'photoUsername',
-      render: (username, record) => (username || '-'),
+      key: 'design',
+      render: (username, record) => (
+        <div>
+          <p><span>负责人: </span>{username || '-'}</p>
+          <p><span>进度: </span>{record.designComplete ? '已完成' : '未完成'}</p>
+        </div>
+      ),
       sorter: true,
     }, {
       title: '资料录入',
       dataIndex: 'referenceUsername',
-      key: 'referenceUsername',
-      render: (username, record) => (username || '-'),
+      key: 'reference',
+      render: (username, record) => (
+        <div>
+          <p><span>负责人: </span>{username || '-'}</p>
+          <p><span>进度: </span>{record.materialStatus || '-'}</p>
+        </div>
+      ),
       sorter: true,
     }, {
       title: '负责人',
