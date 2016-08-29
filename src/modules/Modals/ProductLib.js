@@ -124,7 +124,6 @@ class ProductLib extends Component {
     this.setState(assign(this.state.filters, filters));
   }
 
-
   getFilters = () => (this.state.filters)
 
   supplierIds = () => {
