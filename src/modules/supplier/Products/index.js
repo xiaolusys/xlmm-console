@@ -19,7 +19,7 @@ const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilter
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class HomeWithForm extends Component {
+class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     location: React.PropTypes.any,
@@ -47,6 +47,7 @@ class HomeWithForm extends Component {
     filters: {
       pageSize: 10,
       page: 1,
+      saleSupplier: this.props.location.query.supplierId,
     },
   }
 
@@ -60,7 +61,8 @@ class HomeWithForm extends Component {
   }
 
   onCreateProductClick = (e) => {
-    this.context.router.push('/product/edit');
+    const { supplierId } = this.props.location.query;
+    this.context.router.push(`/supplier/product/edit?supplierId=${supplierId}`);
   }
 
   onSubmitClick = (e) => {
@@ -206,7 +208,7 @@ class HomeWithForm extends Component {
     key: 'operation',
     render: (id) => (
       <span>
-        <Link to={`product/edit?id=${id}`}>编辑</Link>
+        <Link to={`/supplier/product/edit?productId=${id}`}>编辑</Link>
         <span className="ant-divider"></span>
         <a onClick={this.onDeleteClick}>删除</a>
       </span>
@@ -219,10 +221,6 @@ class HomeWithForm extends Component {
     const { selectedRowKeys, page } = this.state;
     return {
       rowKey: (record) => (record.id),
-      rowSelection: {
-        selectedRowKeys,
-        onChange: this.onSelectChange,
-      },
       pagination: {
         total: products.count,
         current: page,
@@ -267,7 +265,7 @@ class HomeWithForm extends Component {
           </Row>
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
-              <Button type="primary" onClick={this.onCreateProductClick}>添加商品</Button>
+              <Button type="primary" onClick={this.onCreateProductClick}>新增商品</Button>
             </Col>
             <Col span={2} offset={20}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
@@ -281,4 +279,4 @@ class HomeWithForm extends Component {
 }
 
 
-export const Home = Form.create()(HomeWithForm);
+export const Products = Form.create()(ProductsWithForm);

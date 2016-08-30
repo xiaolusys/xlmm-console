@@ -200,4 +200,4 @@ class EditWithForm extends Component {
   }
 }
 
-export const Edit = Form.create()(EditWithForm);
+export const SupplierEdit = Form.create()(EditWithForm);
