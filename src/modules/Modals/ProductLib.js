@@ -25,6 +25,7 @@ class ProductLib extends Component {
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     visible: React.PropTypes.bool,
+    scheduleId: React.PropTypes.string,
     onCancel: React.PropTypes.func,
     onOk: React.PropTypes.func,
     suppliers: React.PropTypes.array,
@@ -54,6 +55,7 @@ class ProductLib extends Component {
     filters: {
       pageSize: 10,
       page: 1,
+      scheduleId: this.props.scheduleId,
     },
     selectedRowKeys: [],
   }
@@ -94,6 +96,7 @@ class ProductLib extends Component {
   onOk = (e) => {
     this.props.onOk(this.state.selectedRowKeys);
     this.setState({ selectedRowKeys: [] });
+    this.props.fetchProducts(this.getFilters());
   }
 
   onTableChange = (pagination, filters, sorter) => {
@@ -231,6 +234,9 @@ class ProductLib extends Component {
       rowSelection: {
         selectedRowKeys,
         onChange: this.onSelectChange,
+        getCheckboxProps: (record) => ({
+          disabled: record.inSchedule,
+        }),
       },
       pagination: {
         total: products.count,
