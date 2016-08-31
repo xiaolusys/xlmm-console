@@ -3,12 +3,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table, Popover } from 'antd';
-import * as constants from 'constants';
-import { fetchProducts } from 'redux/modules/supplyChain/products';
-import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
+import * as constants from 'constants';
+import { fetchProducts } from 'redux/modules/supplyChain/products';
+import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 
 const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilters };
 
