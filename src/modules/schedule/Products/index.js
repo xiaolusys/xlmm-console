@@ -23,7 +23,7 @@ const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-export class ProductsWithForm extends Component {
+class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,

@@ -147,6 +147,8 @@ class HomeWithForm extends Component {
           <Link to={`supplier/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
           <a data-supplierid={id} onClick={self.onDeleteClick}>删除</a>
+          <span className="ant-divider"></span>
+          <Link to={`supplier/products?supplierId=${id}`}>商品</Link>
         </span>
       ),
     }];

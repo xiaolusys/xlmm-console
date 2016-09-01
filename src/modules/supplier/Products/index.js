@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Modal, Input, Table, Popover } from 'antd';
-import { assign, isEmpty, isNaN, map, noop } from 'lodash';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Popover } from 'antd';
 import moment from 'moment';
 import stringcase from 'stringcase';
+import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import * as constants from 'constants';
 import { fetchProducts } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
@@ -19,16 +19,10 @@ const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilter
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class ProductLib extends Component {
+class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
-    children: React.PropTypes.any,
     location: React.PropTypes.any,
-    visible: React.PropTypes.bool,
-    scheduleId: React.PropTypes.string,
-    onCancel: React.PropTypes.func,
-    onOk: React.PropTypes.func,
-    suppliers: React.PropTypes.array,
     fetchFilters: React.PropTypes.func,
     fetchProducts: React.PropTypes.func,
     filters: React.PropTypes.object,
@@ -41,9 +35,7 @@ class ProductLib extends Component {
   };
 
   static defaultProps = {
-    prefixCls: 'product-list',
-    onOk: noop,
-    onCancel: noop,
+    prefixCls: 'products',
   };
 
   constructor(props, context) {
@@ -55,15 +47,22 @@ class ProductLib extends Component {
     filters: {
       pageSize: 10,
       page: 1,
-      scheduleId: this.props.scheduleId,
+      saleSupplier: this.props.location.query.supplierId,
     },
-    selectedRowKeys: [],
   }
 
   componentWillMount() {
-    this.setFilters({ saleSupplier: this.supplierIds() });
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
+  }
+
+  componentWillReceiveProps(nextProps) {
+
+  }
+
+  onCreateProductClick = (e) => {
+    const { supplierId } = this.props.location.query;
+    this.context.router.push(`/supplier/product/edit?supplierId=${supplierId}`);
   }
 
   onSubmitClick = (e) => {
@@ -81,21 +80,11 @@ class ProductLib extends Component {
       filters.maxPrice = undefined;
     }
 
-    if (!filters.saleSupplier) {
-      filters.saleSupplier = this.supplierIds();
-    }
-
     filters.page = 1;
 
     delete filters.priceRange;
 
     this.setFilters(filters);
-    this.props.fetchProducts(this.getFilters());
-  }
-
-  onOk = (e) => {
-    this.props.onOk(this.state.selectedRowKeys);
-    this.setState({ selectedRowKeys: [] });
     this.props.fetchProducts(this.getFilters());
   }
 
@@ -116,20 +105,11 @@ class ProductLib extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
-  onSelectChange = (selectedRowKeys, selectedRows) => {
-    this.setState({ selectedRowKeys });
-  }
-
   setFilters = (filters) => {
     this.setState(assign(this.state.filters, filters));
   }
 
   getFilters = () => (this.state.filters)
-
-  supplierIds = () => {
-    const { suppliers } = this.props;
-    return map(suppliers, (supplier) => (supplier.id)).join(',');
-  }
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -145,7 +125,7 @@ class ProductLib extends Component {
       const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
       return (
         <Popover placement="right" content={conetnt} trigger="hover">
-          <img style={{ height: '80px' }} src={productPic} role="presentation" />
+          <img style={{ width: '80px' }} src={productPic} role="presentation" />
         </Popover>
       );
     },
@@ -170,8 +150,8 @@ class ProductLib extends Component {
   }, {
     title: '最后上架销售信息',
     key: 'latestFigures',
-    width: 160,
     dataIndex: 'latestFigures',
+    width: 200,
     render: (figures) => (
       <div>
         <p><span>销售额：</span><span>{figures ? `￥${figures.payment.toFixed(2)}` : '-'}</span></p>
@@ -183,8 +163,8 @@ class ProductLib extends Component {
   }, {
     title: '总销售信息',
     key: 'totalFigures',
-    width: 160,
     dataIndex: 'totalFigures',
+    width: 200,
     render: (figures) => (
       <div>
         <p><span>销售额：</span><span>{figures.totalPayment ? `￥${figures.totalPayment.toFixed(2)}` : '-'}</span></p>
@@ -195,8 +175,8 @@ class ProductLib extends Component {
   }, {
     title: '状态',
     key: 'status',
-    width: 80,
     dataIndex: 'status',
+    width: 100,
   }, {
     title: '类目',
     key: 'saleCategory',
@@ -222,6 +202,17 @@ class ProductLib extends Component {
     width: 100,
     render: (date) => (moment(date).format('YYYY-MM-DD')),
     sorter: true,
+  }, {
+    title: '操作',
+    dataIndex: 'id',
+    key: 'operation',
+    render: (id) => (
+      <span>
+        <Link to={`/supplier/product/edit?productId=${id}`}>编辑</Link>
+        <span className="ant-divider"></span>
+        <a onClick={this.onDeleteClick}>删除</a>
+      </span>
+    ),
   }])
 
   tableProps = () => {
@@ -230,13 +221,6 @@ class ProductLib extends Component {
     const { selectedRowKeys, page } = this.state;
     return {
       rowKey: (record) => (record.id),
-      rowSelection: {
-        selectedRowKeys,
-        onChange: this.onSelectChange,
-        getCheckboxProps: (record) => ({
-          disabled: record.inSchedule,
-        }),
-      },
       pagination: {
         total: products.count,
         current: page,
@@ -251,7 +235,6 @@ class ProductLib extends Component {
           self.props.fetchProducts(self.getFilters());
         },
       },
-      scroll: { y: 500 },
       className: 'margin-top-sm',
       dataSource: products.items,
       onChange: this.onTableChange,
@@ -259,44 +242,41 @@ class ProductLib extends Component {
   }
 
   render() {
-    const { visible, filters, products, onCancel, suppliers } = this.props;
+    const { prefixCls, filters, products } = this.props;
     const { getFieldProps } = this.props.form;
     return (
-      <Modal title="商品" width="1200" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
+      <div className={`${prefixCls}`} >
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
-            <Col sm={8}>
+            <Col sm={6}>
               <Form.Item label="类目" {...this.formItemLayout()} >
                 <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
                   {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
-            <Col sm={8}>
+            <Col sm={6}>
               <Form.Item label="价格范围" {...this.formItemLayout()} >
                 <Select {...getFieldProps('priceRange')} allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
                   {map(constants.priceRanges, (range) => (<Select.Option value={range.value}>{range.lable}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
-            <Col sm={8}>
-              <Form.Item label="供应商" {...this.formItemLayout()} >
-                <Select {...getFieldProps('saleSupplier')} allowClear placeholder="请选择供应商" notFoundContent="无可选项">
-                  {map(suppliers, (supplier) => (<Select.Option value={supplier.id}>{supplier.name}</Select.Option>))}
-                </Select>
-              </Form.Item>
-            </Col>
           </Row>
-          <Row type="flex" justify="end" align="middle">
-            <Col sm={2}>
+          <Row type="flex" justify="start" align="middle">
+            <Col span={2}>
+              <Button type="primary" onClick={this.onCreateProductClick}>新增商品</Button>
+            </Col>
+            <Col span={2} offset={20}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
             </Col>
           </Row>
         </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
-      </Modal>
+      </div>
     );
   }
 }
 
-export default Form.create()(ProductLib);
+
+export const Products = Form.create()(ProductsWithForm);

@@ -5,6 +5,7 @@ import supplier from './supplier';
 import supplierFilters from './supplierFilters';
 import scheduleProducts from './scheduleProducts';
 import products from './products';
+import product from './product';
 import categories from './categories';
 import category from './category';
 import district from './district';
@@ -17,6 +18,7 @@ export default {
   supplierFilters,
   scheduleProducts,
   products,
+  product,
   categories,
   category,
   district,
