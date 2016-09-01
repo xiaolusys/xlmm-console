@@ -87,6 +87,7 @@
     "change-case-keys": "^0.0.4",
     "es6-promise": "^3.2.1",
     "jsx-control-statements": "^3.1.2",
+    "lodash": "^4.15.0",
     "moment": "^2.13.0",
     "ramda": "^0.21.0",
     "react": "^15.1.0",
