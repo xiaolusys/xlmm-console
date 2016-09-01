@@ -1,6 +1,5 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
-import _ from 'lodash'
 
 const initialState = {
   items: [],
@@ -15,12 +14,10 @@ export default createReducer({
     ...status,
   }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) =>{
-    
     return {
       ...state,
       ...status,
-      items:payload.data.results,
-      count: payload.data.count,
+      items: payload.data,
     };
   } ,
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
@@ -29,20 +26,8 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchCategories = (filters) => ({
+export const fetchCategories = () => ({
   url: `${apisBase.supply}salescategory`,
   method: 'get',
   type: `FETCH_${name}`,
-  params: {
-    ...filters,
-  },
-});
-
-export const deleteSupplier = (id, filters) => ({
-  url: `${apisBase.supply}salescategory/${id}`,
-  method: 'delete',
-  type: `DELETE_${name}`,
-  success: (resp, dispatch) => {
-    dispatch(fetchCategories(filters));
-  },
 });

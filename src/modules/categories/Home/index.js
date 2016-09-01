@@ -21,6 +21,7 @@ class List extends Component {
     location: React.PropTypes.any,
     form: React.PropTypes.object,
     fetchCategories: React.PropTypes.func,
+    deleteCategory: React.PropTypes.func,
     categories: React.PropTypes.object,
   };
 
@@ -38,29 +39,22 @@ class List extends Component {
   }
 
   state = {
-    filters: {
-      pageSize: 10,
-      page: 1,
-    },
+    /*  filters: {
+        pageSize: 10,
+        page: 1,
+      },*/
   }
 
   componentWillMount() {
-    this.props.fetchCategories(this.getFilters());
-  }
-
-  onSubmitClick = (e) => {
-    const filters = this.props.form.getFieldsValue();
-    if (filters.dateRange) {
-      filters.createdStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
-      filters.createdEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
-      delete filters.dateRange;
-    }
-    this.setFilters(filters);
-    this.props.fetchCategories(this.getFilters());
+    this.props.fetchCategories();
   }
 
   onCreateCategoryClick = (e) => {
     this.context.router.push('categories/edit');
+  }
+
+  onDeleteClick = (categoryid) => {
+    // this.props.deleteCategory(categoryid);
   }
 
   setFilters = (filters) => {
@@ -93,64 +87,27 @@ class List extends Component {
       title: '类目ID',
       dataIndex: 'cid',
       key: 'cid',
-      render: (cid) => (
-        <div style={{ marginLeft: '100px' }} >{cid}</div>
-      ),
+      width: 100,
     }, {
       title: '父类目ID',
       dataIndex: 'parentCid',
       key: 'parentCid',
-
     }, {
-      title: '商品',
-      dataIndex: 'fullName',
-      key: 'fullName',
-    }, {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <span> {status === 'normal' ? '正常' : '未使用'}</span>
-      ),
-    }, {
-      title: '创建日期',
-      dataIndex: 'created',
-      key: 'date',
-      render: (date) => (moment(date).format('YYYY-MM-DD hh:mm:ss')),
+      title: '商品名称',
+      dataIndex: 'name',
+      key: 'name',
     }, {
       title: '操作',
-      dataIndex: 'id',
-      key: 'operation',
+      dataIndex: 'cid',
+      key: 'id',
       render: (id) => (
         <span>
           <Link to={`categories/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
-          <a data-supplierid={id} onClick={self.onDeleteClick}>删除</a>
+          <a data-categoryid={id} onClick={self.onDeleteClick(id)}>删除</a>
         </span>
       ),
     }];
-  }
-
-  popoverContent = (suppliers) => (
-    suppliers.length > 0 ? map(suppliers, (supplier) => (<p>{supplier.supplierName}</p>)) : '暂无供应商'
-  )
-
-  pagination = () => {
-    const { categories } = this.props;
-    const self = this;
-    return {
-      total: categories.count || 0,
-      showTotal: total => `共 ${total} 条`,
-      showSizeChanger: true,
-      onShowSizeChange(current, pageSize) {
-        self.setFilters({ pageSize: pageSize, page: current });
-        self.props.fetchCategories(self.getFilters());
-      },
-      onChange(current) {
-        self.setFilters({ page: current });
-        self.props.fetchCategories(self.getFilters());
-      },
-    };
   }
 
   render() {
@@ -158,31 +115,8 @@ class List extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <Form horizontal className="ant-advanced-search-form">
-          <Row type="flex" justify="start" align="middle">
-            <Col sm={6}>
-              <Form.Item label="排期类型" {...this.formItemLayout()} >
-                <Select {...getFieldProps('scheduleType')} allowClear placeholder="请选择排期类型" notFoundContent="无可选项">
-                  {map(constants.scheduleTypes, (type) => (<Select.Option value={type.id}>{type.lable}</Select.Option>))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col sm={6}>
-              <Form.Item label="日期" {...this.formItemLayout()} >
-                <DatePicker.RangePicker {...getFieldProps('dateRange')} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row type="flex" justify="start" align="middle">
-            <Col span={2}>
-              <Button type="primary" onClick={this.onCreateCategoryClick}>新建类目</Button>
-            </Col>
-            <Col span={2} offset={20}>
-              <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
-            </Col>
-          </Row>
-        </Form>
-        <Table className="margin-top-sm" columns={this.columns()} pagination={this.pagination()} loading={categories.isLoading} dataSource={categories.items} />
+        <Button type="primary" onClick={this.onCreateCategoryClick}>新建类目</Button>
+        <Table className="margin-top-sm" rowKey={(record) => (record.cid)} columns={this.columns()} loading={categories.isLoading} dataSource={categories.items} />
       </div>
     );
   }
