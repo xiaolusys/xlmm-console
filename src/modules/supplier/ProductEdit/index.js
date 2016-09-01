@@ -1,29 +1,35 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Tabs, Modal, Steps } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, Steps } from 'antd';
 import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
+import { BasicForm } from './BasicForm';
 
 const actionCreators = {
   fetchProduct: fetchProduct,
   crawlProduct: crawlProduct,
   saveProduct: saveProduct,
   updateProduct: updateProduct,
+  fetchSupplier: fetchSupplier,
 };
 
 @connect(
   state => ({
     product: state.product,
+    supplier: state.supplier,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class ProductEditWithForm extends Component {
+export class ProductEdit extends Component {
 
   static propTypes = {
     prefixCls: React.PropTypes.string,
     location: React.PropTypes.any,
-    form: React.PropTypes.object,
     product: React.PropTypes.object,
+    supplier: React.PropTypes.object,
+    filters: React.PropTypes.object,
+    fetchSupplier: React.PropTypes.func,
     fetchProduct: React.PropTypes.func,
     crawlProduct: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
@@ -48,11 +54,15 @@ class ProductEditWithForm extends Component {
     crawlProductModalVisible: true,
   }
 
+  componentWillMount() {
+    const { supplierId } = this.props.location.query;
+    this.props.fetchSupplier(supplierId);
+  }
+
   onCrawlProductClick = (e) => {
     const { supplierId } = this.props.location.query;
     const { productLink } = this.state;
-    console.log(productLink, supplierId);
-    this.props.crawlProduct(supplierId, encodeURIComponent(productLink));
+    this.props.crawlProduct(supplierId, productLink);
   }
 
   onProductLinkChange = (e) => {
@@ -64,7 +74,7 @@ class ProductEditWithForm extends Component {
   }
 
   render() {
-    const { prefixCls } = this.props;
+    const { prefixCls, product, supplier } = this.props;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -78,7 +88,7 @@ class ProductEditWithForm extends Component {
       <div className={`${prefixCls}`}>
         <Tabs defaultActiveKey="basic" onChange={this.onTabChange}>
           <Tabs.TabPane tab="基本信息" key="basic">
-            基本信息
+            <BasicForm product={product} supplier={supplier} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
             完善资料
@@ -93,8 +103,4 @@ class ProductEditWithForm extends Component {
       </div>
     );
   }
-
 }
-
-
-export const ProductEdit = Form.create()(ProductEditWithForm);

@@ -1,10 +1,7 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
-const initialState = {
-  items: [],
-  count: 0,
-};
+const initialState = {};
 
 const name = 'PRODUCT';
 
@@ -16,10 +13,26 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    items: payload.data.results,
-    count: payload.data.count,
+    ...payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`CRAWL_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`CRAWL_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    title: payload.data.title,
+    picUrl: payload.data.picUrl,
+    productLink: payload.data.fetchUrl,
+    supplierId: payload.data.saleSupplier,
+    categoryId: payload.data.saleSategory,
+  }),
+  [`CRAWL_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
