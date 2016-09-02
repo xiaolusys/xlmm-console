@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import request from 'superagent-bluebird-promise';
+import { If } from 'jsx-control-statements';
+import { Icon } from 'antd';
 import classnames from 'classnames';
+import { isEmpty } from 'lodash';
+
+import './index.less';
 
 const isFunction = function(fn) {
   const getType = {};
   return fn && getType.toString.call(fn) === '[object Function]';
 };
 
-export class Qiniu extends Component {
+export class Uploader extends Component {
 
   static propTypes = {
     token: React.PropTypes.string.isRequired,
     onDrop: React.PropTypes.func.isRequired,
+    onDelete: React.PropTypes.func.isRequired,
     prefix: React.PropTypes.string,
     children: React.PropTypes.any,
     className: React.PropTypes.string,
@@ -24,6 +30,7 @@ export class Qiniu extends Component {
     multiple: React.PropTypes.bool,
     uploadUrl: React.PropTypes.string,
     uploadKey: React.PropTypes.string,
+    fileList: React.PropTypes.array,
   };
 
   static defaultProps = {
@@ -117,32 +124,54 @@ export class Qiniu extends Component {
     fileInput.click();
   }
 
+  showAdd = (multiple, fileList) => {
+    if (multiple) {
+      return true;
+    }
+    if (!multiple && isEmpty(fileList)) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
-    const { className, size, multiple, accept } = this.props;
+    const { className, size, multiple, accept, fileList, onDelete } = this.props;
 
     const cls = classnames({
       active: this.state.active,
       dropzone: true,
+      'uploader-item': true,
       [className]: !!className,
     });
 
-    const style = this.props.style || {
+    const uploaderStyle = this.props.style || {
       width: size,
       height: size,
       lineHeight: `${size}px`,
-      textAlign: 'center',
+      fontSize: 28,
       borderStyle: this.state.isDragActive ? 'solid' : 'dashed',
-      borderWidth: 1,
-      borderRadius: 2,
-      fontSize: '28px',
-      color: '#d9d9d9',
-      borderColor: '#d9d9d9',
     };
 
+    const imageStyle = {
+      width: size,
+      height: size,
+    };
     return (
-      <div className={cls} style={style} onClick={this.onClick} onDragLeave={this.onDragLeave} onDragOver={this.onDragOver} onDrop={this.onDrop}>
-        <span>+</span>
-        <input style={{ display: 'none' }} type="file" multiple={multiple} accept={accept} ref="fileInput" onChange={this.onDrop} />
+      <div className="uploader-list">
+        <If condition={!isEmpty(fileList)}>
+          {fileList.map((file) => (
+            <div className="uploader-item" style={imageStyle}>
+              <img src={file.src} role="presentation" />
+              <Icon type="cross" onClick={onDelete} />
+            </div>
+          ))}
+        </If>
+        <If condition={this.showAdd(multiple, fileList)}>
+          <div className={cls} style={uploaderStyle} onClick={this.onClick} onDragLeave={this.onDragLeave} onDragOver={this.onDragOver} onDrop={this.onDrop}>
+            <span>+</span>
+            <input style={{ display: 'none' }} type="file" multiple={multiple} accept={accept} ref="fileInput" onChange={this.onDrop} />
+          </div>
+        </If>
       </div>
     );
   }
