@@ -13,13 +13,11 @@ export default createReducer({
     ...state,
     ...status,
   }),
-  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) =>{
-    return {
-      ...state,
-      ...status,
-      items: payload.data,
-    };
-  } ,
+  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    items: payload.data,
+  }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
