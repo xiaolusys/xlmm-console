@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, Steps } from 'antd';
 import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
+import { fetchCategories } from 'redux/modules/supplyChain/categories';
 import { BasicForm } from './BasicForm';
 
 const actionCreators = {
@@ -12,12 +13,14 @@ const actionCreators = {
   saveProduct: saveProduct,
   updateProduct: updateProduct,
   fetchSupplier: fetchSupplier,
+  fetchCategories: fetchCategories,
 };
 
 @connect(
   state => ({
     product: state.product,
     supplier: state.supplier,
+    categories: state.categories,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -28,7 +31,9 @@ export class ProductEdit extends Component {
     location: React.PropTypes.any,
     product: React.PropTypes.object,
     supplier: React.PropTypes.object,
+    categories: React.PropTypes.object,
     filters: React.PropTypes.object,
+    fetchCategories: React.PropTypes.func,
     fetchSupplier: React.PropTypes.func,
     fetchProduct: React.PropTypes.func,
     crawlProduct: React.PropTypes.func,
@@ -57,6 +62,7 @@ export class ProductEdit extends Component {
   componentWillMount() {
     const { supplierId } = this.props.location.query;
     this.props.fetchSupplier(supplierId);
+    this.props.fetchCategories();
   }
 
   onCrawlProductClick = (e) => {
@@ -74,7 +80,7 @@ export class ProductEdit extends Component {
   }
 
   render() {
-    const { prefixCls, product, supplier } = this.props;
+    const { prefixCls, product, supplier, categories } = this.props;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -88,7 +94,7 @@ export class ProductEdit extends Component {
       <div className={`${prefixCls}`}>
         <Tabs defaultActiveKey="basic" onChange={this.onTabChange}>
           <Tabs.TabPane tab="基本信息" key="basic">
-            <BasicForm product={product} supplier={supplier} />
+            <BasicForm product={product} supplier={supplier} categories={categories} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
             完善资料
