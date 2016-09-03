@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Cascader } from 'antd';
+import { Form, Input, Cascader, Select } from 'antd';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
@@ -64,6 +64,11 @@ class Basic extends Component {
         </Form.Item>
         <Form.Item {...this.formItemLayout()} label="类目">
           <Cascader onChange={this.onCategoryChange} options={options} placeholder="请选择类目" />
+        </Form.Item>
+        <Form.Item {...this.formItemLayout()} label="规格">
+          <Select placeholder="请选择规格项目">
+            {}
+          </Select>
         </Form.Item>
       </Form>
     );
