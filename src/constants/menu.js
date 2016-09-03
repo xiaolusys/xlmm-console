@@ -5,7 +5,7 @@ export default [{
 }, {
   name: '选品类目',
   link: '/categories',
-  icon: 'solution',
+  icon: 'tags-o',
 }, {
   name: '供应商',
   link: '/supplier',
