@@ -54,14 +54,9 @@ class List extends Component {
   }
 
   onDeleteClick = (categoryid) => {
-    // this.props.deleteCategory(categoryid);
+     this.props.deleteCategory(categoryid);
   }
-
-  setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
-  }
-
-  getFilters = () => (this.state.filters)
+  
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
