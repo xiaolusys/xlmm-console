@@ -162,7 +162,7 @@ class ProductLib extends Component {
     width: 200,
     render: (text, record) => (
       <div>
-        <p><span>售价：￥</span><span>{record.price}</span></p>
+        <p><span>售价：￥</span><span>{record.onSalePrice}</span></p>
         <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
         <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
       </div>
