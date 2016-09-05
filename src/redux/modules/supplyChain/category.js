@@ -46,17 +46,11 @@ export const fetchCategory = (id) => ({
   type: `FETCH_${name}`,
 });
 
-export const saveCategory = (params) => ({
-  url: `${apisBase.supply}salescategory`,
-  method: 'post',
+export const saveCategory = (id, params) => ({
+  url: id ? `${apisBase.supply}salescategory/${id}` : `${apisBase.supply}salescategory`,
+  method: id ? 'put' : 'post',
   type: `SAVE_${name}`,
   data: params,
 });
 
-export const updateCategory = (id, params) => ({
-  url: `${apisBase.supply}salescategory/${id}`,
-  method: 'PATCH',
-  type: `SAVE_${name}`,
-  data: params,
-});
-
+export const resetCategory = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));

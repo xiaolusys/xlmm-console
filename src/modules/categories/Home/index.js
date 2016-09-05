@@ -53,15 +53,11 @@ class List extends Component {
     this.context.router.push('categories/edit');
   }
 
-  onDeleteClick = (categoryid) => {
-    // this.props.deleteCategory(categoryid);
+  onDeleteClick = (e) => {
+    const { categoryid } = e.currentTarget.dataset;
+    this.props.deleteCategory(categoryid);
   }
-
-  setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
-  }
-
-  getFilters = () => (this.state.filters)
+  
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -104,7 +100,7 @@ class List extends Component {
         <span>
           <Link to={`categories/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
-          <a data-categoryid={id} onClick={self.onDeleteClick(id)}>删除</a>
+          <a data-categoryid={id} onClick={self.onDeleteClick}>删除</a>
         </span>
       ),
     }];
