@@ -23,7 +23,7 @@ const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-export class ProductsWithForm extends Component {
+class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
@@ -465,6 +465,7 @@ export class ProductsWithForm extends Component {
   }
 
   render() {
+    const { id } = this.props.location.query;
     const { prefixCls } = this.props;
     const { schedule, scheduleProducts, filters } = this.props;
     const { selectedRowKeys } = this.state;
@@ -529,7 +530,7 @@ export class ProductsWithForm extends Component {
         </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
         <If condition={schedule.success}>
-          <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
+          <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} scheduleId={id} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
         </If>
         <Modals.Preview visible={this.state.previewModalVisible} url={this.state.previewLink} onCancel={this.togglePreviewModalVisible} title="商品预览" />
       </div>
