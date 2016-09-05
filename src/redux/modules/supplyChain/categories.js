@@ -30,7 +30,7 @@ export const fetchCategories = () => ({
   type: `FETCH_${name}`,
 });
 export const deleteCategory = (id) => ({
-  url: `${apisBase.supply}supplier/${id}`,
+  url: `${apisBase.supply}salescategory/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {

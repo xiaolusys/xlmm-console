@@ -22,6 +22,7 @@ class EditCategory extends Component {
     location: React.PropTypes.any,
     fetchCategory: React.PropTypes.func,
     saveCategory: React.PropTypes.func,
+    resetCategory: React.PropTypes.func,
     category: React.PropTypes.object,
     form: React.PropTypes.object,
   };
@@ -53,7 +54,9 @@ class EditCategory extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { category } = nextProps;
-    console.log(category.cId);
+    if (!category.isLoading && category.success && category.updated) {
+      this.context.router.goBack();
+    }
     this.props.form.setFieldsInitialValue({
       parentCid: category.parentCid,
       catPic: category.catPic,
@@ -65,7 +68,7 @@ class EditCategory extends Component {
   }
 
   componentWillUnmount() {
-
+    this.props.resetCategory();
   }
 
   onSubmitCliick = (e) => {
@@ -75,7 +78,7 @@ class EditCategory extends Component {
       }
     });
     const params = this.props.form.getFieldsValue();
-    this.props.saveCategory({
+    this.props.saveCategory(this.props.category.cid,{
       parentCid: params.parentCid,
       name: params.name,
       catPic: params.catPic,
