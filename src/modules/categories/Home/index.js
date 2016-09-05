@@ -57,7 +57,7 @@ class List extends Component {
     const { categoryid } = e.currentTarget.dataset;
     this.props.deleteCategory(categoryid);
   }
-  
+
 
   formItemLayout = () => ({
     labelCol: { span: 8 },

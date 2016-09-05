@@ -78,7 +78,7 @@ class EditCategory extends Component {
       }
     });
     const params = this.props.form.getFieldsValue();
-    this.props.saveCategory(this.props.category.cid,{
+    this.props.saveCategory(this.props.category.cid, {
       parentCid: params.parentCid,
       name: params.name,
       catPic: params.catPic,
