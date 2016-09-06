@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Row, Select } from 'antd';
+import { fetchSku } from 'redux/modules/supplyChain/sku';
+import { isEmpty } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
+const actionCreators = {
+  fetchSku: fetchSku,
+};
+
+@connect(
+  state => ({
+    sku: state.sku,
+  }),
+  dispatch => bindActionCreators(actionCreators, dispatch),
+)
 class Basic extends Component {
 
   static propTypes = {
@@ -10,6 +24,8 @@ class Basic extends Component {
     product: React.PropTypes.object,
     categories: React.PropTypes.object,
     supplier: React.PropTypes.object,
+    sku: React.PropTypes.array,
+    fetchSku: React.PropTypes.func,
   };
 
   state = {
@@ -29,13 +45,19 @@ class Basic extends Component {
 
   }
 
+  onCategoryChange = (values) => {
+    let catgoryId = values[values.length - 1].split('-');
+    catgoryId = catgoryId[catgoryId.length - 1];
+    this.props.fetchSku(catgoryId);
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 2 },
     wrapperCol: { span: 5 },
   })
 
   render() {
-    const { product, categories, supplier } = this.props;
+    const { product, categories, supplier, sku } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
 
     const uploaderProps = {
@@ -66,12 +88,6 @@ class Basic extends Component {
           <Form.Item {...this.formItemLayout()} label="类目">
             <Cascader onChange={this.onCategoryChange} options={options} placeholder="请选择类目" />
           </Form.Item>
-          <Row>
-            <Col offset={1} span={7}>
-              <Card title={(<div><p className="pull-left">规格</p><Button style={{ marginTop:10 }} className="pull-right">添加规格</Button></div>)}>
-              </Card>
-            </Col>
-          </Row>
         </Form>
       </div>
     );
