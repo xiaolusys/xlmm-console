@@ -82,7 +82,7 @@
     "webpack-merge": "^0.14.0"
   },
   "dependencies": {
-    "antd": "^1.7.0",
+    "antd": "^1.11.1",
     "axios": "latest",
     "change-case-keys": "^0.0.4",
     "es6-promise": "^3.2.1",

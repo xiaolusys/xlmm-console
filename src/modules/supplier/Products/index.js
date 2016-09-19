@@ -208,7 +208,7 @@ class ProductsWithForm extends Component {
     key: 'operation',
     render: (id) => (
       <span>
-        <Link to={`/supplier/product/edit?productId=${id}`}>编辑</Link>
+        <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
         <span className="ant-divider"></span>
         <a onClick={this.onDeleteClick}>删除</a>
       </span>

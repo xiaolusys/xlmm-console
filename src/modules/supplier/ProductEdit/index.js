@@ -6,6 +6,7 @@ import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/mo
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
 import { BasicForm } from './BasicForm';
+import { MaterialForm } from './MaterialForm';
 
 const actionCreators = {
   fetchProduct: fetchProduct,
@@ -60,7 +61,11 @@ export class ProductEdit extends Component {
   }
 
   componentWillMount() {
-    const { supplierId } = this.props.location.query;
+    const { supplierId, productId } = this.props.location.query;
+    if (productId) {
+      this.setState({ crawlProductModalVisible: false });
+      this.props.fetchProduct(productId);
+    }
     this.props.fetchSupplier(supplierId);
     this.props.fetchCategories();
   }
@@ -97,7 +102,7 @@ export class ProductEdit extends Component {
             <BasicForm product={product} supplier={supplier} categories={categories} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
-            完善资料
+            <MaterialForm />
           </Tabs.TabPane>
           <Tabs.TabPane tab="上传图片" key="images">
             上传图片
