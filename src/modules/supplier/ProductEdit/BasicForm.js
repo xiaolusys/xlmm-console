@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Cascader, Row, Select } from 'antd';
+import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table } from 'antd';
+import { If } from 'jsx-control-statements';
 import { fetchSku } from 'redux/modules/supplyChain/sku';
-import { isEmpty } from 'lodash';
+import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
 const actionCreators = {
   fetchSku: fetchSku,
+  saveProduct: saveProduct,
+  updateProduct: updateProduct,
 };
 
 @connect(
@@ -26,17 +30,39 @@ class Basic extends Component {
     supplier: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
+    saveProduct: React.PropTypes.func,
   };
 
-  state = {
+  constructor(props, context) {
+    super(props);
+    context.router;
+  }
 
+  state = {
+    skus: {},
+    skuItems: [],
   }
 
   componentWillReceiveProps(nextProps) {
-    const { product } = nextProps;
+    const { product, sku } = nextProps;
     if (product.success) {
       this.props.form.setFieldsInitialValue({
-        ...product,
+        picUrl: product.picUrl,
+        productLink: product.productLink,
+        title: product.title,
+        saleSupplier: product.saleSupplier && product.saleSupplier.id,
+      });
+    }
+    if (product.success && sku.success && isEmpty(this.state.skus)) {
+      const selected = this.findSkuValues(product, sku);
+      this.props.form.setFieldsInitialValue({
+        saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
+        skuItems: this.findSkuItems(product, sku),
+        ...selected,
+      });
+      this.setState({
+        skus: selected,
+        skuItems: product.skuExtras,
       });
     }
   }
@@ -49,6 +75,248 @@ class Basic extends Component {
     let catgoryId = values[values.length - 1].split('-');
     catgoryId = catgoryId[catgoryId.length - 1];
     this.props.fetchSku(catgoryId);
+    this.props.form.setFieldsValue({ saleCategory: values });
+  }
+
+  onSkuItemsChange = (values) => {
+    if (includes(values, 0)) {
+      this.setState({ skuItems: this.generateSkuTable() });
+      this.props.form.setFieldsValue({ skuItems: 0 });
+      return;
+    }
+    this.setState({ skuItems: [] });
+    this.props.form.setFieldsValue({ skuItems: values });
+  }
+
+  onSkusChange = (values) => {
+    const { product } = this.props;
+    const { id } = JSON.parse(values[0]);
+    const { skus } = this.state;
+    this.props.form.setFieldsValue({
+      [`skus-${id}`]: values,
+    });
+    skus[`skus-${id}`] = values;
+    this.setState({
+      skus: skus,
+      skuItems: this.generateSkuTable(skus),
+    });
+  }
+
+  onInput = (e) => {
+    const { value } = e.target;
+    const sku = JSON.parse(e.target.dataset.sku);
+    const { type } = e.target.dataset;
+    const { skuItems } = this.state;
+    sku[type] = value;
+    this.setState({ skuItems: merge(skuItems, [sku]) });
+  }
+
+  onbatchValueInput = (e) => {
+    const { type } = e.target.dataset;
+    const { value } = e.target;
+    this.setState({
+      [type]: value,
+    });
+  }
+
+  onBatchSettingClick = (e) => {
+    const { type } = e.currentTarget.dataset;
+    const { skuItems } = this.state;
+    const value = this.state[type];
+    each(skuItems, (item) => {
+      item[type] = value;
+    });
+    this.setState({ skuItems: skuItems });
+  }
+
+  onSaveClick = (e) => {
+    const { getFieldValue } = this.props.form;
+    const params = {
+      title: getFieldValue('title'),
+      productLink: getFieldValue('productLink'),
+      picUrl: getFieldValue('picUrl'),
+      saleCategory: this.getCategory(getFieldValue('saleCategory')),
+      saleSupplier: getFieldValue('saleSupplier'),
+      skuExtras: this.state.skuItems,
+    };
+    this.props.saveProduct(params);
+  }
+
+  onCancelClick = (e) => {
+    this.context.router.goBack();
+  }
+
+  getCategory = (catgoryIds) => (catgoryIds[1].split('-')[1])
+
+  getSkuByName = (sku, key) => {
+    let value;
+    sku = JSON.parse(sku);
+    if (sku.name.indexOf(key) >= 0) {
+      value = sku.value;
+    }
+    return value;
+  }
+
+  findSkuItems = (product, sku) => {
+    const skuItems = [];
+    const firstSku = product.skuExtras[0];
+    each(sku.items, (item) => {
+      if (firstSku.color === item.name && item.name === '统一规格') {
+        skuItems.push(item.id);
+      }
+      if (firstSku.color && item.name !== '统一规格') {
+        skuItems.push(item.id);
+      }
+      if (firstSku.propertiesName && item.name === '尺码') {
+        skuItems.push(item.id);
+      }
+    });
+    return skuItems;
+  }
+
+  findSkuValues = (product, sku) => {
+    const colors = [];
+    const sizes = [];
+    const selected = {};
+    let colorId = 0;
+    let sizeId = 0;
+    each(sku.items, (item) => {
+      if (item.name === '尺码') {
+        sizeId = item.id;
+      }
+      if (item.name === '颜色') {
+        colorId = item.id;
+      }
+    });
+
+    map(groupBy(product.skuExtras, 'color'), (item, key) => {
+      colors.push(JSON.stringify({
+        id: colorId,
+        name: '颜色',
+        value: key,
+      }));
+    });
+
+    map(groupBy(product.skuExtras, 'propertiesName'), (item, key) => {
+      sizes.push(JSON.stringify({
+        id: sizeId,
+        name: '尺码',
+        value: key,
+      }));
+    });
+
+    if (!isEmpty(colors)) {
+      selected[`skus-${colorId}`] = colors;
+    }
+
+    if (!isEmpty(sizes)) {
+      selected[`skus-${sizeId}`] = sizes;
+    }
+    return selected;
+  }
+
+  generateSkuTable = (skus) => {
+    if (isEmpty(skus)) {
+      return [{
+        color: '统一规格',
+        remainNum: 0,
+        cost: 0,
+        stdSalePrice: 0,
+        agentPrice: 0,
+        propertiesName: '',
+        propertiesAlias: '',
+      }];
+    }
+    skus = toArray(skus);
+    const skuItems = [];
+    if (skus.length === 1) {
+      each(skus[0], sku => {
+        const color = this.getSkuByName(sku, '颜色') || '';
+        const size = this.getSkuByName(sku, '尺码') || '';
+        skuItems.push({
+          color: color,
+          remainNum: 0,
+          cost: 0,
+          stdSalePrice: 0,
+          agentPrice: 0,
+          propertiesName: size,
+          propertiesAlias: size,
+        });
+      });
+    }
+    if (skus.length === 2) {
+      each(skus[0], skuA => {
+        each(skus[1], skuB => {
+          const color = this.getSkuByName(skuA, '颜色') || this.getSkuByName(skuB, '颜色') || '';
+          const size = this.getSkuByName(skuA, '尺码') || this.getSkuByName(skuB, '尺码') || '';
+          skuItems.push({
+            color: color,
+            remainNum: 0,
+            cost: 0,
+            stdSalePrice: 0,
+            agentPrice: 0,
+            propertiesName: size,
+            propertiesAlias: size,
+          });
+        });
+      });
+    }
+    return skuItems;
+  }
+
+  columnTitle = (text, type) => {
+    const content = (
+      <div className="clearfix">
+        <Input type="text" data-type={type} onInput={this.onbatchValueInput} />
+        <Button style={{ marginTop: 10 }} type="primary pull-right" data-type={type} onClick={this.onBatchSettingClick}>确定</Button>
+      </div>
+    );
+    return (
+      <Popover trigger="click" placement="top" content={content} title={`批量设置${text}`}>
+        <span>{text} <a>批量</a></span>
+      </Popover>
+    );
+  }
+
+  tableProps = () => {
+    const self = this;
+    return {
+      columns: [{
+        title: '规格',
+        key: 'sku',
+        render: (record) => (
+          <span>
+            <If condition={record.color}>
+              <Tag color="blue">{record.color}</Tag>
+            </If>
+            <If condition={record.propertiesName}>
+              <Tag color="green">{record.propertiesName}</Tag>
+            </If>
+          </span>
+        ),
+      }, {
+        title: this.columnTitle('预留数', 'remainNum'),
+        dataIndex: 'remainNum',
+        key: 'remainNum',
+        render: (data, record) => <Input type="text" data-type="remainNum" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      }, {
+        title: this.columnTitle('采购价', 'cost'),
+        dataIndex: 'cost',
+        key: 'cost',
+        render: (data, record) => <Input type="text" data-type="cost" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      }, {
+        title: this.columnTitle('售价', 'agentPrice'),
+        dataIndex: 'agentPrice',
+        key: 'agentPrice',
+        render: (data, record) => <Input type="text" data-type="agentPrice" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      }, {
+        title: this.columnTitle('吊牌价', 'stdSalePrice'),
+        key: 'stdSalePrice',
+        dataIndex: 'stdSalePrice',
+        render: (data, record) => <Input type="text" data-type="stdSalePrice" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      }],
+      pagination: false,
+    };
   }
 
   formItemLayout = () => ({
@@ -77,18 +345,75 @@ class Basic extends Component {
             <p>{supplier.supplierName}</p>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品名称">
-            <Input {...getFieldProps('title', { rules: [{ required: true, message: '请输入商品名称！' }] })} value={getFieldValue('title')} placeholder="请输入商品名称" />
+            <Input
+              {...getFieldProps('title', { rules: [{ required: true, message: '请输入商品名称！' }] })}
+              value={getFieldValue('title')}
+              placeholder="请输入商品名称"
+              />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品链接">
-            <Input {...getFieldProps('productLink', { rules: [{ required: true, message: '请输入商品链接！' }] })} value={getFieldValue('productLink')} placeholder="请输入商品链接" />
+            <Input
+              {...getFieldProps('productLink', { rules: [{ required: true, message: '请输入商品链接！' }] })}
+              value={getFieldValue('productLink')}
+              placeholder="请输入商品链接"
+              />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="商品主图">
+          <Form.Item {...this.formItemLayout()} label="商品主图" required>
             <Uploader {...uploaderProps} />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="类目">
-            <Cascader onChange={this.onCategoryChange} options={options} placeholder="请选择类目" />
+          <Form.Item {...this.formItemLayout()} label="类目" required>
+            <Cascader
+              options={options}
+              onChange={this.onCategoryChange}
+              value={getFieldValue('saleCategory')}
+              placeholder="请选择类目"
+              />
           </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="规格" required>
+            <Select
+              onChange={this.onSkuItemsChange}
+              value={getFieldValue('skuItems')}
+              multiple>
+              {sku.items.map((item) => (
+                <Select.Option value={item.id}>{item.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {sku.items.map((skuItem) => {
+            if (skuItem.id !== 0 && includes(getFieldValue('skuItems'), skuItem.id)) {
+              return (
+                <Form.Item {...this.formItemLayout()} label={skuItem.name} required>
+                  <TreeSelect
+                    treeData={skuItem.values}
+                    placeholder={`请选择${skuItem.name}`}
+                    onChange={this.onSkusChange}
+                    value={getFieldValue(`skus-${skuItem.id}`)}
+                    treeCheckable
+                    multiple
+                    allowClear
+                    showSearch
+                    />
+                </Form.Item>
+              );
+            }
+            return null;
+          })}
+          <If condition={!isEmpty(this.state.skuItems)}>
+            <Row>
+              <Col offset="1" span="12">
+                <Table {...this.tableProps()} dataSource={this.state.skuItems} />
+              </Col>
+            </Row>
+          </If>
         </Form>
+        <Row style={{ marginTop: 10 }}>
+          <Col offset="11" span="1">
+            <Button onClick={this.onCancelClick}>取消</Button>
+          </Col>
+          <Col span="1">
+            <Button type="primary" onClick={this.onSaveClick}>保存</Button>
+          </Col>
+        </Row>
       </div>
     );
   }
