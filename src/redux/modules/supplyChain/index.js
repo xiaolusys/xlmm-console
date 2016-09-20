@@ -10,6 +10,7 @@ import categories from './categories';
 import category from './category';
 import district from './district';
 import sku from './sku';
+import preference from './preference';
 
 export default {
   schedules,
@@ -24,4 +25,5 @@ export default {
   category,
   district,
   sku,
+  preference,
 };

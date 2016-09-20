@@ -13,7 +13,7 @@ class Material extends Component {
   render() {
     return (
       <Form>
-        <div>test</div>
+        <div>完善资料</div>
       </Form>
     );
   }

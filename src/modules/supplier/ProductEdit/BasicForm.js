@@ -5,7 +5,7 @@ import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Sel
 import { If } from 'jsx-control-statements';
 import { fetchSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
-import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, toArray, union, unionBy, uniqBy } from 'lodash';
+import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
@@ -107,8 +107,12 @@ class Basic extends Component {
     const sku = JSON.parse(e.target.dataset.sku);
     const { type } = e.target.dataset;
     const { skuItems } = this.state;
-    sku[type] = value;
-    this.setState({ skuItems: merge(skuItems, [sku]) });
+    each(skuItems, (item) => {
+      if (`${item.color}-${item.propertiesName}` === `${sku.color}-${sku.propertiesName}`) {
+        item[type] = value;
+      }
+    });
+    this.setState({ skuItems: skuItems });
   }
 
   onbatchValueInput = (e) => {
@@ -261,7 +265,7 @@ class Basic extends Component {
         });
       });
     }
-    return skuItems;
+    return sortBy(skuItems, 'color');
   }
 
   columnTitle = (text, type) => {
