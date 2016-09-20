@@ -61,6 +61,9 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`ADD_${name}`]: (state, { payload, status }) => {
+    console.log(state, payload, status);
+  },
 }, initialState);
 
 export const fetchSku = (categoryId) => ({
@@ -71,4 +74,13 @@ export const fetchSku = (categoryId) => ({
     configedCategory: categoryId,
     isSku: 'True',
   },
+});
+
+
+export const addSku = (value) => ((dispatch) => {
+  debugger;
+  console.log(value);
+  return {
+    type: `ADD_${name}`,
+  };
 });

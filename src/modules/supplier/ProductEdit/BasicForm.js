@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table } from 'antd';
 import { If } from 'jsx-control-statements';
-import { fetchSku } from 'redux/modules/supplyChain/sku';
+import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
@@ -11,6 +11,7 @@ import { replaceAllKeys } from 'utils/object';
 
 const actionCreators = {
   fetchSku: fetchSku,
+  addSku: addSku,
   saveProduct: saveProduct,
   updateProduct: updateProduct,
 };
@@ -30,6 +31,7 @@ class Basic extends Component {
     supplier: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
+    addSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
   };
 
@@ -148,6 +150,18 @@ class Basic extends Component {
 
   onCancelClick = (e) => {
     this.context.router.goBack();
+  }
+
+  onSkuValueInput = (e) => {
+    const { dataset, value } = e.target;
+    this.setState({
+      [`sku-value-${dataset.id}`]: value,
+    });
+  }
+
+  onAddSkuValueClick = (e) => {
+    const { id } = e.currentTarget.dataset;
+    this.props.addSku(this.state[`sku-value-${id}`]);
   }
 
   getCategory = (catgoryIds) => (catgoryIds[1].split('-')[1])
@@ -282,6 +296,20 @@ class Basic extends Component {
     );
   }
 
+  skuInput = (id) => {
+    const content = (
+      <div className="clearfix">
+        <Input type="text" data-id={id} value={this.state[`sku-value-${id}`]} onInput={this.onSkuValueInput} />
+        <Button style={{ marginTop: 10 }} type="primary pull-right" data-id={id} onClick={this.onAddSkuValueClick}>确定</Button>
+      </div>
+    );
+    return (
+      <Popover trigger="click" placement="bottom" content={content} title={'添加规格值'}>
+        <Button style={{ marginTop: 8 }} size="small">添加</Button>
+      </Popover>
+    );
+  }
+
   tableProps = () => {
     const self = this;
     return {
@@ -397,6 +425,7 @@ class Basic extends Component {
                     allowClear
                     showSearch
                     />
+                {this.skuInput(skuItem.id)}
                 </Form.Item>
               );
             }
