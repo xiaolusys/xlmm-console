@@ -90,9 +90,15 @@ class Basic extends Component {
     this.props.form.setFieldsValue({ skuItems: values });
   }
 
-  onSkusChange = (values) => {
+  onSkusChange = (values, label, extra) => {
+    let id = -1;
+    if (isEmpty(values)) {
+      id = JSON.parse(extra.preValue[0].value).id;
+    }
+    if (!isEmpty(values)) {
+      id = JSON.parse(values[0]).id;
+    }
     const { product } = this.props;
-    const { id } = JSON.parse(values[0]);
     const { skus } = this.state;
     this.props.form.setFieldsValue({
       [`skus-${id}`]: values,
@@ -160,8 +166,20 @@ class Basic extends Component {
   }
 
   onAddSkuValueClick = (e) => {
-    const { id } = e.currentTarget.dataset;
-    this.props.addSku(this.state[`sku-value-${id}`]);
+    const { id, name } = e.currentTarget.dataset;
+    const value = this.state[`sku-value-${id}`];
+    const { skus } = this.state;
+    const skuValue = this.generateSkuValue(id, name, value);
+    const values = union(skus[`skus-${id}`], [skuValue.value]);
+    this.props.addSku(id, skuValue);
+    this.props.form.setFieldsValue({
+      [`skus-${id}`]: values,
+    });
+    skus[`skus-${id}`] = values;
+    this.setState({
+      skus: skus,
+      skuItems: this.generateSkuTable(skus),
+    });
   }
 
   getCategory = (catgoryIds) => (catgoryIds[1].split('-')[1])
@@ -178,7 +196,7 @@ class Basic extends Component {
   findSkuItems = (product, sku) => {
     const skuItems = [];
     const firstSku = product.skuExtras[0];
-    each(sku.items, (item) => {
+    each(sku.items.toJS(), (item) => {
       if (firstSku.color === item.name && item.name === '统一规格') {
         skuItems.push(item.id);
       }
@@ -198,7 +216,7 @@ class Basic extends Component {
     const selected = {};
     let colorId = 0;
     let sizeId = 0;
-    each(sku.items, (item) => {
+    each(sku.items.toJS(), (item) => {
       if (item.name === '尺码') {
         sizeId = item.id;
       }
@@ -232,6 +250,16 @@ class Basic extends Component {
     }
     return selected;
   }
+
+  generateSkuValue = (id, name, value) => ({
+    label: value,
+    key: value,
+    value: JSON.stringify({
+      id: id,
+      name: name,
+      value: value,
+    }),
+  })
 
   generateSkuTable = (skus) => {
     if (isEmpty(skus)) {
@@ -296,16 +324,16 @@ class Basic extends Component {
     );
   }
 
-  skuInput = (id) => {
+  skuInput = (id, name) => {
     const content = (
       <div className="clearfix">
         <Input type="text" data-id={id} value={this.state[`sku-value-${id}`]} onInput={this.onSkuValueInput} />
-        <Button style={{ marginTop: 10 }} type="primary pull-right" data-id={id} onClick={this.onAddSkuValueClick}>确定</Button>
+        <Button style={{ marginTop: 10 }} type="primary pull-right" data-id={id} data-name={name} onClick={this.onAddSkuValueClick}>确定</Button>
       </div>
     );
     return (
-      <Popover trigger="click" placement="bottom" content={content} title={'添加规格值'}>
-        <Button style={{ marginTop: 8 }} size="small">添加</Button>
+      <Popover trigger="click" placement="bottom" content={content} title={`添加${name}`}>
+        <Button style={{ marginTop: 8 }} size="small">{`添加${name}`}</Button>
       </Popover>
     );
   }
@@ -406,16 +434,17 @@ class Basic extends Component {
               onChange={this.onSkuItemsChange}
               value={getFieldValue('skuItems')}
               multiple>
-              {sku.items.map((item) => (
+              {sku.items.toJS().map((item) => (
                 <Select.Option value={item.id}>{item.name}</Select.Option>
               ))}
             </Select>
           </Form.Item>
-          {sku.items.map((skuItem) => {
+          {sku.items.toJS().map((skuItem) => {
             if (skuItem.id !== 0 && includes(getFieldValue('skuItems'), skuItem.id)) {
               return (
                 <Form.Item {...this.formItemLayout()} label={skuItem.name} required>
                   <TreeSelect
+                    showCheckedStrategy={TreeSelect.SHOW_CHILD}
                     treeData={skuItem.values}
                     placeholder={`请选择${skuItem.name}`}
                     onChange={this.onSkusChange}
@@ -425,7 +454,7 @@ class Basic extends Component {
                     allowClear
                     showSearch
                     />
-                {this.skuInput(skuItem.id)}
+                {this.skuInput(skuItem.id, skuItem.name)}
                 </Form.Item>
               );
             }

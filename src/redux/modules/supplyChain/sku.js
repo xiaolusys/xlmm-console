@@ -1,13 +1,14 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
-import { each, union } from 'lodash';
+import { each, union, uniqueId } from 'lodash';
+import Immutable from 'immutable';
 
 const initialState = {
-  items: [{
+  items: Immutable.fromJS([{
     id: 0,
     name: '统一规格',
     values: [],
-  }],
+  }]),
 };
 
 const name = 'SKU';
@@ -25,6 +26,7 @@ const transformSku = (preferences) => {
       each(valueItem.value, (item) => {
         children.push({
           label: item,
+          key: item,
           value: JSON.stringify({
             id: preference.id,
             name: preference.name,
@@ -37,6 +39,11 @@ const transformSku = (preferences) => {
         value: valueItem.name,
         children: children,
       });
+    });
+    values.push({
+      label: '其他',
+      value: '其他',
+      children: [],
     });
     items.push({
       id: preference.id,
@@ -55,14 +62,31 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    items: transformSku(payload.data),
+    items: Immutable.fromJS(transformSku(payload.data)),
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
   [`ADD_${name}`]: (state, { payload, status }) => {
-    console.log(state, payload, status);
+    const { id, skuValue } = payload;
+    const items = state.items.toJS();
+    console.log(items);
+    each(items, (item) => {
+      if (item.id === Number(id)) {
+        each(item.values, (itemValue) => {
+          if (itemValue.label === '其他') {
+            console.log(itemValue.children);
+            itemValue.children = union(itemValue.children, [skuValue]);
+          }
+        });
+      }
+    });
+    return {
+      ...state,
+      ...status,
+      items: Immutable.fromJS(items),
+    };
   },
 }, initialState);
 
@@ -77,10 +101,10 @@ export const fetchSku = (categoryId) => ({
 });
 
 
-export const addSku = (value) => ((dispatch) => {
-  debugger;
-  console.log(value);
-  return {
-    type: `ADD_${name}`,
-  };
+export const addSku = (id, skuValue) => ({
+  type: `ADD_${name}`,
+  payload: {
+    id: id,
+    skuValue: skuValue,
+  },
 });

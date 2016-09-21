@@ -3,7 +3,10 @@
   "plugins": [
     ["transform-decorators-legacy"],
     ["jsx-control-statements"],
-    ["antd", { "style": false }]
+    ["import", { 
+      "style": false,
+      "libraryName": "antd"
+    }]
   ],
   "env": {
     "start": {
