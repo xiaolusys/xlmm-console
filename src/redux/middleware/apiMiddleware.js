@@ -1,9 +1,9 @@
 import axios from 'axios';
 import Qs from 'qs';
-import _ from 'lodash';
+import { assign, noop } from 'lodash';
 import changeCaseKeys from 'change-case-keys';
 
-axios.defaults = _.assign(axios.defaults, {
+axios.defaults = assign(axios.defaults, {
   headers: {
     get: { 'Content-Type': 'application/json, text/plain, */*' },
     patch: { 'Content-Type': 'application/json' },
@@ -35,8 +35,8 @@ export const apiMiddleware = store => next => action => {
       payload: {
         promise: axios(action),
       },
-      success: action.success || _.noop,
-      error: action.error || _.noop,
+      success: action.success || noop,
+      error: action.error || noop,
     });
   }
   return next(action);
