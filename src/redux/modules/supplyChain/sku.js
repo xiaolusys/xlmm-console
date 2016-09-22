@@ -71,12 +71,10 @@ export default createReducer({
   [`ADD_${name}`]: (state, { payload, status }) => {
     const { id, skuValue } = payload;
     const items = state.items.toJS();
-    console.log(items);
     each(items, (item) => {
       if (item.id === Number(id)) {
         each(item.values, (itemValue) => {
           if (itemValue.label === '其他') {
-            console.log(itemValue.children);
             itemValue.children = union(itemValue.children, [skuValue]);
           }
         });
@@ -88,6 +86,10 @@ export default createReducer({
       items: Immutable.fromJS(items),
     };
   },
+  [`RESET_${name}`]: (state, { payload, status }) => ({
+    ...state,
+    ...initialState,
+  }),
 }, initialState);
 
 export const fetchSku = (categoryId) => ({
@@ -107,4 +109,8 @@ export const addSku = (id, skuValue) => ({
     id: id,
     skuValue: skuValue,
   },
+});
+
+export const resetSku = () => ({
+  type: `RESET_${name}`,
 });

@@ -3,17 +3,19 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table } from 'antd';
 import { If } from 'jsx-control-statements';
-import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
-import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { fetchSku, addSku, resetSku } from 'redux/modules/supplyChain/sku';
+import { saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
 const actionCreators = {
-  fetchSku: fetchSku,
-  addSku: addSku,
-  saveProduct: saveProduct,
-  updateProduct: updateProduct,
+  fetchSku,
+  addSku,
+  resetSku,
+  saveProduct,
+  updateProduct,
+  resetProduct,
 };
 
 @connect(
@@ -26,13 +28,21 @@ class Basic extends Component {
 
   static propTypes = {
     form: React.PropTypes.object,
+    location: React.PropTypes.object,
     product: React.PropTypes.object,
     categories: React.PropTypes.object,
     supplier: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
+    resetSku: React.PropTypes.func,
     addSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
+    updateProduct: React.PropTypes.func,
+    resetProduct: React.PropTypes.func,
+  };
+
+  static contextTypes = {
+    router: React.PropTypes.object,
   };
 
   constructor(props, context) {
@@ -67,6 +77,14 @@ class Basic extends Component {
         skuItems: product.skuExtras,
       });
     }
+    if (product.updated) {
+      this.context.router.goBack();
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetProduct();
+    this.props.resetSku();
   }
 
   onDrop = (files, e) => {
@@ -142,6 +160,7 @@ class Basic extends Component {
   }
 
   onSaveClick = (e) => {
+    const { productId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
     const params = {
       title: getFieldValue('title'),
@@ -151,6 +170,10 @@ class Basic extends Component {
       saleSupplier: getFieldValue('saleSupplier'),
       skuExtras: this.state.skuItems,
     };
+    if (productId) {
+      this.props.updateProduct(productId, params);
+      return;
+    }
     this.props.saveProduct(params);
   }
 

@@ -85,7 +85,7 @@ export class ProductEdit extends Component {
   }
 
   render() {
-    const { prefixCls, product, supplier, categories } = this.props;
+    const { prefixCls, product, supplier, categories, location } = this.props;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -99,7 +99,7 @@ export class ProductEdit extends Component {
       <div className={`${prefixCls}`}>
         <Tabs defaultActiveKey="basic" onChange={this.onTabChange}>
           <Tabs.TabPane tab="基本信息" key="basic">
-            <BasicForm product={product} supplier={supplier} categories={categories} />
+            <BasicForm product={product} supplier={supplier} categories={categories} location={location} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
             <MaterialForm />
