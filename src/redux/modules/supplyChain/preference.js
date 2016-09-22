@@ -8,6 +8,17 @@ const initialState = {
 
 const name = 'PREFERENCE';
 
+const transform = (items) => {
+  const transformedItems = [];
+  each(items, (item) => {
+    transformedItems.push({
+      id: item.id,
+      name: item.name,
+      values: item.preferenceValue,
+    });
+  });
+  return transformedItems;
+};
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -17,7 +28,7 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    items: payload.data,
+    items: transform(payload.data),
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
