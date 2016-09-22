@@ -31,6 +31,7 @@ export default createReducer({
     picUrl: payload.data.picUrl,
     productLink: payload.data.fetchUrl,
     saleSupplier: payload.data.saleSupplier,
+    supplierSku: payload.data.supplierSku,
   }),
   [`CRAWL_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,

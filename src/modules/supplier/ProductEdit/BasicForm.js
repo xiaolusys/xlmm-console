@@ -63,6 +63,7 @@ class Basic extends Component {
         productLink: product.productLink,
         title: product.title,
         saleSupplier: product.saleSupplier && product.saleSupplier.id,
+        supplierSku: product.supplierSku,
       });
     }
     if (product.success && sku.success && isEmpty(this.state.skus)) {
@@ -168,6 +169,7 @@ class Basic extends Component {
       picUrl: getFieldValue('picUrl'),
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
       saleSupplier: getFieldValue('saleSupplier'),
+      supplierSku: getFieldValue('supplierSku'),
       skuExtras: this.state.skuItems,
     };
     if (productId) {
@@ -439,6 +441,13 @@ class Basic extends Component {
               {...getFieldProps('productLink', { rules: [{ required: true, message: '请输入商品链接！' }] })}
               value={getFieldValue('productLink')}
               placeholder="请输入商品链接"
+              />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="货号">
+            <Input
+              {...getFieldProps('supplierSku')}
+              value={getFieldValue('supplierSku')}
+              placeholder="请输入货号"
               />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品主图" required>
