@@ -47,6 +47,7 @@ class ProductsWithForm extends Component {
     filters: {
       pageSize: 10,
       page: 1,
+      ordering: '-created',
       saleSupplier: this.props.location.query.supplierId,
     },
   }
@@ -103,6 +104,15 @@ class ProductsWithForm extends Component {
     }
     this.setFilters({ ordering: ordering });
     this.props.fetchProducts(this.getFilters());
+  }
+
+  onPreviewClick = (e) => {
+    const { productid } = e.currentTarget.dataset;
+    const { protocol, host } = window.location;
+    this.setState({
+      previewModalVisible: true,
+      previewLink: `${protocol}//${host}/mall/product/details/${productid}?preview=true`,
+    });
   }
 
   setFilters = (filters) => {
