@@ -31,10 +31,45 @@ export default createReducer({
     picUrl: payload.data.picUrl,
     productLink: payload.data.fetchUrl,
     saleSupplier: payload.data.saleSupplier,
+    supplierSku: payload.data.supplierSku,
   }),
   [`CRAWL_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+  }),
+  [`SAVE_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: false,
+  }),
+  [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: true,
+  }),
+  [`SAVE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: false,
+  }),
+  [`UPDATE_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: false,
+  }),
+  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    ...payload.data,
+    updated: true,
+  }),
+  [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: false,
+  }),
+  [`RESET_${name}`]: (state, { payload, status }) => ({
+
   }),
 }, initialState);
 
@@ -74,4 +109,8 @@ export const updateProduct = (id, params) => ({
   data: {
     ...params,
   },
+});
+
+export const resetProduct = () => ({
+  type: `RESET_${name}`,
 });

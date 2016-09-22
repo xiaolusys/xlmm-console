@@ -3,17 +3,19 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table } from 'antd';
 import { If } from 'jsx-control-statements';
-import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
-import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { fetchSku, addSku, resetSku } from 'redux/modules/supplyChain/sku';
+import { saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 
 const actionCreators = {
-  fetchSku: fetchSku,
-  addSku: addSku,
-  saveProduct: saveProduct,
-  updateProduct: updateProduct,
+  fetchSku,
+  addSku,
+  resetSku,
+  saveProduct,
+  updateProduct,
+  resetProduct,
 };
 
 @connect(
@@ -26,13 +28,21 @@ class Basic extends Component {
 
   static propTypes = {
     form: React.PropTypes.object,
+    location: React.PropTypes.object,
     product: React.PropTypes.object,
     categories: React.PropTypes.object,
     supplier: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
+    resetSku: React.PropTypes.func,
     addSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
+    updateProduct: React.PropTypes.func,
+    resetProduct: React.PropTypes.func,
+  };
+
+  static contextTypes = {
+    router: React.PropTypes.object,
   };
 
   constructor(props, context) {
@@ -53,6 +63,7 @@ class Basic extends Component {
         productLink: product.productLink,
         title: product.title,
         saleSupplier: product.saleSupplier && product.saleSupplier.id,
+        supplierSku: product.supplierSku,
       });
     }
     if (product.success && sku.success && isEmpty(this.state.skus)) {
@@ -67,6 +78,14 @@ class Basic extends Component {
         skuItems: product.skuExtras,
       });
     }
+    if (product.updated) {
+      this.context.router.goBack();
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetProduct();
+    this.props.resetSku();
   }
 
   onDrop = (files, e) => {
@@ -142,6 +161,7 @@ class Basic extends Component {
   }
 
   onSaveClick = (e) => {
+    const { productId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
     const params = {
       title: getFieldValue('title'),
@@ -149,8 +169,13 @@ class Basic extends Component {
       picUrl: getFieldValue('picUrl'),
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
       saleSupplier: getFieldValue('saleSupplier'),
+      supplierSku: getFieldValue('supplierSku'),
       skuExtras: this.state.skuItems,
     };
+    if (productId) {
+      this.props.updateProduct(productId, params);
+      return;
+    }
     this.props.saveProduct(params);
   }
 
@@ -416,6 +441,13 @@ class Basic extends Component {
               {...getFieldProps('productLink', { rules: [{ required: true, message: '请输入商品链接！' }] })}
               value={getFieldValue('productLink')}
               placeholder="请输入商品链接"
+              />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="货号">
+            <Input
+              {...getFieldProps('supplierSku')}
+              value={getFieldValue('supplierSku')}
+              placeholder="请输入货号"
               />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品主图" required>
