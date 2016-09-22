@@ -7,10 +7,14 @@ import moment from 'moment';
 import stringcase from 'stringcase';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import * as constants from 'constants';
-import { fetchProducts } from 'redux/modules/supplyChain/products';
+import { fetchProducts, deleteProduct } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 
-const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilters };
+const actionCreators = {
+  fetchProducts,
+  deleteProduct,
+  fetchFilters,
+};
 
 @connect(
   state => ({
@@ -25,6 +29,7 @@ class ProductsWithForm extends Component {
     location: React.PropTypes.any,
     fetchFilters: React.PropTypes.func,
     fetchProducts: React.PropTypes.func,
+    deleteProduct: React.PropTypes.func,
     filters: React.PropTypes.object,
     products: React.PropTypes.object,
     form: React.PropTypes.object,
@@ -47,6 +52,7 @@ class ProductsWithForm extends Component {
     filters: {
       pageSize: 10,
       page: 1,
+      ordering: '-created',
       saleSupplier: this.props.location.query.supplierId,
     },
   }
@@ -103,6 +109,20 @@ class ProductsWithForm extends Component {
     }
     this.setFilters({ ordering: ordering });
     this.props.fetchProducts(this.getFilters());
+  }
+
+  onDeleteClick = (e) => {
+    const { id } = e.currentTarget.dataset;
+    this.props.deleteProduct(id, this.getFilters());
+  }
+
+  onPreviewClick = (e) => {
+    const { productid } = e.currentTarget.dataset;
+    const { protocol, host } = window.location;
+    this.setState({
+      previewModalVisible: true,
+      previewLink: `${protocol}//${host}/mall/product/details/${productid}?preview=true`,
+    });
   }
 
   setFilters = (filters) => {
@@ -210,7 +230,7 @@ class ProductsWithForm extends Component {
       <span>
         <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
         <span className="ant-divider"></span>
-        <a onClick={this.onDeleteClick}>删除</a>
+        <a data-id={id} onClick={this.onDeleteClick}>删除</a>
       </span>
     ),
   }])
