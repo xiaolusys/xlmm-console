@@ -33,3 +33,11 @@ export const fetchProducts = (filters) => ({
     ...filters,
   },
 });
+
+export const deleteProduct = (id, filters) => ({
+  url: `${apisBase.supply}saleproduct/${id}`,
+  method: 'delete',
+  success: (resolved, dispatch) => {
+    dispatch(fetchProducts(filters));
+  },
+});
