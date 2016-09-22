@@ -87,7 +87,6 @@ export default createReducer({
     };
   },
   [`RESET_${name}`]: (state, { payload, status }) => ({
-    ...state,
     ...initialState,
   }),
 }, initialState);
