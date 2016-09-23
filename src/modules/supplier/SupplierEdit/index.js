@@ -105,11 +105,11 @@ class EditWithForm extends Component {
     delete params.province;
     delete params.city;
     delete params.district;
-    if (Number(id) === 0) {
+    if (!id) {
       this.props.saveSupplier(params);
-    } else {
-      this.props.updateSupplier(id, params);
+      return;
     }
+    this.props.updateSupplier(id, params);
   }
 
   getValue = (id, items) => (find(items, (item) => (item.id === id)).name);
