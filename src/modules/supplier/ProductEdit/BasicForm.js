@@ -62,7 +62,6 @@ class Basic extends Component {
         picUrl: product.picUrl,
         productLink: product.productLink,
         title: product.title,
-        saleSupplier: product.saleSupplier && product.saleSupplier.id,
         supplierSku: product.supplierSku,
       });
     }
@@ -161,14 +160,14 @@ class Basic extends Component {
   }
 
   onSaveClick = (e) => {
-    const { productId } = this.props.location.query;
+    const { productId, supplierId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
     const params = {
       title: getFieldValue('title'),
       productLink: getFieldValue('productLink'),
       picUrl: getFieldValue('picUrl'),
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
-      saleSupplier: getFieldValue('saleSupplier'),
+      saleSupplier: supplierId,
       supplierSku: getFieldValue('supplierSku'),
       skuExtras: this.state.skuItems,
     };
