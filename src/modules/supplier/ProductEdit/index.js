@@ -102,7 +102,7 @@ export class ProductEdit extends Component {
             <BasicForm product={product} supplier={supplier} categories={categories} location={location} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
-            <MaterialForm />
+            <MaterialForm product={product} location={location}/>
           </Tabs.TabPane>
           <Tabs.TabPane tab="上传图片" key="images">
             上传图片
