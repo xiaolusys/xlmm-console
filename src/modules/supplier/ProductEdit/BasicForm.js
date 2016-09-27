@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table } from 'antd';
+import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
 import { If } from 'jsx-control-statements';
 import { fetchSku, addSku, resetSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
+import { imageUrlPrefixs } from 'constants';
 
 const actionCreators = {
   fetchSku,
@@ -32,6 +33,7 @@ class Basic extends Component {
     product: React.PropTypes.object,
     categories: React.PropTypes.object,
     supplier: React.PropTypes.object,
+    uptoken: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
     resetSku: React.PropTypes.func,
@@ -69,6 +71,11 @@ class Basic extends Component {
       const selected = this.findSkuValues(product, sku);
       this.props.form.setFieldsInitialValue({
         saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
+        fileList: [{
+          uid: product.picUrl,
+          url: product.picUrl,
+          status: 'done',
+        }],
         skuItems: this.findSkuItems(product, sku),
         ...selected,
       });
@@ -85,10 +92,6 @@ class Basic extends Component {
   componentWillUnmount() {
     this.props.resetProduct();
     this.props.resetSku();
-  }
-
-  onDrop = (files, e) => {
-
   }
 
   onCategoryChange = (values) => {
@@ -159,13 +162,39 @@ class Basic extends Component {
     this.setState({ skuItems: skuItems });
   }
 
+  onRemove = (file) => {
+    const fileList = [];
+    each(this.props.form.getFieldValue('fileList'), (item) => {
+      if (file.url !== item.url) {
+        fileList.push(item);
+      }
+    });
+    this.props.form.setFieldsValue({ fileList: fileList });
+  }
+
+  onChange = ({ fileList }) => {
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.error(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ fileList: fileList });
+  }
+
   onSaveClick = (e) => {
     const { productId, supplierId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
+    if (getFieldValue('fileList').length !== 1) {
+      message.error('上传一张图片!');
+      return;
+    }
     const params = {
       title: getFieldValue('title'),
       productLink: getFieldValue('productLink'),
-      picUrl: getFieldValue('picUrl'),
+      picUrl: getFieldValue('fileList')[0].url,
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
       saleSupplier: supplierId,
       supplierSku: getFieldValue('supplierSku'),
@@ -409,17 +438,8 @@ class Basic extends Component {
   })
 
   render() {
-    const { product, categories, supplier, sku } = this.props;
+    const { product, categories, supplier, sku, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-
-    const uploaderProps = {
-      token: 'M7M4hlQTLlz_wa5-rGKaQ2sh8zzTrdY8JNKNtvKN:jtnTOpgw5vtDkEs0o_yLg0q2lHA=:eyJzY29wZSI6InhpYW9sdW1tIiwiZGVhZGxpbmUiOjE0NzI3MDA3MTN9',
-      onDrop: this.onDrop,
-      multiple: false,
-      fileList: product.picUrl ? [{
-        src: product.picUrl,
-      }] : [],
-    };
     let options = replaceAllKeys(categories.items, 'name', 'label');
     options = replaceAllKeys(options, 'cid', 'value');
     return (
@@ -450,7 +470,12 @@ class Basic extends Component {
               />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品主图" required>
-            <Uploader {...uploaderProps} />
+            <Uploader
+              uptoken={uptoken.token}
+              fileList={getFieldValue('fileList')}
+              onRemove={this.onRemove}
+              onChange={this.onChange}
+              />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类目" required>
             <Cascader

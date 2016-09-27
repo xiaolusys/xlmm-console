@@ -5,16 +5,19 @@ import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, S
 import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
+import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { BasicForm } from './BasicForm';
 import { MaterialForm } from './MaterialForm';
+import { ImagesForm } from './ImagesForm';
 
 const actionCreators = {
-  fetchProduct: fetchProduct,
-  crawlProduct: crawlProduct,
-  saveProduct: saveProduct,
-  updateProduct: updateProduct,
-  fetchSupplier: fetchSupplier,
-  fetchCategories: fetchCategories,
+  fetchUptoken,
+  fetchProduct,
+  crawlProduct,
+  saveProduct,
+  updateProduct,
+  fetchSupplier,
+  fetchCategories,
 };
 
 @connect(
@@ -22,6 +25,7 @@ const actionCreators = {
     product: state.product,
     supplier: state.supplier,
     categories: state.categories,
+    uptoken: state.uptoken,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -33,11 +37,13 @@ export class ProductEdit extends Component {
     product: React.PropTypes.object,
     supplier: React.PropTypes.object,
     categories: React.PropTypes.object,
+    uptoken: React.PropTypes.object,
     filters: React.PropTypes.object,
     fetchCategories: React.PropTypes.func,
     fetchSupplier: React.PropTypes.func,
     fetchProduct: React.PropTypes.func,
     crawlProduct: React.PropTypes.func,
+    fetchUptoken: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
   };
@@ -66,6 +72,7 @@ export class ProductEdit extends Component {
       this.setState({ crawlProductModalVisible: false });
       this.props.fetchProduct(productId);
     }
+    this.props.fetchUptoken();
     this.props.fetchSupplier(supplierId);
     this.props.fetchCategories();
   }
@@ -85,7 +92,7 @@ export class ProductEdit extends Component {
   }
 
   render() {
-    const { prefixCls, product, supplier, categories, location } = this.props;
+    const { prefixCls, product, supplier, categories, location, uptoken } = this.props;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -99,13 +106,13 @@ export class ProductEdit extends Component {
       <div className={`${prefixCls}`}>
         <Tabs defaultActiveKey="basic" onChange={this.onTabChange}>
           <Tabs.TabPane tab="基本信息" key="basic">
-            <BasicForm product={product} supplier={supplier} categories={categories} location={location} />
+            <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material">
             <MaterialForm product={product} location={location} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="上传图片" key="images">
-            上传图片
+            <ImagesForm product={product} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
         </Tabs>
         <Modal {...crawlProductModalProps}>

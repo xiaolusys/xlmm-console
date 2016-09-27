@@ -7,7 +7,6 @@ import { each, groupBy, isEmpty, includes, map, merge, sortBy, union } from 'lod
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { saveMaterial, updateMaterial } from 'redux/modules/supplyChain/material';
 
-
 const actionCreators = {
   fetchPreference,
   saveMaterial,
