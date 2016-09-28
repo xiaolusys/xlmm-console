@@ -11,6 +11,7 @@ import category from './category';
 import district from './district';
 import sku from './sku';
 import preference from './preference';
+import uptoken from './uptoken';
 
 export default {
   schedules,
@@ -26,4 +27,5 @@ export default {
   district,
   sku,
   preference,
+  uptoken,
 };
