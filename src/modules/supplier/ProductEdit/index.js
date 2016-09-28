@@ -8,7 +8,7 @@ import { fetchCategories } from 'redux/modules/supplyChain/categories';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { BasicForm } from './BasicForm';
 import { MaterialForm } from './MaterialForm';
-import { ImagesForm } from './ImagesForm';
+import { PicturesForm } from './PicturesForm';
 
 const actionCreators = {
   fetchUptoken,
@@ -112,7 +112,7 @@ export class ProductEdit extends Component {
             <MaterialForm product={product} location={location} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="上传图片" key="images">
-            <ImagesForm product={product} location={location} uptoken={uptoken} />
+            <PicturesForm product={product} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
         </Tabs>
         <Modal {...crawlProductModalProps}>

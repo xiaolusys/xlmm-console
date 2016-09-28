@@ -176,7 +176,7 @@ class Basic extends Component {
     each(fileList, (file) => {
       if (file.status === 'done' && file.response) {
         file.url = `${imageUrlPrefixs}${file.response.key}`;
-        message.error(`上传成功: ${file.name}`);
+        message.success(`上传成功: ${file.name}`);
       } else if (file.status === 'error') {
         message.error(`上传失败: ${file.name}`);
       }
@@ -188,7 +188,7 @@ class Basic extends Component {
     const { productId, supplierId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
     if (getFieldValue('fileList').length !== 1) {
-      message.error('上传一张图片!');
+      message.warning('上传一张图片!');
       return;
     }
     const params = {
