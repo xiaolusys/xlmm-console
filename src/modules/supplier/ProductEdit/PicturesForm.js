@@ -43,7 +43,7 @@ class Pictures extends Component {
 
   componentWillMount() {
     const { product } = this.props;
-    const { setFieldsValue } = this.props.form;
+    const { setFieldsValue, getFieldsValue } = this.props.form;
     const { model } = product;
     if (product.success && !isEmpty(model.headImgs)) {
       setFieldsValue({
@@ -68,6 +68,9 @@ class Pictures extends Component {
     if (product.success && !isEmpty(product.skuExtras)) {
       map(groupBy(product.skuExtras, 'color'), (values, key) => {
         const item = values[0];
+        if (isEmpty(item.picPath)) {
+          return;
+        }
         setFieldsValue({
           [key]: [{
             uid: item.picPath,
@@ -109,16 +112,30 @@ class Pictures extends Component {
     }
     const fieldsValue = getFieldsValue();
     const { product } = this.props;
-    const mainPic = `${imageUrlPrefixs}${getFieldValue('mainPic')[0].response.key}`;
+    let mainPic = '';
     const detailPics = [];
     const skuExtras = [];
+    if (getFieldValue('mainPic')[0].response) {
+      mainPic = `${imageUrlPrefixs}${getFieldValue('mainPic')[0].response.key}`;
+    } else {
+      mainPic = getFieldValue('mainPic')[0].url;
+    }
+
     each(getFieldValue('detailPics'), (file) => {
-      detailPics.push(`${imageUrlPrefixs}${file.response.key}`);
+      if (file.response) {
+        detailPics.push(`${imageUrlPrefixs}${file.response.key}`);
+      } else {
+        detailPics.push(file.url);
+      }
     });
     each(product.skuExtras, (sku) => {
       const file = getFieldValue(sku.color) && getFieldValue(sku.color)[0];
       if (file) {
-        sku.picPath = `${imageUrlPrefixs}${file.response.key}`;
+        if (file.response) {
+          sku.picPath = `${imageUrlPrefixs}${file.response.key}`;
+        } else {
+          sku.picPath = file.url;
+        }
         skuExtras.push(sku);
       } else {
         message.error(`请上传头图（${sku.color}）`);

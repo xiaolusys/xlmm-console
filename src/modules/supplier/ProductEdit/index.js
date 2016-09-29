@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, Steps } from 'antd';
-import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, message } from 'antd';
+import { isEmpty } from 'lodash';
+import { fetchProduct, crawlProduct, saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
+import { resetSku } from 'redux/modules/supplyChain/sku';
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
+import { resetMaterial } from 'redux/modules/supplyChain/material';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { BasicForm } from './BasicForm';
 import { MaterialForm } from './MaterialForm';
@@ -18,6 +21,9 @@ const actionCreators = {
   updateProduct,
   fetchSupplier,
   fetchCategories,
+  resetSku,
+  resetMaterial,
+  resetProduct,
 };
 
 @connect(
@@ -26,6 +32,7 @@ const actionCreators = {
     supplier: state.supplier,
     categories: state.categories,
     uptoken: state.uptoken,
+    material: state.material,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -37,6 +44,7 @@ export class ProductEdit extends Component {
     product: React.PropTypes.object,
     supplier: React.PropTypes.object,
     categories: React.PropTypes.object,
+    material: React.PropTypes.object,
     uptoken: React.PropTypes.object,
     filters: React.PropTypes.object,
     fetchCategories: React.PropTypes.func,
@@ -46,6 +54,9 @@ export class ProductEdit extends Component {
     fetchUptoken: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
+    resetProduct: React.PropTypes.func,
+    resetSku: React.PropTypes.func,
+    resetMaterial: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -77,6 +88,23 @@ export class ProductEdit extends Component {
     this.props.fetchCategories();
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { product, material } = nextProps;
+    if (product.updated || material.updated) {
+      this.context.router.goBack();
+      message.error('保存成功！');
+    }
+    if (product.failure || material.failure) {
+      message.error('服务器出错，保存失败！');
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetProduct();
+    this.props.resetSku();
+    this.props.resetMaterial();
+  }
+
   onCrawlProductClick = (e) => {
     const { supplierId } = this.props.location.query;
     const { productLink } = this.state;
@@ -93,6 +121,7 @@ export class ProductEdit extends Component {
 
   render() {
     const { prefixCls, product, supplier, categories, location, uptoken } = this.props;
+    const { productId } = this.props.location.query;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -108,10 +137,10 @@ export class ProductEdit extends Component {
           <Tabs.TabPane tab="基本信息" key="basic">
             <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="完善资料" key="material">
+          <Tabs.TabPane tab="完善资料" key="material" disabled={!productId}>
             <MaterialForm product={product} location={location} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="上传图片" key="images">
+          <Tabs.TabPane tab="上传图片" key="images" disabled={isEmpty(product.model)}>
             <PicturesForm product={product} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
         </Tabs>

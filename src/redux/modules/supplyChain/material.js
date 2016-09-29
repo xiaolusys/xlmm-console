@@ -16,20 +16,22 @@ export default createReducer({
   [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+    updated: true,
   }),
   [`SAVE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
+  [`UPDATE_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
-  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
+  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+    updated: true,
   }),
-  [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
+  [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
@@ -56,6 +58,6 @@ export const updateMaterial = (params) => ({
   },
 });
 
-export const resetCategory = () => ({
+export const resetMaterial = () => ({
   type: `RESET_${name}`,
 });
