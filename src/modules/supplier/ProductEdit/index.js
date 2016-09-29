@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, Steps } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, message } from 'antd';
 import { isEmpty } from 'lodash';
-import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { fetchProduct, crawlProduct, saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
+import { resetSku } from 'redux/modules/supplyChain/sku';
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
+import { resetMaterial } from 'redux/modules/supplyChain/material';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { BasicForm } from './BasicForm';
 import { MaterialForm } from './MaterialForm';
@@ -19,6 +21,9 @@ const actionCreators = {
   updateProduct,
   fetchSupplier,
   fetchCategories,
+  resetSku,
+  resetMaterial,
+  resetProduct,
 };
 
 @connect(
@@ -27,6 +32,7 @@ const actionCreators = {
     supplier: state.supplier,
     categories: state.categories,
     uptoken: state.uptoken,
+    material: state.material,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -38,6 +44,7 @@ export class ProductEdit extends Component {
     product: React.PropTypes.object,
     supplier: React.PropTypes.object,
     categories: React.PropTypes.object,
+    material: React.PropTypes.object,
     uptoken: React.PropTypes.object,
     filters: React.PropTypes.object,
     fetchCategories: React.PropTypes.func,
@@ -47,6 +54,9 @@ export class ProductEdit extends Component {
     fetchUptoken: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
+    resetProduct: React.PropTypes.func,
+    resetSku: React.PropTypes.func,
+    resetMaterial: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -76,6 +86,23 @@ export class ProductEdit extends Component {
     this.props.fetchUptoken();
     this.props.fetchSupplier(supplierId);
     this.props.fetchCategories();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { product, material } = nextProps;
+    if (product.updated || material.updated) {
+      this.context.router.goBack();
+      message.error('保存成功！');
+    }
+    if (product.failure || material.failure) {
+      message.error('服务器出错，保存失败！');
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetProduct();
+    this.props.resetSku();
+    this.props.resetMaterial();
   }
 
   onCrawlProductClick = (e) => {

@@ -3,8 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
 import { If } from 'jsx-control-statements';
-import { fetchSku, addSku, resetSku } from 'redux/modules/supplyChain/sku';
-import { saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
+import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
+import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
@@ -13,10 +13,8 @@ import { imageUrlPrefixs } from 'constants';
 const actionCreators = {
   fetchSku,
   addSku,
-  resetSku,
   saveProduct,
   updateProduct,
-  resetProduct,
 };
 
 @connect(
@@ -36,11 +34,9 @@ class Basic extends Component {
     uptoken: React.PropTypes.object,
     sku: React.PropTypes.array,
     fetchSku: React.PropTypes.func,
-    resetSku: React.PropTypes.func,
     addSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
-    resetProduct: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -84,14 +80,6 @@ class Basic extends Component {
         skuItems: product.skuExtras,
       });
     }
-    if (product.updated) {
-      this.context.router.goBack();
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.resetProduct();
-    this.props.resetSku();
   }
 
   onCategoryChange = (values) => {
