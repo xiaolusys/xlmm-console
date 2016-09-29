@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, Steps } from 'antd';
+import { isEmpty } from 'lodash';
 import { fetchProduct, crawlProduct, saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchSupplier } from 'redux/modules/supplyChain/supplier';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
@@ -93,6 +94,7 @@ export class ProductEdit extends Component {
 
   render() {
     const { prefixCls, product, supplier, categories, location, uptoken } = this.props;
+    const { productId } = this.props.location.query;
     const crawlProductModalProps = {
       title: '抓取商品',
       okText: '抓取商品',
@@ -108,10 +110,10 @@ export class ProductEdit extends Component {
           <Tabs.TabPane tab="基本信息" key="basic">
             <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="完善资料" key="material">
+          <Tabs.TabPane tab="完善资料" key="material" disabled={!productId}>
             <MaterialForm product={product} location={location} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="上传图片" key="images">
+          <Tabs.TabPane tab="上传图片" key="images" disabled={isEmpty(product.model)}>
             <PicturesForm product={product} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
         </Tabs>
