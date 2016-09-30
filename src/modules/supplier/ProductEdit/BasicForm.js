@@ -57,7 +57,11 @@ class Basic extends Component {
     const { product, sku } = nextProps;
     if (product.success) {
       this.props.form.setFieldsInitialValue({
-        picUrl: product.picUrl,
+        fileList: [{
+          uid: product.picUrl,
+          url: product.picUrl,
+          status: 'done',
+        }],
         productLink: product.productLink,
         title: product.title,
         supplierSku: product.supplierSku,
