@@ -23,6 +23,7 @@ class Pictures extends Component {
     form: React.PropTypes.object,
     location: React.PropTypes.object,
     product: React.PropTypes.object,
+    material: React.PropTypes.object,
     uptoken: React.PropTypes.object,
     updateProduct: React.PropTypes.func,
     updateMaterial: React.PropTypes.func,
@@ -171,7 +172,7 @@ class Pictures extends Component {
   })
 
   render() {
-    const { uptoken, product } = this.props;
+    const { uptoken, product, material } = this.props;
     const { getFieldProps, getFieldValue, getFieldsValue } = this.props.form;
     return (
       <Form>
@@ -225,7 +226,7 @@ class Pictures extends Component {
             <Button onClick={this.onCancelClick}>取消</Button>
           </Col>
           <Col span="1">
-            <Button type="primary" onClick={this.onSaveClick}>保存</Button>
+            <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
           </Col>
         </Row>
       </Form>
