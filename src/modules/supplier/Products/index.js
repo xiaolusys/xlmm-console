@@ -258,6 +258,7 @@ class ProductsWithForm extends Component {
       className: 'margin-top-sm',
       dataSource: products.items,
       onChange: this.onTableChange,
+      loading: products.isLoading,
     };
   }
 
