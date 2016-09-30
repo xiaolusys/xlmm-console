@@ -26,6 +26,7 @@ class Material extends Component {
     location: React.PropTypes.object,
     preference: React.PropTypes.object,
     product: React.PropTypes.object,
+    material: React.PropTypes.object,
     fetchPreference: React.PropTypes.func,
     saveMaterial: React.PropTypes.func,
     updateMaterial: React.PropTypes.func,
@@ -197,7 +198,7 @@ class Material extends Component {
 
   dataSource = (params, origin) => {
     const { getFieldValue, setFieldsInitialValue } = this.props.form;
-    const { product } = this.props;
+    const { product, material } = this.props;
     let data = this.state.table || [];
     map(groupBy(product.skuExtras, 'propertiesName'), (value, key) => {
       const item = {};
@@ -218,7 +219,7 @@ class Material extends Component {
   }
 
   render() {
-    const { preference } = this.props;
+    const { preference, product, material } = this.props;
     const { getFieldProps, getFieldValue, getFieldsValue } = this.props.form;
     return (
       <Form>
@@ -248,7 +249,7 @@ class Material extends Component {
             <Button onClick={this.onCancelClick}>取消</Button>
           </Col>
           <Col span="1">
-            <Button type="primary" onClick={this.onSaveClick}>保存</Button>
+            <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading || material.isLoading}>保存</Button>
           </Col>
         </Row>
       </Form>

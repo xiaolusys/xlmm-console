@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Select, Tag, Button, DatePicker, Input, Table, Tabs, Modal, message } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Input, Spin, Table, Tabs, Modal, message } from 'antd';
 import { isEmpty } from 'lodash';
 import { fetchProduct, crawlProduct, saveProduct, updateProduct, resetProduct } from 'redux/modules/supplyChain/product';
 import { resetSku } from 'redux/modules/supplyChain/sku';
@@ -120,7 +120,7 @@ export class ProductEdit extends Component {
   }
 
   render() {
-    const { prefixCls, product, supplier, categories, location, uptoken } = this.props;
+    const { prefixCls, product, supplier, categories, location, uptoken, material } = this.props;
     const { productId } = this.props.location.query;
     const crawlProductModalProps = {
       title: '抓取商品',
@@ -138,10 +138,10 @@ export class ProductEdit extends Component {
             <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="完善资料" key="material" disabled={!productId}>
-            <MaterialForm product={product} location={location} />
+            <MaterialForm product={product} material={material} location={location} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="上传图片" key="images" disabled={isEmpty(product.model)}>
-            <PicturesForm product={product} location={location} uptoken={uptoken} />
+            <PicturesForm product={product} material={material} location={location} uptoken={uptoken} />
           </Tabs.TabPane>
         </Tabs>
         <Modal {...crawlProductModalProps}>

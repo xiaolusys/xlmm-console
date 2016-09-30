@@ -521,7 +521,7 @@ class Basic extends Component {
             <Button onClick={this.onCancelClick}>取消</Button>
           </Col>
           <Col span="1">
-            <Button type="primary" onClick={this.onSaveClick}>保存</Button>
+            <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading}>保存</Button>
           </Col>
         </Row>
       </div>
