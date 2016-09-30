@@ -5,16 +5,17 @@ import { Button, Col, Input, Form, FormItem, Row, Select, Table } from 'antd';
 import { find, isEmpty } from 'lodash';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { fetchProvinces, fetchCities, fetchDistricts } from 'redux/modules/supplyChain/district';
-import { fetchSupplier, saveSupplier, updateSupplier } from 'redux/modules/supplyChain/supplier';
+import { fetchSupplier, saveSupplier, updateSupplier, resetSupplier } from 'redux/modules/supplyChain/supplier';
 
 const actionCreators = {
-  fetchFilters: fetchFilters,
-  fetchProvinces: fetchProvinces,
-  fetchCities: fetchCities,
-  fetchDistricts: fetchDistricts,
-  fetchSupplier: fetchSupplier,
-  saveSupplier: saveSupplier,
-  updateSupplier: updateSupplier,
+  fetchFilters,
+  fetchProvinces,
+  fetchCities,
+  fetchDistricts,
+  fetchSupplier,
+  saveSupplier,
+  updateSupplier,
+  resetSupplier,
 };
 
 @connect(
@@ -40,6 +41,7 @@ class EditWithForm extends Component {
     fetchSupplier: React.PropTypes.func,
     saveSupplier: React.PropTypes.func,
     updateSupplier: React.PropTypes.func,
+    resetSupplier: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -72,6 +74,13 @@ class EditWithForm extends Component {
         ...supplier,
       });
     }
+    if (supplier.updated) {
+      this.context.router.goBack();
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetSupplier();
   }
 
   onProvinceChange = (value) => {
