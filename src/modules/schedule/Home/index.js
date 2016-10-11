@@ -79,8 +79,9 @@ class List extends Component {
     const self = this;
     return [{
       title: '日期',
-      dataIndex: 'saleTime',
-      key: 'date',
+      dataIndex: 'upshelfTime',
+      key: 'datetime',
+      render: (upshelfTime) => (map(upshelfTime.split('T'), (t) => (<p>{t}</p>)))
     }, {
       title: '类型',
       dataIndex: 'scheduleTypeLable',
