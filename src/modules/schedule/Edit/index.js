@@ -59,8 +59,8 @@ class EditSchedule extends Component {
     }
     if (!schedule.isLoading && schedule.success) {
       this.props.form.setFieldsInitialValue({
-        upshelfTime: moment(schedule.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-        offshelfTime: moment(schedule.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+        upshelfTime: moment(schedule.upshelfTime).format('YYYY-MM-DD HH:mm:ss'),
+        offshelfTime: moment(schedule.offshelfTime).format('YYYY-MM-DD HH:mm:ss'),
         scheduleType: schedule.scheduleType,
         lockStatus: schedule.lockStatus,
       });
@@ -98,8 +98,8 @@ class EditSchedule extends Component {
     const params = this.props.form.getFieldsValue();
     this.props.saveSchedule(this.props.schedule.id, {
       saleTime: moment(params.upshelfTime).format('YYYY-MM-DD'),
-      upshelfTime: moment(params.upshelfTime).format('YYYY-MM-DD hh:mm:ss'),
-      offshelfTime: moment(params.offshelfTime).format('YYYY-MM-DD hh:mm:ss'),
+      upshelfTime: moment(params.upshelfTime).format('YYYY-MM-DD HH:mm:ss'),
+      offshelfTime: moment(params.offshelfTime).format('YYYY-MM-DD HH:mm:ss'),
       scheduleType: params.scheduleType,
       lockStatus: params.lockStatus,
       saleSuppliers: _.map(this.state.suppliers, (supplier) => (supplier.id)),
