@@ -81,7 +81,7 @@ class List extends Component {
       title: '日期',
       dataIndex: 'upshelfTime',
       key: 'datetime',
-      render: (upshelfTime) => (map(upshelfTime.split('T'), (t) => (<p>{t}</p>)))
+      render: (upshelfTime) => (map(upshelfTime.split('T'), (t) => (<p>{t}</p>))),
     }, {
       title: '类型',
       dataIndex: 'scheduleTypeLable',
