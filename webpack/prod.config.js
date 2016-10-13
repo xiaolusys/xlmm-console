@@ -53,6 +53,7 @@ module.exports = {
       data: {
         css: `<link type="text/css" rel="stylesheet" href="${publicPath}app-[hash].css">`,
         js: `<script src="${publicPath}framework-[hash].js"></script><script src="${publicPath}app-[hash].js"></script>`,
+        bughd: '<script type="text/javascript" src="https://dn-bughd-web.qbox.me/bughd.min.js" crossOrigin="anonymous"></script><script type="text/javascript">window.bughd = window.bughd || function() {}; window.bughd(\'create\',{key: \'bad6cc566e49c4b2549ebbd011a2dd4c\',});</script>',
       },
     }),
     new webpack.ProvidePlugin({
