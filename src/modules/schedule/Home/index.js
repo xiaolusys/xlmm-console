@@ -81,7 +81,7 @@ class List extends Component {
       title: '排期ID',
       dataIndex: 'id',
       key: 'id',
-    },{
+    }, {
       title: '日期',
       dataIndex: 'upshelfTime',
       key: 'datetime',

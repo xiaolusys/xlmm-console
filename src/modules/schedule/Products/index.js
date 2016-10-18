@@ -434,18 +434,18 @@ class ProductsWithForm extends Component {
         <div>
           <ul style={{ display: 'block' }}>
             <li >
-            <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
+              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
             </li>
             <li >
-            <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             </li>
             <li >
-            <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} data-productid={record.id} disabled={schedule.lockStatus} onConfirm={this.onDeleteClick} okText="删除" cancelText="取消">
-              <a >删除商品</a>
-            </Popconfirm>
+              <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} data-productid={record.id} disabled={schedule.lockStatus} onConfirm={this.onDeleteClick} okText="删除" cancelText="取消">
+                <a >删除商品</a>
+              </Popconfirm>
             </li>
             <li >
-            <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
+              <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
             </li>
           </ul>
         </div>
