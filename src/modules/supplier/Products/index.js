@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Popover } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Popover, Popconfirm} from 'antd';
 import moment from 'moment';
 import stringcase from 'stringcase';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
@@ -49,6 +49,7 @@ class ProductsWithForm extends Component {
   }
 
   state = {
+    delSaleProductId: null,
     filters: {
       pageSize: 10,
       page: 1,
@@ -111,9 +112,19 @@ class ProductsWithForm extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
+  onDeleteConfirm = (e) => {
+    const delSaleProductId = this.state.delSaleProductId;
+    console.log('del:', delSaleProductId);
+    if (delSaleProductId){
+      this.props.deleteProduct(delSaleProductId, this.getFilters());
+      this.setState({delSaleProductId: null});
+    }
+  }
+
   onDeleteClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    this.props.deleteProduct(id, this.getFilters());
+    console.log('del a:', id);
+    this.setState({delSaleProductId: id});
   }
 
   onPreviewClick = (e) => {
@@ -159,7 +170,7 @@ class ProductsWithForm extends Component {
     title: '价格信息',
     key: 'allPrice',
     dataIndex: 'allPrice',
-    width: 200,
+    width: 150,
     render: (text, record) => (
       <div>
         <p><span>售价：￥</span><span>{record.price}</span></p>
@@ -171,7 +182,7 @@ class ProductsWithForm extends Component {
     title: '最后上架销售信息',
     key: 'latestFigures',
     dataIndex: 'latestFigures',
-    width: 200,
+    width: 150,
     render: (figures) => (
       <div>
         <p><span>销售额：</span><span>{figures ? `￥${figures.payment.toFixed(2)}` : '-'}</span></p>
@@ -184,7 +195,7 @@ class ProductsWithForm extends Component {
     title: '总销售信息',
     key: 'totalFigures',
     dataIndex: 'totalFigures',
-    width: 200,
+    width: 150,
     render: (figures) => (
       <div>
         <p><span>销售额：</span><span>{figures.totalPayment ? `￥${figures.totalPayment.toFixed(2)}` : '-'}</span></p>
@@ -196,7 +207,7 @@ class ProductsWithForm extends Component {
     title: '状态',
     key: 'status',
     dataIndex: 'status',
-    width: 100,
+    width: 60,
   }, {
     title: '类目',
     key: 'saleCategory',
@@ -207,7 +218,7 @@ class ProductsWithForm extends Component {
     title: '供应商',
     key: 'saleSupplier',
     dataIndex: 'saleSupplier',
-    width: 200,
+    width: 150,
     render: (saleSupplier) => (
       <div>
         <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
@@ -226,11 +237,15 @@ class ProductsWithForm extends Component {
     title: '操作',
     dataIndex: 'id',
     key: 'operation',
-    render: (id) => (
+    width: 80,
+    render: (id, record) => (
       <span>
         <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
         <span className="ant-divider"></span>
-        <a data-id={id} onClick={this.onDeleteClick}>删除</a>
+        <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} 
+          onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+          <a data-id={id} onClick={this.onDeleteClick}>删除</a>
+        </Popconfirm>
       </span>
     ),
   }])

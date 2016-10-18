@@ -89,6 +89,7 @@ class ProductsWithForm extends Component {
       this.setState({
         desinger: 0,
         maintainer: 0,
+        delProductId: null,
         selectedRowKeys: [],
       });
     }
@@ -119,14 +120,22 @@ class ProductsWithForm extends Component {
     this.setState({ distance: 1 });
   }
 
-  onDeleteClick = (e) => {
+  onDeleteConfirm = (e) => {
     const { id } = this.props.location.query;
-    const { productid } = e.currentTarget.dataset;
+    // const { productid } = e.currentTarget.dataset;
+    if (this.state.delProductId){
+      this.props.deleteProduct(id, this.state.delProductId, this.getFilters());
+      this.setState({delProductId: null});
+    }
+  }
 
-    this.props.deleteProduct(id, productid, this.getFilters());
+  onDeleteClick = (e) => {
+    const { productid } = e.currentTarget.dataset;
+    this.setState({delProductId: productid});
   }
 
   onPreviewClick = (e) => {
+    console.log('debug pr:', e, e.currentTarget);
     const { productid } = e.currentTarget.dataset;
     const { protocol, host } = window.location;
     this.setState({
@@ -287,7 +296,6 @@ class ProductsWithForm extends Component {
     const { users } = this.props;
     const buttonProps = {
       className: 'pull-right',
-      style: { marginTop: 10 },
       size: 'small',
       type: 'primary',
     };
@@ -429,7 +437,7 @@ class ProductsWithForm extends Component {
       title: '操作',
       dataIndex: 'operating',
       key: 'operating',
-      // fixed: 'right',
+      width: 100,
       render: (text, record) => (
         <div>
           <ul style={{ display: 'block' }}>
@@ -440,8 +448,9 @@ class ProductsWithForm extends Component {
               <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             </li>
             <li >
-              <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} data-productid={record.id} disabled={schedule.lockStatus} onConfirm={this.onDeleteClick} okText="删除" cancelText="取消">
-                <a >删除商品</a>
+              <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`}  
+                onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+                <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
               </Popconfirm>
             </li>
             <li >
