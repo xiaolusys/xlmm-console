@@ -114,7 +114,7 @@ class ProductsWithForm extends Component {
 
   onDeleteConfirm = (e) => {
     const delSaleProductId = this.state.delSaleProductId;
-    if (delSaleProductId){
+    if (delSaleProductId) {
       this.props.deleteProduct(delSaleProductId, this.getFilters());
       this.setState({ delSaleProductId: null });
     }
@@ -240,8 +240,7 @@ class ProductsWithForm extends Component {
       <span>
         <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
         <span className="ant-divider"></span>
-        <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} 
-          onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+        <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
           <a data-id={id} onClick={this.onDeleteClick}>删除</a>
         </Popconfirm>
       </span>
