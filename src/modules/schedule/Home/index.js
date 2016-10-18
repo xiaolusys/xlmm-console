@@ -78,6 +78,10 @@ class List extends Component {
   columns = () => {
     const self = this;
     return [{
+      title: '排期ID',
+      dataIndex: 'id',
+      key: 'id',
+    },{
       title: '日期',
       dataIndex: 'upshelfTime',
       key: 'datetime',

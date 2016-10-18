@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select, Form } from 'antd';
+import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select, Form, Popconfirm } from 'antd';
 import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
@@ -122,6 +122,7 @@ class ProductsWithForm extends Component {
   onDeleteClick = (e) => {
     const { id } = this.props.location.query;
     const { productid } = e.currentTarget.dataset;
+
     this.props.deleteProduct(id, productid, this.getFilters());
   }
 
@@ -316,15 +317,20 @@ class ProductsWithForm extends Component {
       title: 'id',
       dataIndex: 'modelId',
       key: 'modelId',
+      width: 60,
+      render: (modelId, record) => (<a target="_blank" href={`/admin/pay/modelproduct/${record.modelId}/`}>{modelId}</a>),
     }, {
       title: '图片',
       dataIndex: 'productPic',
       key: 'productPic',
+      // fixed: 'left',
       render: (productPic, record) => {
         const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
         return (
           <Popover placement="right" content={conetnt} trigger="hover">
-            <img style={{ height: '80px' }} src={productPic} role="presentation" />
+            <a target="_blank" href={`/admin/supplier/saleproduct/${record.id}/`} title={record.id}>
+              <img style={{ height: '80px' }} src={productPic} role="presentation" />
+            </a>
           </Popover>
         );
       },
@@ -332,25 +338,29 @@ class ProductsWithForm extends Component {
       title: '名称',
       dataIndex: 'productName',
       key: 'productName',
-      width: 260,
+      width: 200,
       render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
     }, {
       title: '吊牌价',
       dataIndex: 'productOriginPrice',
       key: 'productOriginPrice',
+      width: 60,
     }, {
       title: '售价',
       dataIndex: 'productSalePrice',
       key: 'productSalePrice',
+      width: 60,
     }, {
       title: '采购价',
       dataIndex: 'productPurchasePrice',
       key: 'productPurchasePrice',
+      width: 60,
     }, {
       title: '供应商',
       dataIndex: 'supplierName',
       key: 'supplierId',
       render: (supplierName) => (supplierName || '-'),
+      width: 100,
       sorter: true,
     }, {
       title: '设计',
@@ -384,10 +394,10 @@ class ProductsWithForm extends Component {
       title: '备注',
       dataIndex: 'productMemo',
       key: 'productMemo',
-      width: 200,
+      width: 100,
       render: (memo) => (memo || '-'),
     }, {
-      title: '每日推送商品',
+      title: '每日推送',
       dataIndex: 'id',
       key: 'id',
       render: (productId, record) => {
@@ -398,7 +408,7 @@ class ProductsWithForm extends Component {
           disabled: schedule.lockStatus,
         };
         return (
-          <Checkbox {...checkboxProps}>设为推送</Checkbox>
+          <Checkbox {...checkboxProps}>推送</Checkbox>
         );
       },
     }, {
@@ -419,15 +429,25 @@ class ProductsWithForm extends Component {
       title: '操作',
       dataIndex: 'operating',
       key: 'operating',
+      // fixed: 'right',
       render: (text, record) => (
         <div>
-          <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
-          <span className="ant-divider"></span>
-          <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
-          <span className="ant-divider"></span>
-          <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
-          <span className="ant-divider"></span>
-          <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
+          <ul style={{ display: 'block' }}>
+            <li >
+            <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
+            </li>
+            <li >
+            <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+            </li>
+            <li >
+            <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} data-productid={record.id} disabled={schedule.lockStatus} onConfirm={this.onDeleteClick} okText="删除" cancelText="取消">
+              <a >删除商品</a>
+            </Popconfirm>
+            </li>
+            <li >
+            <a data-productid={record.modelId} onClick={this.onPreviewClick}>预览商品</a>
+            </li>
+          </ul>
         </div>
       ),
     }];

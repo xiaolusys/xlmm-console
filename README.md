@@ -24,8 +24,13 @@ _______________________
 - [mocha](https://github.com/mochajs/mocha)
 
 ## Sublime Text Setup
+# for mac
 ### 1. Install package controll [https://packagecontrol.io/installation](https://packagecontrol.io/installation)
 ### 2. Install Below Plugins
+# for ubuntu
+### sudo add-apt-repository ppa:webupd8team/sublime-text-3
+### sudo apt-get update
+### sudo apt-get install sublime-text-installer
 ```
 Babel
 Babel Snippets
@@ -50,7 +55,11 @@ View -> Syntax -> Open all with current extension as ... -> Babel -> JavaScript(
 ## Installation
 ```shell
 $ git clone ssh://git@git.xiaolumm.com:10022/XLMM-FE/xlmm-console.git
-$ cd xlmm-mall
+$ cd xlmm-console
+#for ubuntu
+$ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
+#endfor ubuntu
 $ npm install babel-eslint -g
 $ npm install eslint -g
 $ npm install
