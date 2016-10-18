@@ -122,16 +122,15 @@ class ProductsWithForm extends Component {
 
   onDeleteConfirm = (e) => {
     const { id } = this.props.location.query;
-    // const { productid } = e.currentTarget.dataset;
-    if (this.state.delProductId){
+    if (this.state.delProductId) {
       this.props.deleteProduct(id, this.state.delProductId, this.getFilters());
-      this.setState({delProductId: null});
+      this.setState({ delProductId: null });
     }
   }
 
   onDeleteClick = (e) => {
     const { productid } = e.currentTarget.dataset;
-    this.setState({delProductId: productid});
+    this.setState({ delProductId: productid });
   }
 
   onPreviewClick = (e) => {
@@ -448,8 +447,7 @@ class ProductsWithForm extends Component {
               <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
             </li>
             <li >
-              <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`}  
-                onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+              <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
                 <a data-productid={record.id} onClick={this.onDeleteClick} disabled={schedule.lockStatus}>删除商品</a>
               </Popconfirm>
             </li>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Button, Col, DatePicker, Input, Form, Row, Select, Table, Popconfirm} from 'antd';
+import { Button, Col, DatePicker, Input, Form, Row, Select, Table, Popconfirm } from 'antd';
 import { assign, noop, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
@@ -92,15 +92,15 @@ class HomeWithForm extends Component {
 
   onDeleteConfirm = (e) => {
     const { delSupplierId } = this.state;
-    if (delSupplierId){
+    if (delSupplierId) {
       this.props.deleteSupplier(delSupplierId);
-      this.setState({delSupplierId: null});
+      this.setState({ delSupplierId: null });
     }
   }
 
   onDeleteClick = (e) => {
     const { supplierid } = e.currentTarget.dataset;
-    this.setState({delSupplierId: supplierid});
+    this.setState({ delSupplierId: supplierid });
   }
 
   setFilters = (filters) => {
@@ -156,8 +156,7 @@ class HomeWithForm extends Component {
         <span>
           <Link to={`supplier/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
-          <Popconfirm placement="left" title={`确认删除(${record.supplierName})吗？`} 
-            onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+          <Popconfirm placement="left" title={`确认删除(${record.supplierName})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
             <a data-supplierid={id} onClick={this.onDeleteClick}>删除</a>
           </Popconfirm>
           <span className="ant-divider"></span>
