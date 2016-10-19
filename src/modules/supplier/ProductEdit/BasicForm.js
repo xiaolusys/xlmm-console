@@ -5,6 +5,7 @@ import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Sel
 import { If } from 'jsx-control-statements';
 import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
+import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
@@ -15,11 +16,13 @@ const actionCreators = {
   addSku,
   saveProduct,
   updateProduct,
+  fetchPreference,
 };
 
 @connect(
   state => ({
     sku: state.sku,
+    preference: state.preference,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -33,10 +36,12 @@ class Basic extends Component {
     supplier: React.PropTypes.object,
     uptoken: React.PropTypes.object,
     sku: React.PropTypes.array,
+    preference: React.PropTypes.object,
     fetchSku: React.PropTypes.func,
     addSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
+    fetchPreference: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -51,6 +56,10 @@ class Basic extends Component {
   state = {
     skus: {},
     skuItems: [],
+  }
+
+  componentWillMount() {
+    this.props.fetchPreference();
   }
 
   componentWillReceiveProps(nextProps) {

@@ -440,7 +440,7 @@ class ProductsWithForm extends Component {
         <div>
           <ul style={{ display: 'block' }}>
             <li >
-              <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=material`}>资料录入</Link>
+              <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
             </li>
             <li >
               <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
