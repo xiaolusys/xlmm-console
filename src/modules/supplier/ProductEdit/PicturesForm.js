@@ -222,10 +222,10 @@ class Pictures extends Component {
             />
         </Form.Item>
         <Row style={{ marginTop: 10 }}>
-          <Col offset="11" span="1">
+          <Col offset="8" span="2">
             <Button onClick={this.onCancelClick}>取消</Button>
           </Col>
-          <Col span="1">
+          <Col span="2">
             <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
           </Col>
         </Row>

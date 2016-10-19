@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Popover, Popconfirm } from 'antd';
+import Modals from 'modules/Modals';
 import moment from 'moment';
 import stringcase from 'stringcase';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
@@ -50,6 +51,8 @@ class ProductsWithForm extends Component {
 
   state = {
     delSaleProductId: null,
+    previewModalVisible: false,
+    previewLink: '',
     filters: {
       pageSize: 10,
       page: 1,
@@ -145,6 +148,10 @@ class ProductsWithForm extends Component {
     wrapperCol: { span: 16 },
   })
 
+  togglePreviewModalVisible = (e) => {
+    this.setState({ previewModalVisible: !this.state.previewModalVisible });
+  }
+
   columns = () => ([{
     title: '图片',
     key: 'picUrl',
@@ -237,13 +244,19 @@ class ProductsWithForm extends Component {
     key: 'operation',
     width: 80,
     render: (id, record) => (
-      <span>
-        <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
-        <span className="ant-divider"></span>
-        <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
-          <a data-id={id} onClick={this.onDeleteClick}>删除</a>
-        </Popconfirm>
-      </span>
+      <ul style={{ display: 'block' }}>
+        <li>
+          <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
+        </li>
+        <li>
+          <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
+            <a data-id={id} onClick={this.onDeleteClick}>删除</a>
+          </Popconfirm>
+        </li>
+        <li>
+          <a data-productid={id} onClick={this.onPreviewClick}>预览</a>
+        </li>
+      </ul>
     ),
   }])
 
@@ -306,6 +319,7 @@ class ProductsWithForm extends Component {
           </Row>
         </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
+        <Modals.Preview visible={this.state.previewModalVisible} url={this.state.previewLink} onCancel={this.togglePreviewModalVisible} title="商品预览" />
       </div>
     );
   }

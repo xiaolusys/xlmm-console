@@ -56,10 +56,10 @@ View -> Syntax -> Open all with current extension as ... -> Babel -> JavaScript(
 ```shell
 $ git clone ssh://git@git.xiaolumm.com:10022/XLMM-FE/xlmm-console.git
 $ cd xlmm-console
-#for ubuntu
+# for ubuntu
 $ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 $ sudo apt-get install -y nodejs
-#endfor ubuntu
+# endfor ubuntu
 $ npm install babel-eslint -g
 $ npm install eslint -g
 $ npm install

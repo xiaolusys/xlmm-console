@@ -22,6 +22,7 @@ const actionCreators = {
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class HomeWithForm extends Component {
 
   static propTypes = {

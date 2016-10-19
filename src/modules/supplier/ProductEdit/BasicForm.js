@@ -240,16 +240,20 @@ class Basic extends Component {
 
   findSkuItems = (product, sku) => {
     const skuItems = [];
+    const unionSkuName = '统一规格';
     const firstSku = product.skuExtras[0];
     each(sku.items.toJS(), (item) => {
-      if (firstSku.color === item.name && item.name === '统一规格') {
-        skuItems.push(item.id);
-      }
-      if (firstSku.color && item.name !== '统一规格') {
-        skuItems.push(item.id);
-      }
-      if (firstSku.propertiesName && item.name === '尺码') {
-        skuItems.push(item.id);
+      if (firstSku.color === unionSkuName) {
+        if (firstSku.color === item.name) {
+          skuItems.push(item.id);
+        }
+      } else {
+        if (firstSku.color && item.name !== unionSkuName) {
+          skuItems.push(item.id);
+        }
+        if (firstSku.propertiesName && item.name !== unionSkuName) {
+          skuItems.push(item.id);
+        }
       }
     });
     return skuItems;
@@ -270,7 +274,7 @@ class Basic extends Component {
       }
     });
 
-    map(groupBy(product.skuExtras, 'color'), (item, key) => {
+    map(groupBy(product.skuExtras, 'color'), (items, key) => {
       colors.push(JSON.stringify({
         id: colorId,
         name: '颜色',
@@ -278,14 +282,13 @@ class Basic extends Component {
       }));
     });
 
-    map(groupBy(product.skuExtras, 'propertiesName'), (item, key) => {
+    map(groupBy(product.skuExtras, 'propertiesName'), (items, key) => {
       sizes.push(JSON.stringify({
         id: sizeId,
         name: '尺码',
         value: key,
       }));
     });
-
     if (!isEmpty(colors)) {
       selected[`skus-${colorId}`] = colors;
     }
@@ -426,7 +429,7 @@ class Basic extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 5 },
+    wrapperCol: { span: 10 },
   })
 
   render() {
@@ -517,10 +520,10 @@ class Basic extends Component {
           </If>
         </Form>
         <Row style={{ marginTop: 10 }}>
-          <Col offset="11" span="1">
+          <Col offset="8" span="2">
             <Button onClick={this.onCancelClick}>取消</Button>
           </Col>
-          <Col span="1">
+          <Col span="2">
             <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading}>保存</Button>
           </Col>
         </Row>

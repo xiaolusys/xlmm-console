@@ -73,14 +73,15 @@ export class ProductEdit extends Component {
   }
 
   state = {
+    activeTabKey: 'basic',
     productLink: '',
     crawlProductModalVisible: true,
   }
 
   componentWillMount() {
-    const { supplierId, productId } = this.props.location.query;
+    const { supplierId, productId, tabKey } = this.props.location.query;
     if (productId) {
-      this.setState({ crawlProductModalVisible: false });
+      this.setState({ crawlProductModalVisible: false, activeTabKey: tabKey || 'basic' });
       this.props.fetchProduct(productId);
     }
     this.props.fetchUptoken();
@@ -133,7 +134,7 @@ export class ProductEdit extends Component {
     };
     return (
       <div className={`${prefixCls}`}>
-        <Tabs defaultActiveKey="basic" onChange={this.onTabChange}>
+        <Tabs defaultActiveKey={this.state.activeTabKey} onChange={this.onTabChange}>
           <Tabs.TabPane tab="基本信息" key="basic">
             <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
           </Tabs.TabPane>

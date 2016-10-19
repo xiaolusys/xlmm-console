@@ -14,6 +14,7 @@ import moment from 'moment';
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
