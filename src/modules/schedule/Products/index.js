@@ -440,10 +440,12 @@ class ProductsWithForm extends Component {
         <div>
           <ul style={{ display: 'block' }}>
             <li >
-              <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
+              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
+              // <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
             </li>
             <li >
-              <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
+              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+              // <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
             </li>
             <li >
               <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
