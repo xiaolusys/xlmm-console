@@ -10,4 +10,8 @@ export default [{
   name: '选品类目',
   link: '/categories',
   icon: 'tags-o',
+}, {
+  name: '每日推送',
+  link: '/ninepics',
+  icon: 'tags-o',
 }];
