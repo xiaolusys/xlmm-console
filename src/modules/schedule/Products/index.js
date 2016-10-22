@@ -250,7 +250,7 @@ class ProductsWithForm extends Component {
 
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
-    return  fieldValue? { value: fieldValue }: {};
+    return fieldValue ? { value: fieldValue } : {};
   }
 
   setDistance = (e) => {

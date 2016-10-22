@@ -96,7 +96,7 @@ class List extends Component {
 
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
-    return  fieldValue? { value: fieldValue }: {};
+    return fieldValue ? { value: fieldValue } : {};
   }
 
   formItemLayout = () => ({
@@ -217,7 +217,7 @@ class List extends Component {
             </Col>
             <Col sm={6}>
               <Form.Item label="日期" {...this.formItemLayout()} >
-                <DatePicker.RangePicker {...getFieldProps('dateRange')} {...this.getFilterSelectValue('dateRange')} labelInValue/>
+                <DatePicker.RangePicker {...getFieldProps('dateRange')} {...this.getFilterSelectValue('dateRange')} labelInValue />
               </Form.Item>
             </Col>
           </Row>
