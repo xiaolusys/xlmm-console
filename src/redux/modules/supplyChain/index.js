@@ -13,6 +13,7 @@ import sku from './sku';
 import preference from './preference';
 import material from './material';
 import uptoken from './uptoken';
+import stateFilters from './stateFilters';
 
 export default {
   schedules,
@@ -30,4 +31,5 @@ export default {
   preference,
   material,
   uptoken,
+  stateFilters,
 };

@@ -246,7 +246,7 @@ class Material extends Component {
         </If>
         <Row style={{ marginTop: 10 }}>
           <Col offset="8" span="2">
-            <Button onClick={this.onCancelClick}>取消</Button>
+            <Button onClick={this.onCancelClick}>返回</Button>
           </Col>
           <Col span="2">
             <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading || material.isLoading}>保存</Button>

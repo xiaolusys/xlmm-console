@@ -401,6 +401,7 @@ class Basic extends Component {
       columns: [{
         title: '规格',
         key: 'sku',
+        width: '20%',
         render: (record) => (
           <span>
             <If condition={record.color}>
@@ -530,7 +531,7 @@ class Basic extends Component {
         </Form>
         <Row style={{ marginTop: 10 }}>
           <Col offset="8" span="2">
-            <Button onClick={this.onCancelClick}>取消</Button>
+            <Button onClick={this.onCancelClick}>返回</Button>
           </Col>
           <Col span="2">
             <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading}>保存</Button>
