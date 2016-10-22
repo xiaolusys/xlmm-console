@@ -1,12 +1,12 @@
 import createReducer from 'redux/createReducer';
-import { apisBase, scheduleTypes } from 'constants';
+import { apisBase } from 'constants';
 
 const initialState = {
   items: [],
   count: 0,
 };
 
-const name = 'NINEPIC';
+const name = 'NINEPICS';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -25,12 +25,13 @@ export default createReducer({
 }, initialState);
 
 export const fetchNinepics = () => ({
-  url: `${apisBase.pmt}ninepic`,
+  url: `${apisBase.xiaolumm}ninepic`,
   method: 'get',
   type: `FETCH_${name}`,
 });
+
 export const deleteNinepic = (id) => ({
-  url: `${apisBase.pmt}ninepic/${id}`,
+  url: `${apisBase.xiaolumm}ninepic/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {

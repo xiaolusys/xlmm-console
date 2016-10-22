@@ -17,11 +17,10 @@ import moment from 'moment';
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
-    children: React.PropTypes.any,
     location: React.PropTypes.any,
     form: React.PropTypes.object,
     fetchNinepics: React.PropTypes.func,
-    deleteNinepics: React.PropTypes.func,
+    deleteNinepic: React.PropTypes.func,
     ninepics: React.PropTypes.object,
   };
 
@@ -55,9 +54,8 @@ class List extends Component {
 
   onDeleteNinepicClick = (e) => {
     const { nincpicid } = e.currentTarget.dataset;
-    this.props.deleteNinepics(nincpicid);
+    this.props.deleteNinepic(nincpicid);
   }
-
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -66,39 +64,27 @@ class List extends Component {
 
   columns = () => {
     const self = this;
-    return [{
-      title: '图片',
-      key: 'catPic',
-      dataIndex: 'catPic',
-      width: 100,
-      render: (catPic, record) => {
-        const conetnt = (<img style={{ height: '360px' }} src={catPic} role="presentation" />);
-        return (
-          <Popover placement="right" content={conetnt} trigger="hover">
-            <img style={{ height: '80px' }} src={catPic} role="presentation" />
-          </Popover>
-        );
-      },
-    }, {
+    return [
+    {
       title: '标题',
       dataIndex: 'title',
       key: 'title',
       width: 100,
     }, {
       title: '开始时间',
-      dataIndex: 'start_time',
-      key: 'start_time',
+      dataIndex: 'startTime',
+      key: 'startTime',
     }, {
       title: '轮数',
-      dataIndex: 'turns_num',
-      key: 'turns_num',
+      dataIndex: 'turnsNum',
+      key: 'turnsNum',
     }, {
       title: '操作',
-      dataIndex: 'cid',
+      dataIndex: 'id',
       key: 'id',
       render: (id) => (
         <span>
-          //<Link to={`ninepics/edit?id=${id}`}>编辑</Link>
+          <Link to={`ninepics/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
           <a data-ninepicid={id} onClick={self.onDeleteNinepicClick}>删除</a>
         </span>
@@ -112,7 +98,7 @@ class List extends Component {
     return (
       <div className={`${prefixCls}`} >
         <Button type="primary" onClick={this.onCreateNinepicClick}>新建每日推送</Button>
-        <Table className="margin-top-sm" rowKey={(record) => (record.cid)} columns={this.columns()} loading={ninepics.isLoading} dataSource={ninepics.items} />
+        <Table className="margin-top-sm" rowKey={(record) => (record.id)} columns={this.columns()} loading={ninepics.isLoading} dataSource={ninepics.items} />
       </div>
     );
   }
