@@ -58,10 +58,11 @@ class EditNinepic extends Component {
       this.context.router.goBack();
     }
     this.props.form.setFieldsInitialValue({
-      parentCid: ninepic.parentCid,
-      catPic: ninepic.catPic,
-      name: ninepic.name,
-      sortOrder: ninepic.sortOrder,
+      id: ninepic.id,
+      title: ninepic.title,
+      auther: ninepic.auther,
+      cateGory: ninepic.cateGory,
+      description: ninepic.description,
       created: moment(ninepic.created).format('YYYY-MM-DD hh:mm:ss'),
       modified: moment(ninepic.modified).format('YYYY-MM-DD hh:mm:ss'),
     });
@@ -82,7 +83,7 @@ class EditNinepic extends Component {
       auther: params.auther,
       title: params.title,
       description: params.description,
-      cate_gory: params.cate_gory,
+      cateGory: params.cateGory,
     });
   }
 
@@ -98,21 +99,21 @@ class EditNinepic extends Component {
   render() {
     const { prefixCls, ninepic, form } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-    const { categories } = this.state;
+    const { ninepics } = this.state;
     return (
       <div>
         <Form horizontal className={`${prefixCls}`}>
-          <Form.Item {...this.formItemLayout()} label="作者">
-            <Input {...getFieldProps('auther', { rules: [{ required: true, auther: '请输入父类目ID！' }] })} value={getFieldValue('auther')} placeholder="请输入父类目ID" />
-          </Form.Item>
           <Form.Item {...this.formItemLayout()} label="标题">
-            <Input {...getFieldProps('title', { rules: [{ required: true, title: '请输入名称！' }] })} value={getFieldValue('title')} placeholder="请输入名称" />
+            <Input {...getFieldProps('title', { rules: [{ required: true, title: '请输入名称！' }] })} value={getFieldValue('title')} placeholder="推送标题" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="开始时间">
+            <DatePicker {...getFieldProps('startTime')} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="描述">
-            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="请输入图片URL" />
+            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="类别id">
-            <Input {...getFieldProps('cate_gory')} value={getFieldValue('cate_gory')} placeholder="请输入权重" />
+          <Form.Item {...this.formItemLayout()} label="类别">
+            <Input {...getFieldProps('cateGory')} value={getFieldValue('cateGory')} placeholder="推送的产品类别" />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
