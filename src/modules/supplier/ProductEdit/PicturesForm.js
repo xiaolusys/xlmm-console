@@ -54,14 +54,14 @@ class Pictures extends Component {
     const { setFieldsValue, getFieldsValue } = this.props.form;
     const fieldsValue = getFieldsValue();
     map(fieldsValue, (values, field) => {
+      const items = [];
       each(values, (value) => {
-        const items = [];
         if (file.uid !== value.uid) {
           items.push(value);
         }
-        setFieldsValue({
+      });
+      setFieldsValue({
           [field]: items,
-        });
       });
     });
   }
@@ -217,7 +217,7 @@ class Pictures extends Component {
           {...this.formItemLayout()}
           label="详情"
           help="可一次性选中多张图片上传"
-          required>
+          required >
           <Uploader
             {...getFieldProps('detailPics', {
               valuePropName: 'fileList',
@@ -228,14 +228,17 @@ class Pictures extends Component {
             multiple
             />
         </Form.Item>
-        <Row style={{ marginTop: 10 }}>
-          <Col offset="8" span="2">
-            <Button onClick={this.onCancelClick}>返回</Button>
-          </Col>
-          <Col span="2">
-            <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
-          </Col>
-        </Row>
+        <Form.Item 
+          {...this.formItemLayout()}>
+          <Row >
+            <Col offset="8" span="2">
+              <Button onClick={this.onCancelClick}>返回</Button>
+            </Col>
+            <Col span="2">
+              <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
+            </Col>
+          </Row>
+        </Form.Item>
       </Form>
     );
   }

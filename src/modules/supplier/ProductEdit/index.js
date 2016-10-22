@@ -97,7 +97,6 @@ export class ProductEdit extends Component {
       // this.context.router.goBack();
       message.success('保存成功！');
     }
-    console.log('product', product, material);
     if (product.failure || material.failure) {
       message.error('服务器出错，保存失败！');
     }

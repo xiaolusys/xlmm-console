@@ -147,11 +147,11 @@ class ProductsWithForm extends Component {
   }
 
   onPreviewClick = (e) => {
-    const { productid } = e.currentTarget.dataset;
+    const { productid, modelid } = e.currentTarget.dataset;
     const { protocol, host } = window.location;
     this.setState({
       previewModalVisible: true,
-      previewLink: `${protocol}//${host}/mall/product/details/${productid}?preview=true`,
+      previewLink: `${protocol}//${host}/mall/product/details/${modelid}?preview=true`,
     });
   }
 
@@ -277,7 +277,7 @@ class ProductsWithForm extends Component {
           </Popconfirm>
         </li>
         <li>
-          <a data-productid={id} onClick={this.onPreviewClick}>预览</a>
+          <a data-productid={id} data-modelid={record.modelId} onClick={this.onPreviewClick} disabled={record.modelId == null} >预览</a>
         </li>
       </ul>
     ),
