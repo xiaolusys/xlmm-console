@@ -228,7 +228,7 @@ class Pictures extends Component {
             multiple
             />
         </Form.Item>
-        <Form.Item 
+        <Form.Item
           {...this.formItemLayout()}>
           <Row >
             <Col offset="8" span="2">
