@@ -6,28 +6,29 @@ import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form 
 import * as constants from 'constants';
 import { fetchNinepics, deleteNinepic } from 'redux/modules/ninePic/ninepics';
 import { assign, map } from 'lodash';
+import stringcase from 'stringcase';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
 
 const actionCreators = {
-  fetchFilters: fetchFilters,
   fetchNinepics: fetchNinepics,
+  fetchFilters: fetchFilters,
   deleteNinepic: deleteNinepic,
 };
 
 @connect(
   state => ({
     ninepics: state.ninepics,
-    listFilters: state.ninepicFilters,
+    filters: state.ninepicFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     location: React.PropTypes.any,
     fetchFilters: React.PropTypes.func,
-    listFilters: React.PropTypes.object,
     form: React.PropTypes.object,
     fetchNinepics: React.PropTypes.func,
     deleteNinepic: React.PropTypes.func,
@@ -48,6 +49,7 @@ class List extends Component {
   }
 
   state = {
+    nincpicid: null,
     filters: {
       pageSize: 10,
       page: 1,
@@ -56,9 +58,25 @@ class List extends Component {
   }
 
   componentWillMount() {
-    console.log(this.props);
     this.props.fetchFilters();
     this.props.fetchNinepics();
+  }
+
+  onTableChange = (pagination, filters, sorter) => {
+    let ordering = this.state.filters.ordering;
+    switch (sorter.order) {
+      case 'ascend':
+        ordering = `${sorter.column.dataIndex}__${stringcase.snakecase(sorter.column.key)}`;
+        break;
+      case 'descend':
+        ordering = `-${sorter.column.dataIndex}__${stringcase.snakecase(sorter.column.key)}`;
+        break;
+      default:
+        ordering = undefined;
+        break;
+    }
+    this.setFilters({ ordering: ordering });
+    this.props.fetchNinepics(this.getFilters());
   }
 
   onCreateNinepicClick = (e) => {
@@ -70,33 +88,15 @@ class List extends Component {
     this.props.deleteNinepic(nincpicid);
   }
 
-  setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
+  setFilters = function(filters) {
+    return this.setState(assign(this.state.filters, filters));
   }
 
   getFilters = () => (this.state.filters)
 
-  pagination = () => {
-    const { ninepics } = this.props;
-    const self = this;
-    return {
-      total: ninepics.count || 0,
-      showTotal: total => `共 ${total} 条`,
-      showSizeChanger: true,
-      onShowSizeChange(current, pageSize) {
-        self.setFilters({ pageSize: pageSize, page: current });
-        self.props.fetchNinepics(self.getFilters());
-      },
-      onChange(current) {
-        self.setFilters({ page: current });
-        self.props.fetchNinepics(self.getFilters());
-      },
-    };
-  }
-
   formItemLayout = () => ({
-    labelCol: { span: 9 },
-    wrapperCol: { span: 18 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   })
 
   columns = () => {
@@ -156,14 +156,44 @@ class List extends Component {
     }];
   }
 
+  tableProps = () => {
+    const self = this;
+    const { ninepics } = this.props;
+
+    return {
+      className: 'margin-top-sm',
+      rowKey: (record) => (record.id),
+      rowSelection: {
+        onChange: (selectedRowKeys, selectedRows) => {
+          const selected = map(selectedRows, (row) => ({ id: row.id, name: row.title }));
+          self.setSelected(selected);
+        },
+      },
+      pagination: {
+        total: ninepics.items.count || 0,
+        showTotal: total => `共 ${total} 条`,
+        showSizeChanger: true,
+        onShowSizeChange(current, pageSize) {
+          self.setFilters({ pageSize: pageSize, page: current });
+          self.props.fetchNinepics(self.getFilters());
+        },
+        onChange(current) {
+          self.setFilters({ page: current });
+        },
+      },
+      loading: ninepics.isLoading,
+      dataSource: ninepics.items.results,
+      onChange: this.onTableChange,
+    };
+  }
+
   render() {
     const { prefixCls, ninepics } = this.props;
     const { getFieldProps } = this.props.form;
-    console.log(ninepics.items);
     return (
       <div className={`${prefixCls}`} >
         <Button type="primary" onClick={this.onCreateNinepicClick}>新建每日推送</Button>
-        <Table className="margin-top-sm" rowKey={(record) => (record.id)} pagination={this.pagination()} columns={this.columns()} loading={ninepics.isLoading} dataSource={ninepics.items.results} />
+        <Table {...this.tableProps()} columns={this.columns()} />
       </div>
     );
   }

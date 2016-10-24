@@ -24,7 +24,7 @@ export default createReducer({
 }, initialState);
 
 export const fetchFilters = () => ({
-  url: `${apisBase.xiaolumm}ninepics/list_filters`,
+  url: `${apisBase.xiaolumm}ninepic/list_filters`,
   method: 'get',
   type: `FETCH_${name}`,
 });

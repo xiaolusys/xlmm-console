@@ -16,6 +16,7 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+    count: payload.data.count,
     items: payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
@@ -24,17 +25,20 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchNinepics = () => ({
+export const fetchNinepics = (filters) => ({
   url: `${apisBase.xiaolumm}ninepic`,
   method: 'get',
   type: `FETCH_${name}`,
+  params: {
+    ...filters,
+  },
 });
 
-export const deleteNinepic = (id) => ({
+export const deleteNinepic = (id, filters) => ({
   url: `${apisBase.xiaolumm}ninepic/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {
-    dispatch(fetchNinepics());
+    dispatch(fetchNinepics(filters));
   },
 });
