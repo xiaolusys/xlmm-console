@@ -5,13 +5,23 @@ import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input } from 'antd';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/ninePic/ninepic';
+import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
 import _ from 'lodash';
 import moment from 'moment';
+import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
+
+
+const actionCreators = {
+  fetchFilters,
+  fetchNinepic,
+  saveNinepic,
+  resetNinepic,
+};
 
 @connect(
   state => ({
     ninepic: state.ninepic,
+    filters: state.ninepicFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -19,6 +29,7 @@ class EditNinepic extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
+    filters: React.PropTypes.object,
     location: React.PropTypes.any,
     fetchNinepic: React.PropTypes.func,
     saveNinepic: React.PropTypes.func,
@@ -46,6 +57,7 @@ class EditNinepic extends Component {
   }
 
   componentWillMount() {
+    const { filters } = this.props;
     const { id } = this.props.location.query;
     if (id) {
       this.props.fetchNinepic(id);
@@ -54,15 +66,19 @@ class EditNinepic extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { ninepic } = nextProps;
-    if (!ninepic.isLoading && ninepic.success && ninepic.updated) {
+    console.log('debug ninepic:', ninepic);
+    if (ninepic && !ninepic.isLoading && ninepic.success && ninepic.updated) {
       this.context.router.goBack();
     }
     this.props.form.setFieldsInitialValue({
       id: ninepic.id,
       title: ninepic.title,
-      auther: ninepic.auther,
-      cateGory: ninepic.cateGory,
+      advertisementType: ninepic.advertisementType,
+      advertisementTypeDisplay: ninepic.advertisementTypeDisplay,
       description: ninepic.description,
+      saleCategory: ninepic.saleCategory,
+      categoryName: ninepic.categoryName,
+      startTime: ninepic.startTime,
       created: moment(ninepic.created).format('YYYY-MM-DD hh:mm:ss'),
       modified: moment(ninepic.modified).format('YYYY-MM-DD hh:mm:ss'),
     });
@@ -78,12 +94,13 @@ class EditNinepic extends Component {
         return;
       }
     });
+
     const params = this.props.form.getFieldsValue();
-    this.props.saveNinepic(this.props.ninepic.cid, {
-      auther: params.auther,
+    this.props.saveNinepic(this.props.ninepic.id, {
       title: params.title,
       description: params.description,
       cateGory: params.cateGory,
+      sortOrder: params.sortOrder,
     });
   }
 
@@ -97,23 +114,26 @@ class EditNinepic extends Component {
   })
 
   render() {
-    const { prefixCls, ninepic, form } = this.props;
+    const { prefixCls, ninepic, form, filters } = this.props;
+    console.log('debug ninepic in render:', ninepic, 'debug :', this.props);
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { ninepics } = this.state;
     return (
       <div>
         <Form horizontal className={`${prefixCls}`}>
           <Form.Item {...this.formItemLayout()} label="标题">
-            <Input {...getFieldProps('title', { rules: [{ required: true, title: '请输入名称！' }] })} value={getFieldValue('title')} placeholder="推送标题" />
+            <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('startTime')} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="描述">
             <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类别">
-            <Input {...getFieldProps('cateGory')} value={getFieldValue('cateGory')} placeholder="推送的产品类别" />
+            <Select {...getFieldProps('categoryName')} value={getFieldValue('categoryName')} placeholder="推送的产品类别!">
+              {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+            </Select>
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
