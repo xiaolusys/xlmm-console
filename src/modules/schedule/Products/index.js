@@ -10,8 +10,8 @@ import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stat
 import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
 import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
 import { fetchUsers } from 'redux/modules/auth/users';
-import { merge, map } from 'lodash';
 import stringcase from 'stringcase';
+import { merge, map } from 'lodash';
 
 const propsFiltersName = 'scheduleProductList';
 

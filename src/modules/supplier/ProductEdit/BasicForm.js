@@ -6,12 +6,11 @@ import { If } from 'jsx-control-statements';
 import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
-import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
+import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, assign, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 import { imageUrlPrefixs } from 'constants';
 import changeCaseKeys from 'change-case-keys';
-import { assign } from 'lodash';
 
 const actionCreators = {
   fetchSku,
@@ -209,7 +208,7 @@ class Basic extends Component {
       this.setState({
         skuItems: changeCaseKeys(skuItems, 'camelize', 10),
       });
-    }else{
+    } else {
       this.props.saveProduct(params);
       this.context.router.goBack();
     }
