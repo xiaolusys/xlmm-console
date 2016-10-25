@@ -84,8 +84,8 @@ class List extends Component {
   }
 
   onDeleteNinepicClick = (e) => {
-    const { nincpicid } = e.currentTarget.dataset;
-    this.props.deleteNinepic(nincpicid);
+    const { ninepicid } = e.currentTarget.dataset;
+    this.props.deleteNinepic(ninepicid);
   }
 
   setFilters = function(filters) {
@@ -120,8 +120,8 @@ class List extends Component {
     },
     {
       title: '类别',
-      dataIndex: 'cateGory',
-      key: 'cateGory',
+      dataIndex: 'categoryName',
+      key: 'categoryName',
     },
     {
       title: '开始时间',
