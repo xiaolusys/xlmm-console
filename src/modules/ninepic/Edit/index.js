@@ -168,7 +168,7 @@ class EditNinepic extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 5 },
+    wrapperCol: { span: 9 },
   })
 
   render() {
