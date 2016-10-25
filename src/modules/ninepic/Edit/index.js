@@ -129,7 +129,7 @@ class EditNinepic extends Component {
             <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('startTime')} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类别">
             <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
@@ -137,7 +137,7 @@ class EditNinepic extends Component {
             </Select>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="描述">
-            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={10} />
+            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="款式id">
             <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
@@ -146,7 +146,7 @@ class EditNinepic extends Component {
             <Input {...getFieldProps('redirectUrl')} value={getFieldValue('redirectUrl')} placeholder="跳转页面后缀" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="备注">
-            <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="后台备注" type="textarea" rows={10} />
+            <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="后台备注" type="textarea" rows={7} />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
