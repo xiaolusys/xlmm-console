@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message } from 'antd';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
-import _ from 'lodash';
+import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
+import { Uploader } from 'components/Uploader';
+import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 
 
 const actionCreators = {
@@ -16,15 +18,18 @@ const actionCreators = {
   fetchNinepic,
   saveNinepic,
   resetNinepic,
+  fetchUptoken,
 };
 
 @connect(
   state => ({
     ninepic: state.ninepic,
     filters: state.ninepicFilters,
+    uptoken: state.uptoken,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class EditNinepic extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
@@ -36,6 +41,8 @@ class EditNinepic extends Component {
     resetNinepic: React.PropTypes.func,
     ninepic: React.PropTypes.object,
     form: React.PropTypes.object,
+    fetchUptoken: React.PropTypes.func,
+    uptoken: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -59,6 +66,7 @@ class EditNinepic extends Component {
   componentWillMount() {
     const { filters } = this.props;
     const { id } = this.props.location.query;
+    this.props.fetchUptoken();
     if (id) {
       this.props.fetchNinepic(id);
     }
@@ -109,8 +117,26 @@ class EditNinepic extends Component {
     });
   }
 
-  toggleModalVisible = () => {
-    this.setState({ modalVisible: !this.state.modalVisible });
+  onPicRemove = (file) => {
+    const fileList = [];
+    each(this.props.form.getFieldValue('fileList'), (item) => {
+      if (file.url !== item.url) {
+        fileList.push(item);
+      }
+    });
+    this.props.form.setFieldsValue({ fileList: fileList });
+  }
+
+  onPicChange = ({ fileList }) => {
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        // file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.success(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ fileList: fileList });
   }
 
   formItemLayout = () => ({
@@ -119,7 +145,7 @@ class EditNinepic extends Component {
   })
 
   render() {
-    const { prefixCls, ninepic, form, filters } = this.props;
+    const { prefixCls, ninepic, form, filters, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { ninepics } = this.state;
     return (
@@ -138,6 +164,14 @@ class EditNinepic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="描述">
             <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="商品主图" required>
+            <Uploader
+              uptoken={uptoken.token}
+              fileList={getFieldValue('fileList')}
+              onRemove={this.onPicRemove}
+              onChange={this.onPicChange}
+              />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="款式id">
             <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />

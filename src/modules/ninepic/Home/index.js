@@ -148,7 +148,7 @@ class List extends Component {
       key: 'modifyID',
       render: (id) => (
         <span>
-          <Link to={`ninepics/edit?id=${id}`}>编辑</Link>
+          <Link to={`ninepics/edit?id=${id}`} >编辑</Link>
           <span className="ant-divider"></span>
           <a data-ninepicid={id} onClick={self.onDeleteNinepicClick}>删除</a>
         </span>
