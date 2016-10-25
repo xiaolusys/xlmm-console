@@ -57,12 +57,15 @@ export default createReducer({
     ...status,
     updated: false,
   }),
-  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-    ...payload.data,
-    updated: true,
-  }),
+  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => {
+    const resp = {
+      ...state,
+      ...status,
+      ...payload.data,
+      updated: true,
+    };
+    return resp;
+  },
   [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,

@@ -357,7 +357,6 @@ class ProductsWithForm extends Component {
       title: '图片',
       dataIndex: 'productPic',
       key: 'productPic',
-      // fixed: 'left',
       render: (productPic, record) => {
         const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
         return (
@@ -467,17 +466,17 @@ class ProductsWithForm extends Component {
       render: (text, record) => (
         <div>
           <ul style={{ display: 'block' }}>
-            <li >
-              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
+            <li>
+              <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
             </li>
             <li>
-              <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>NEW资料录入</Link>
+              <Link disabled={schedule.lockStatus || !record.modelId} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
             </li>
             <li >
-              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
+              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>OLD资料录入</a>
             </li>
-            <li>
-              <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>NEW上传图片</Link>
+            <li >
+              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus || !record.modelId}>OLD上传图片</a>
             </li>
             <li >
               <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">

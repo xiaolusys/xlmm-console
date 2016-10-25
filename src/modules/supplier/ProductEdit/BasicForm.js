@@ -10,6 +10,8 @@ import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, me
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 import { imageUrlPrefixs } from 'constants';
+import changeCaseKeys from 'change-case-keys';
+import { assign } from 'lodash';
 
 const actionCreators = {
   fetchSku,
@@ -64,7 +66,7 @@ class Basic extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { product, sku } = nextProps;
-    if (product.success) {
+    if (product.success && !product.update) {
       this.props.form.setFieldsInitialValue({
         fileList: [{
           uid: product.picUrl,
@@ -76,7 +78,7 @@ class Basic extends Component {
         supplierSku: product.supplierSku,
       });
     }
-    if (product.success && sku.success && isEmpty(this.state.skus)) {
+    if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
       const selected = this.findSkuValues(product, sku);
       this.props.form.setFieldsInitialValue({
         saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
@@ -88,7 +90,7 @@ class Basic extends Component {
         skuItems: this.findSkuItems(product, sku),
         ...selected,
       });
-      this.setState({
+      this.state.setState({
         skus: selected,
         skuItems: product.skuExtras,
       });
@@ -188,6 +190,7 @@ class Basic extends Component {
   onSaveClick = (e) => {
     const { productId, supplierId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
+    const { skuItems } = this.state;
     if (getFieldValue('fileList').length !== 1) {
       message.warning('上传一张图片!');
       return;
@@ -199,13 +202,17 @@ class Basic extends Component {
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
       saleSupplier: supplierId,
       supplierSku: getFieldValue('supplierSku'),
-      skuExtras: this.state.skuItems,
+      skuExtras: skuItems,
     };
     if (productId) {
       this.props.updateProduct(productId, params);
-      return;
+      this.setState({
+        skuItems: changeCaseKeys(skuItems, 'camelize', 10),
+      });
+    }else{
+      this.props.saveProduct(params);
+      this.context.router.goBack();
     }
-    this.props.saveProduct(params);
   }
 
   onCancelClick = (e) => {
