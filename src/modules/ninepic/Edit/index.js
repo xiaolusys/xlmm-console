@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message } from 'antd';
 import Modals from 'modules/Modals';
-import * as constants from 'constants';
+import { imageUrlPrefixs } from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
@@ -74,23 +74,42 @@ class EditNinepic extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { ninepic } = nextProps;
+    console.log('will moment');
     if (ninepic && !ninepic.isLoading && ninepic.success && ninepic.updated) {
       this.context.router.goBack();
     }
-    console.log('debug start time :', ninepic.startTime);
-    this.props.form.setFieldsInitialValue({
-      id: ninepic.id,
-      title: ninepic.title,
-      advertisementType: ninepic.advertisementType,
-      advertisementTypeDisplay: ninepic.advertisementTypeDisplay,
-      description: ninepic.description,
-      saleCategory: ninepic.saleCategory,
-      categoryName: ninepic.categoryName,
-      detailModelids: ninepic.detailModelids,
-      memo: ninepic.memo,
-      redirectUrl: ninepic.redirectUrl,
-      startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
-    });
+    if (ninepic.success) {
+      const detailPics = [];
+      if (!isEmpty(ninepic.picArry)) {
+        each(ninepic.picArry, (img) => {
+          detailPics.push({
+            uid: img,
+            url: img,
+            status: 'done',
+          });
+        });
+      }
+      this.props.form.setFieldsInitialValue({
+        id: ninepic.id,
+        title: ninepic.title,
+        advertisementType: ninepic.advertisementType,
+        advertisementTypeDisplay: ninepic.advertisementTypeDisplay,
+        description: ninepic.description,
+        saleCategory: ninepic.saleCategory,
+        categoryName: ninepic.categoryName,
+        detailModelids: ninepic.detailModelids,
+        memo: ninepic.memo,
+        fileList: detailPics,
+        redirectUrl: ninepic.redirectUrl,
+        startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
+      });
+    } else {
+      console.log(123);
+      this.props.form.setFieldsInitialValue({
+        fileList: [],
+        startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -105,6 +124,13 @@ class EditNinepic extends Component {
     });
 
     const params = this.props.form.getFieldsValue();
+
+    const detailPics = [];
+      if (!isEmpty(params.fileList)) {
+        each(params.fileList, (picInstance) => {
+          detailPics.push(picInstance.url);
+        });
+      }
     this.props.saveNinepic(this.props.ninepic.id, {
       title: params.title,
       description: params.description,
@@ -113,6 +139,7 @@ class EditNinepic extends Component {
       sortOrder: params.sortOrder,
       detailModelids: params.detailModelids,
       redirectUrl: params.redirectUrl,
+      picArry: detailPics,
       memo: params.memo,
     });
   }
@@ -130,7 +157,7 @@ class EditNinepic extends Component {
   onPicChange = ({ fileList }) => {
     each(fileList, (file) => {
       if (file.status === 'done' && file.response) {
-        // file.url = `${imageUrlPrefixs}${file.response.key}`;
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
         message.success(`上传成功: ${file.name}`);
       } else if (file.status === 'error') {
         message.error(`上传失败: ${file.name}`);
@@ -148,6 +175,7 @@ class EditNinepic extends Component {
     const { prefixCls, ninepic, form, filters, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { ninepics } = this.state;
+    let multiple = true;
     return (
       <div>
         <Form horizontal className={`${prefixCls}`}>
@@ -165,10 +193,11 @@ class EditNinepic extends Component {
           <Form.Item {...this.formItemLayout()} label="描述">
             <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="商品主图" required>
+          <Form.Item {...this.formItemLayout()} label="推广图片" required>
             <Uploader
               uptoken={uptoken.token}
               fileList={getFieldValue('fileList')}
+              multiple={multiple}
               onRemove={this.onPicRemove}
               onChange={this.onPicChange}
               />
