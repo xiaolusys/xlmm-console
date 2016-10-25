@@ -78,6 +78,9 @@ class EditNinepic extends Component {
       description: ninepic.description,
       saleCategory: ninepic.saleCategory,
       categoryName: ninepic.categoryName,
+      detailModelids: ninepic.detailModelids,
+      memo: ninepic.memo,
+      redirectUrl: ninepic.redirectUrl,
       startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
     });
   }
@@ -100,6 +103,9 @@ class EditNinepic extends Component {
       saleCategory: params.saleCategory,
       startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
       sortOrder: params.sortOrder,
+      detailModelids: params.detailModelids,
+      redirectUrl: params.redirectUrl,
+      memo: params.memo,
     });
   }
 
@@ -132,6 +138,15 @@ class EditNinepic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="描述">
             <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={10} />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="款式id">
+            <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="跳转页面">
+            <Input {...getFieldProps('redirectUrl')} value={getFieldValue('redirectUrl')} placeholder="跳转页面后缀" />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="备注">
+            <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="后台备注" type="textarea" rows={10} />
           </Form.Item>
           <Row>
             <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>

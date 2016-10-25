@@ -133,14 +133,14 @@ class List extends Component {
       key: 'turnsNum',
     },
     {
-      title: '已经推送？',
+      title: '已经推送',
       dataIndex: 'isPushed',
       key: 'isPushed',
     },
     {
       title: '款式ID',
-      dataIndex: 'detailDodelids',
-      key: 'detailDodelids',
+      dataIndex: 'detailModelids',
+      key: 'detailModelids',
     },
     {
       title: '操作',
