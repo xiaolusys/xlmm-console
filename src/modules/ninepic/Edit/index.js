@@ -74,7 +74,6 @@ class EditNinepic extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { ninepic } = nextProps;
-    console.log('will moment');
     if (ninepic && !ninepic.isLoading && ninepic.success && ninepic.updated) {
       this.context.router.goBack();
     }
@@ -104,7 +103,6 @@ class EditNinepic extends Component {
         startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
       });
     } else {
-      console.log(123);
       this.props.form.setFieldsInitialValue({
         fileList: [],
         startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
