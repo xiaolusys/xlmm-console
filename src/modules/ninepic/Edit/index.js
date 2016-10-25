@@ -66,10 +66,10 @@ class EditNinepic extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { ninepic } = nextProps;
-    console.log('debug ninepic:', ninepic);
     if (ninepic && !ninepic.isLoading && ninepic.success && ninepic.updated) {
       this.context.router.goBack();
     }
+    console.log('debug start time :', ninepic.startTime);
     this.props.form.setFieldsInitialValue({
       id: ninepic.id,
       title: ninepic.title,
@@ -78,9 +78,7 @@ class EditNinepic extends Component {
       description: ninepic.description,
       saleCategory: ninepic.saleCategory,
       categoryName: ninepic.categoryName,
-      startTime: ninepic.startTime,
-      created: moment(ninepic.created).format('YYYY-MM-DD hh:mm:ss'),
-      modified: moment(ninepic.modified).format('YYYY-MM-DD hh:mm:ss'),
+      startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
     });
   }
 
@@ -88,7 +86,7 @@ class EditNinepic extends Component {
     this.props.resetNinepic();
   }
 
-  onSubmitCliick = (e) => {
+  onSubmitClick = (e) => {
     this.props.form.validateFields((errors, values) => {
       if (!!errors) {
         return;
@@ -99,7 +97,8 @@ class EditNinepic extends Component {
     this.props.saveNinepic(this.props.ninepic.id, {
       title: params.title,
       description: params.description,
-      cateGory: params.cateGory,
+      saleCategory: params.saleCategory,
+      startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
       sortOrder: params.sortOrder,
     });
   }
@@ -115,7 +114,6 @@ class EditNinepic extends Component {
 
   render() {
     const { prefixCls, ninepic, form, filters } = this.props;
-    console.log('debug ninepic in render:', ninepic, 'debug :', this.props);
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { ninepics } = this.state;
     return (
@@ -125,18 +123,18 @@ class EditNinepic extends Component {
             <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="描述">
-            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" />
+            <DatePicker {...getFieldProps('startTime')} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类别">
-            <Select {...getFieldProps('categoryName')} value={getFieldValue('categoryName')} placeholder="推送的产品类别!">
+            <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
               {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
           </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="描述">
+            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={10} />
+          </Form.Item>
           <Row>
-            <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
+            <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
           </Row>
         </Form>
       </div>
