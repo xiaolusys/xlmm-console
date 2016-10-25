@@ -89,7 +89,7 @@ class Basic extends Component {
         skuItems: this.findSkuItems(product, sku),
         ...selected,
       });
-      this.state.setState({
+      this.setState({
         skus: selected,
         skuItems: product.skuExtras,
       });

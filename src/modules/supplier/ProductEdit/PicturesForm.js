@@ -228,8 +228,7 @@ class Pictures extends Component {
             multiple
             />
         </Form.Item>
-        <Form.Item
-          {...this.formItemLayout()}>
+        <Form.Item wrapperCol={{ span: 16, offset: 2 }} style={{ marginTop: 120 }}>
           <Row >
             <Col offset="8" span="2">
               <Button onClick={this.onCancelClick}>返回</Button>

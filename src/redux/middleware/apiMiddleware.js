@@ -19,10 +19,8 @@ axios.defaults = assign(axios.defaults, {
     try {
       payload = JSON.parse(data);
       payload = changeCaseKeys(payload, 'camelize', 10);
-      console.log('payload json', payload);
     } catch (e) {
       payload = data;
-      console.log('payload error', payload);
     }
     return payload;
   }],
