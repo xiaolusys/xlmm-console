@@ -80,6 +80,7 @@ class ProductsWithForm extends Component {
       pageSize: 10,
       page: 1,
       ordering: 'order_weight',
+      scheduleId: this.props.location.query.id,
     },
     selectedRowKeys: [],
     modalVisible: false,
@@ -97,8 +98,9 @@ class ProductsWithForm extends Component {
     this.props.fetchSchedule(id);
     this.props.getStateFilters();
     const { stateFilters } = this.props;
-    if (stateFilters) {
-      this.setFilters(stateFilters[propsFiltersName]);
+    const filters = stateFilters[propsFiltersName];
+    if (filters && filters.scheduleId === id) {
+      this.setFilters(filters);
     }
     this.props.fetchProducts(id, this.getFilters());
     this.props.fetchUsers({

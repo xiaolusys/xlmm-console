@@ -73,9 +73,9 @@ class ProductsWithForm extends Component {
   componentWillMount() {
     this.props.getStateFilters();
     const { stateFilters } = this.props;
-    if (stateFilters) {
-      const filters = stateFilters[propsFiltersName];
-      assign(filters, { saleSupplier: this.props.location.query.supplierId });
+    const filters = stateFilters[propsFiltersName];
+    const curSupplierId = this.props.location.query.supplierId;
+    if (filters && filters.saleSupplier && filters.saleSupplier === curSupplierId) {
       this.setFilters(filters);
     }
     this.props.fetchProducts(this.getFilters());
