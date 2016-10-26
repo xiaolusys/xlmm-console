@@ -178,7 +178,7 @@ class EditNinepic extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 8 },
+    wrapperCol: { span: 20 },
   })
 
   chooseProduct = (e) => {
@@ -190,16 +190,19 @@ class EditNinepic extends Component {
     const self = this;
     const { modelId } = promotionPro;
     return (
-      <Card style={{ width: 120 }} bodyStyle={{ padding: 0 }}>
-        <div className="custom-image">
-          <img alt="example" width="100%" src={promotionPro.picPath} data-modelid={modelId} onClick={self.chooseProduct} />
-        </div>
-        <div className="custom-card">
-          <h3>{promotionPro.saleTime}</h3>
-          <h3>{promotionPro.name}</h3>
-          <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >款式id{promotionPro.modelId}</a>
-        </div>
-      </Card>
+      <Col span={6}>
+        <Card style={{ width: 120 }} bodyStyle={{ padding: 0 }}>
+          <div className="custom-image">
+            <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
+              <img alt={promotionPro.name} width="100%" src={promotionPro.picPath} />
+            </a>
+          </div>
+          <div className="custom-card">
+            <h3>{promotionPro.saleTime}</h3>
+            <a data-modelid={modelId} onClick={self.chooseProduct}>款式: {promotionPro.modelId}</a>
+          </div>
+        </Card>
+      </Col>
     );
   }
 
@@ -207,7 +210,9 @@ class EditNinepic extends Component {
     const self = this;
     return (
       <div>
-        {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
+        <Row>
+          {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
+        </Row>
       </div>);
   }
 
@@ -218,46 +223,51 @@ class EditNinepic extends Component {
     let multiple = true;
     return (
       <div>
-        <Form horizontal className={`${prefixCls}`}>
-          <Form.Item {...this.formItemLayout()} label="标题">
-            <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="类别">
-            <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
-              {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
-            </Select>
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="描述">
-            <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="推广图片" required>
-            <Uploader
-              uptoken={uptoken.token}
-              fileList={getFieldValue('fileList')}
-              multiple={multiple}
-              onRemove={this.onPicRemove}
-              onChange={this.onPicChange}
-              />
-          </Form.Item>
-          <DatePicker onChange={this.onPromotionDateChange} />
-          <Form.Item {...this.formItemLayout()} label="款式id">
-            <Popover content={this.promotionProducts(promotionPros.items)} title="推广产品" placement="right">
-              <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
-            </Popover>
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="跳转页面">
-            <Input {...getFieldProps('redirectUrl')} value={getFieldValue('redirectUrl')} placeholder="跳转页面后缀" />
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="备注">
-            <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="后台备注" type="textarea" rows={7} />
-          </Form.Item>
-          <Row>
-            <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
-          </Row>
-        </Form>
+        <Row>
+          <Col span={12}>
+            <Form horizontal className={`${prefixCls}`}>
+              <Form.Item {...this.formItemLayout()} label="标题">
+                <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="开始时间">
+                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="类别">
+                <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
+                  {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+                </Select>
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="描述">
+                <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="推广图片" required>
+                <Uploader
+                  uptoken={uptoken.token}
+                  fileList={getFieldValue('fileList')}
+                  multiple={multiple}
+                  onRemove={this.onPicRemove}
+                  onChange={this.onPicChange}
+                  />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="款式id">
+                <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="跳转页面">
+                <Input {...getFieldProps('redirectUrl')} value={getFieldValue('redirectUrl')} placeholder="跳转页面后缀" />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="备注">
+                <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="后台备注" type="textarea" rows={7} />
+              </Form.Item>
+              <Row>
+                <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
+              </Row>
+            </Form>
+          </Col>
+          <Col span={12}>
+            <DatePicker onChange={this.onPromotionDateChange} />
+            {this.promotionProducts(promotionPros.items)}
+          </Col>
+        </Row>
       </div>
     );
   }
