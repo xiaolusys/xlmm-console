@@ -177,8 +177,8 @@ class EditNinepic extends Component {
   }
 
   formItemLayout = () => ({
-    labelCol: { span: 2 },
-    wrapperCol: { span: 20 },
+    labelCol: { span: 3 },
+    wrapperCol: { span: 18 },
   })
 
   chooseProduct = (e) => {
@@ -191,14 +191,15 @@ class EditNinepic extends Component {
     const { modelId } = promotionPro;
     return (
       <Col span={6}>
-        <Card style={{ width: 120 }} bodyStyle={{ padding: 0 }}>
+        <Card style={{ width: 160 }} bodyStyle={{ padding: 0 }}>
           <div className="custom-image">
             <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
-              <img alt={promotionPro.name} width="100%" src={promotionPro.picPath} />
+              <img alt="" width="100%" src={promotionPro.picPath} />
             </a>
           </div>
           <div className="custom-card">
             <h3>{promotionPro.saleTime}</h3>
+            <span>{promotionPro.name.slice(0, 20)}</span>
             <a data-modelid={modelId} onClick={self.chooseProduct}>款式: {promotionPro.modelId}</a>
           </div>
         </Card>
@@ -224,7 +225,7 @@ class EditNinepic extends Component {
     return (
       <div>
         <Row>
-          <Col span={12}>
+          <Col span={10}>
             <Form horizontal className={`${prefixCls}`}>
               <Form.Item {...this.formItemLayout()} label="标题">
                 <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
@@ -240,7 +241,7 @@ class EditNinepic extends Component {
               <Form.Item {...this.formItemLayout()} label="描述">
                 <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
               </Form.Item>
-              <Form.Item {...this.formItemLayout()} label="推广图片" required>
+              <Form.Item {...this.formItemLayout()} style={{ height: 270 }} label="推广图片" required>
                 <Uploader
                   uptoken={uptoken.token}
                   fileList={getFieldValue('fileList')}
@@ -263,7 +264,7 @@ class EditNinepic extends Component {
               </Row>
             </Form>
           </Col>
-          <Col span={12}>
+          <Col span={14}>
             <DatePicker onChange={this.onPromotionDateChange} />
             {this.promotionProducts(promotionPros.items)}
           </Col>
