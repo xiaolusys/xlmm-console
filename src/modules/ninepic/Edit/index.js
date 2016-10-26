@@ -9,6 +9,7 @@ import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/n
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
+import { fetchPromotionPros } from 'redux/modules/ninePic/ninepicPromotionPros';
 import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 
@@ -19,6 +20,7 @@ const actionCreators = {
   saveNinepic,
   resetNinepic,
   fetchUptoken,
+  fetchPromotionPros,
 };
 
 @connect(
@@ -26,6 +28,7 @@ const actionCreators = {
     ninepic: state.ninepic,
     filters: state.ninepicFilters,
     uptoken: state.uptoken,
+    promotionPros: state.promotionPros,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -42,7 +45,9 @@ class EditNinepic extends Component {
     ninepic: React.PropTypes.object,
     form: React.PropTypes.object,
     fetchUptoken: React.PropTypes.func,
+    fetchPromotionPros: React.PropTypes.func,
     uptoken: React.PropTypes.object,
+    promotionPros: React.PropTypes.any,
   };
 
   static contextTypes = {
@@ -67,13 +72,14 @@ class EditNinepic extends Component {
     const { filters } = this.props;
     const { id } = this.props.location.query;
     this.props.fetchUptoken();
+    this.props.fetchPromotionPros('2016-10-10');
     if (id) {
       this.props.fetchNinepic(id);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { ninepic } = nextProps;
+    const { ninepic, promotionPros } = nextProps;
     if (ninepic && !ninepic.isLoading && ninepic.success && ninepic.updated) {
       this.context.router.goBack();
     }
@@ -164,9 +170,15 @@ class EditNinepic extends Component {
     this.props.form.setFieldsValue({ fileList: fileList });
   }
 
+  onPromotionDateChange = (date, dateString) => {
+    const self = this;
+    console.log(date, dateString);
+    this.props.fetchPromotionPros(dateString);
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 9 },
+    wrapperCol: { span: 8 },
   })
 
   chooseProduct = (e) => {
@@ -191,32 +203,16 @@ class EditNinepic extends Component {
     );
   }
 
-  promotionProducts = () => {
+  promotionProducts = (promotionPros) => {
     const self = this;
-    const promotionPro = {
-      name: 'linjie1',
-      saleTime: '2016-10-10',
-      modelId: 123,
-      picPath: 'https://cbu01.alicdn.com/img/ibank/2015/932/440/2290044239_2103832436.400x400.jpg',
-    };
-
-    const promotionPros = [
-      {
-      name: 'linjie2',
-      saleTime: '2016-10-10',
-      modelId: 123,
-      picPath: 'https://cbu01.alicdn.com/img/ibank/2015/932/440/2290044239_2103832436.400x400.jpg',
-    },
-    ];
-
     return (
       <div>
-          {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
+        {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
       </div>);
   }
 
   render() {
-    const { prefixCls, ninepic, form, filters, uptoken } = this.props;
+    const { prefixCls, ninepic, form, filters, uptoken, promotionPros } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { ninepics } = this.state;
     let multiple = true;
@@ -246,8 +242,9 @@ class EditNinepic extends Component {
               onChange={this.onPicChange}
               />
           </Form.Item>
+          <DatePicker onChange={this.onPromotionDateChange} />
           <Form.Item {...this.formItemLayout()} label="款式id">
-            <Popover content={this.promotionProducts()} title="推广产品" placement="right">
+            <Popover content={this.promotionProducts(promotionPros.items)} title="推广产品" placement="right">
               <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
             </Popover>
           </Form.Item>

@@ -2,10 +2,10 @@ import createReducer from 'redux/createReducer';
 import { apisBase } from 'constants';
 
 const initialState = {
-  start_time: [],
+  items: [],
 };
 
-const name = 'NINEPIC_FILTERS';
+const name = 'NINEPIC_PROMOTIONPROS';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -15,7 +15,7 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    ...payload.data,
+    items: payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -23,8 +23,8 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchFilters = () => ({
-  url: `${apisBase.xiaolumm}ninepic/list_filters`,
+export const fetchPromotionPros = (date) => ({
+  url: `${apisBase.xiaolumm}ninepic/get_promotion_product?date=${date}`,
   method: 'get',
   type: `FETCH_${name}`,
 });
