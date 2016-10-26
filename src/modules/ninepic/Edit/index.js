@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
@@ -169,6 +169,52 @@ class EditNinepic extends Component {
     wrapperCol: { span: 9 },
   })
 
+  chooseProduct = (e) => {
+    const { modelid } = e.currentTarget.dataset;
+    this.props.form.setFieldsValue({ detailModelids: modelid });
+  }
+
+  proCard = (promotionPro) => {
+    const self = this;
+    const { modelId } = promotionPro;
+    return (
+      <Card style={{ width: 120 }} bodyStyle={{ padding: 0 }}>
+        <div className="custom-image">
+          <img alt="example" width="100%" src={promotionPro.picPath} data-modelid={modelId} onClick={self.chooseProduct} />
+        </div>
+        <div className="custom-card">
+          <h3>{promotionPro.saleTime}</h3>
+          <h3>{promotionPro.name}</h3>
+          <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >款式id{promotionPro.modelId}</a>
+        </div>
+      </Card>
+    );
+  }
+
+  promotionProducts = () => {
+    const self = this;
+    const promotionPro = {
+      name: 'linjie1',
+      saleTime: '2016-10-10',
+      modelId: 123,
+      picPath: 'https://cbu01.alicdn.com/img/ibank/2015/932/440/2290044239_2103832436.400x400.jpg',
+    };
+
+    const promotionPros = [
+      {
+      name: 'linjie2',
+      saleTime: '2016-10-10',
+      modelId: 123,
+      picPath: 'https://cbu01.alicdn.com/img/ibank/2015/932/440/2290044239_2103832436.400x400.jpg',
+    },
+    ];
+
+    return (
+      <div>
+          {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
+      </div>);
+  }
+
   render() {
     const { prefixCls, ninepic, form, filters, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
@@ -201,7 +247,9 @@ class EditNinepic extends Component {
               />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="款式id">
-            <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
+            <Popover content={this.promotionProducts()} title="推广产品" placement="right">
+              <Input {...getFieldProps('detailModelids')} value={getFieldValue('detailModelids')} placeholder="填写款式id, 多个用逗号隔开" />
+            </Popover>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="跳转页面">
             <Input {...getFieldProps('redirectUrl')} value={getFieldValue('redirectUrl')} placeholder="跳转页面后缀" />
