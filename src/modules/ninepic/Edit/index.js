@@ -71,8 +71,11 @@ class EditNinepic extends Component {
   componentWillMount() {
     const { filters } = this.props;
     const { id } = this.props.location.query;
+    const now = new Date();
+    const todayDateArry = [now.getFullYear(), now.getMonth() + 1, now.getDate()];
+    const todayDate = todayDateArry.join('-');
     this.props.fetchUptoken();
-    this.props.fetchPromotionPros('2016-10-10');
+    this.props.fetchPromotionPros(todayDate);
     if (id) {
       this.props.fetchNinepic(id);
     }
