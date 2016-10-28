@@ -75,7 +75,7 @@ class Editapppushmsg extends Component {
       this.props.form.setFieldsInitialValue({
         desc: apppushmsg.desc,
         targetUrl: apppushmsg.targetUrl,
-        params: apppushmsg.params,
+        paramsUrl: apppushmsg.paramsUrl,
         cat: apppushmsg.cat,
         platform: apppushmsg.platform,
         regid: apppushmsg.regid,
@@ -100,7 +100,7 @@ class Editapppushmsg extends Component {
     this.props.saveAppPushMsg(this.props.apppushmsg.id, {
         desc: params.desc,
         targetUrl: params.targetUrl,
-        params: params.params,
+        paramsUrl: params.paramsUrl,
         cat: params.cat,
         platform: params.platform,
         status: params.status,
@@ -133,13 +133,13 @@ class Editapppushmsg extends Component {
                   {filters.platform.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
-              <Form.Item {...this.formItemLayout()} label="跳转页面">
+              <Form.Item {...this.formItemLayout()} label="跳转界面">
                 <Select {...getFieldProps('targetUrl')} value={getFieldValue('targetUrl')} placeholder="RedirectPage Choose ...">
                   {filters.targetUrl.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
-              <Form.Item {...this.formItemLayout()} label="推送参数">
-                <Input {...getFieldProps('params')} value={getFieldValue('params')} type="textarea" rows={7} laceholder="推送参数" />
+              <Form.Item {...this.formItemLayout()} label="跳转Url">
+                <Input {...getFieldProps('paramsUrl')} value={getFieldValue('paramsUrl')} type="textarea" rows={7} laceholder="跳转Url" />
               </Form.Item>
               <Row>
                 <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
