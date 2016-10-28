@@ -1,12 +1,12 @@
 import createReducer from 'redux/createReducer';
-import { apisBase } from 'constants';
+import { apisBase, scheduleTypes } from 'constants';
 import _ from 'lodash';
 
 const initialState = {
 
 };
 
-const name = 'NINEPIC';
+const name = 'APPPUSHMSG';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -40,17 +40,17 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchNinepic = (id) => ({
-  url: `${apisBase.xiaolumm}ninepic/${id}`,
+export const fetchAppPushMsg = (id) => ({
+  url: `${apisBase.apppushmsg}apppushmsg/${id}`,
   method: 'get',
   type: `FETCH_${name}`,
 });
 
-export const saveNinepic = (id, params) => ({
-  url: id ? `${apisBase.xiaolumm}ninepic/${id}` : `${apisBase.xiaolumm}ninepic`,
+export const saveAppPushMsg = (id, params) => ({
+  url: id ? `${apisBase.apppushmsg}apppushmsg/${id}` : `${apisBase.apppushmsg}apppushmsg`,
   method: id ? 'put' : 'post',
   type: `SAVE_${name}`,
   data: params,
 });
 
-export const resetNinepic = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));
+export const resetAppPushMsg = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));

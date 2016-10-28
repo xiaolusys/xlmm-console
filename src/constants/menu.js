@@ -11,7 +11,11 @@ export default [{
   link: '/categories',
   icon: 'tags-o',
 }, {
-  name: '每日推送',
+  name: 'App推送',
+  link: '/apppushmsgs',
+  icon: 'tags-o',
+}, {
+  name: '九张图',
   link: '/ninepics',
   icon: 'tags-o',
 }];

@@ -187,7 +187,6 @@ class EditNinepic extends Component {
   chooseProduct = (e) => {
     const { modelid } = e.currentTarget.dataset;
     const oldModelIds = this.props.form.getFieldProps('detailModelids').value;
-    console.log('debug old ids:', oldModelIds);
     const tmp = oldModelIds.split(',');
     let isIn = false;
     for (let i = 0; i < tmp.length; i++) {
@@ -200,7 +199,6 @@ class EditNinepic extends Component {
     } else {
       message.error('已经添加了！');
     }
-    console.log('tmp', tmp);
     const mds = tmp.join(',');
     this.props.form.setFieldsValue({ detailModelids: mds });
   }
