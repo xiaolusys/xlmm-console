@@ -186,7 +186,23 @@ class EditNinepic extends Component {
 
   chooseProduct = (e) => {
     const { modelid } = e.currentTarget.dataset;
-    this.props.form.setFieldsValue({ detailModelids: modelid });
+    const oldModelIds = this.props.form.getFieldProps('detailModelids').value;
+    console.log('debug old ids:', oldModelIds);
+    const tmp = oldModelIds.split(',');
+    let isIn = false;
+    for (let i = 0; i < tmp.length; i++) {
+      if (modelid === tmp[i]) {
+        isIn = true;
+      }
+    }
+    if (isIn === false) {
+      tmp.push(modelid);
+    } else {
+      message.error('已经添加了！');
+    }
+    console.log('tmp', tmp);
+    const mds = tmp.join(',');
+    this.props.form.setFieldsValue({ detailModelids: mds });
   }
 
   proCard = (promotionPro) => {

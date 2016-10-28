@@ -190,21 +190,11 @@ class List extends Component {
     };
   }
 
-
-  handleInputChange(e) {
-    const self = this;
-    console.log('dbueg :', e.target.value);
-    return {
-      self.setFilters({detailModelids: e.target.value});
-    }
+  handleInputChange = (e) => {
+    this.setFilters({ detailModelids: e.target.value });
   }
 
-  handleSearch () {
-    // if (this.props.onSearch) {
-      // this.props.onSearch(this.state.value);
-    // }
-    // const filters = this.props.form.getFieldsValue();
-    // this.setFilters(filters);
+  handleSearch = () => {
     this.props.fetchNinepics(this.getFilters());
   }
 
@@ -213,8 +203,8 @@ class List extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <InputGroup className="123">
-          <Input placeholder="123123" value={this.state.value} onChange={this.handleInputChange} onFocus={this.handleFocusBlur} onBlur={this.handleFocusBlur} onPressEnter={this.handleSearch} />
+        <InputGroup className="filter-modelid">
+          <Input placeholder="款式ID" value={this.state.filters.detailModelids} onChange={this.handleInputChange} onFocus={this.handleFocusBlur} onPressEnter={this.handleSearch} />
           <div className="ant-input-group-wrap">
             <Button icon="search" className={777} size={6} onClick={this.handleSearch} />
           </div>
