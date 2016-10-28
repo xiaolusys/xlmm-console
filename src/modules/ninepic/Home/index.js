@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, Input } from 'antd';
 import * as constants from 'constants';
 import { fetchNinepics, deleteNinepic } from 'redux/modules/ninePic/ninepics';
 import { assign, map } from 'lodash';
 import stringcase from 'stringcase';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
+
+
+const InputGroup = Input.Group;
 
 const actionCreators = {
   fetchNinepics: fetchNinepics,
@@ -27,6 +30,7 @@ const actionCreators = {
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
+    placeholder: React.PropTypes.string,
     location: React.PropTypes.any,
     fetchFilters: React.PropTypes.func,
     form: React.PropTypes.object,
@@ -49,7 +53,6 @@ class List extends Component {
   }
 
   state = {
-    nincpicid: null,
     filters: {
       pageSize: 10,
       page: 1,
@@ -187,11 +190,35 @@ class List extends Component {
     };
   }
 
+
+  handleInputChange(e) {
+    const self = this;
+    console.log('dbueg :', e.target.value);
+    return {
+      self.setFilters({detailModelids: e.target.value});
+    }
+  }
+
+  handleSearch () {
+    // if (this.props.onSearch) {
+      // this.props.onSearch(this.state.value);
+    // }
+    // const filters = this.props.form.getFieldsValue();
+    // this.setFilters(filters);
+    this.props.fetchNinepics(this.getFilters());
+  }
+
   render() {
-    const { prefixCls, ninepics } = this.props;
+    const { prefixCls, ninepics, placeholder } = this.props;
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
+        <InputGroup className="123">
+          <Input placeholder="123123" value={this.state.value} onChange={this.handleInputChange} onFocus={this.handleFocusBlur} onBlur={this.handleFocusBlur} onPressEnter={this.handleSearch} />
+          <div className="ant-input-group-wrap">
+            <Button icon="search" className={777} size={6} onClick={this.handleSearch} />
+          </div>
+        </InputGroup>
         <Button type="primary" onClick={this.onCreateNinepicClick}>新建每日推送</Button>
         <Table {...this.tableProps()} columns={this.columns()} />
       </div>
