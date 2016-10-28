@@ -19,7 +19,7 @@ const actionCreators = {
 @connect(
   state => ({
     apppushmsgs: state.apppushmsgs,
-    filters: state.fetchFilters,
+    filters: state.apppushmsgFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -34,6 +34,7 @@ class List extends Component {
     fetchAppPushMsgs: React.PropTypes.func,
     deleteAppPushMsg: React.PropTypes.func,
     apppushmsgs: React.PropTypes.object,
+    filters: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -179,9 +180,8 @@ class List extends Component {
     };
   }
 
-
   render() {
-    const { prefixCls, apppushmsgs, placeholder } = this.props;
+    const { prefixCls, apppushmsgs, placeholder, filters } = this.props;
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >

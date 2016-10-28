@@ -20,7 +20,7 @@ const actionCreators = {
 @connect(
   state => ({
     apppushmsg: state.apppushmsg,
-    filters: state.fetchFilters,
+    filters: state.apppushmsgFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -117,7 +117,6 @@ class Editapppushmsg extends Component {
     const { prefixCls, apppushmsg, form, filters } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { apppushmsgs } = this.state;
-    console.log('debug :', apppushmsg);
     return (
       <div>
         <Row>
@@ -130,7 +129,17 @@ class Editapppushmsg extends Component {
                 <DatePicker {...getFieldProps('pushTime', { rules: [{ required: true, title: '推送时间' }] })} value={getFieldValue('pushTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="推送对象">
-                <Input {...getFieldProps('platform')} value={getFieldValue('platform')} placeholder="选中推送" />
+                <Select {...getFieldProps('platform')} value={getFieldValue('platform')} placeholder="Platform Choose ...">
+                  {filters.platform.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+                </Select>
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="跳转页面">
+                <Select {...getFieldProps('targetUrl')} value={getFieldValue('targetUrl')} placeholder="RedirectPage Choose ...">
+                  {filters.targetUrl.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+                </Select>
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="推送参数">
+                <Input {...getFieldProps('params')} value={getFieldValue('params')} type="textarea" rows={7} laceholder="推送参数" />
               </Form.Item>
               <Row>
                 <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
