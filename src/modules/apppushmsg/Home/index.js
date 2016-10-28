@@ -106,12 +106,32 @@ class List extends Component {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
+      width: 50,
     },
     {
       title: '推送内容',
       dataIndex: 'desc',
       key: 'desc',
+      width: 300,
+    },
+
+    {
+      title: 'Target',
+      dataIndex: 'targetDisplay',
+      key: 'targetDisplay',
       width: 100,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'statusDisplay',
+      key: 'statusDisplay',
+      width: 100,
+    },
+    {
+      title: 'PushTime',
+      dataIndex: 'pushTime',
+      key: 'pushTime',
+      width: 200,
     },
 
     {
