@@ -38,13 +38,13 @@ Sass
 SublimeLinter
 SublimeLinter-eslint
 HTML-CSS-JS Prettify
-``` 
+```
 ### 3. Plugins Setup
 ```text
 a. HTML-CSS-JS Prettify Setup
 Preference -> Package Settings -> HTML/CSS/JS Prettify -> Set Prettify Preference
 set 'indent_size' as 2,
-set 'e4x' as true, 
+set 'e4x' as true,
 
 b. SublimeLinter Setup
 Tools -> SublimeLinter -> Debug Mode
@@ -80,7 +80,7 @@ Using rimraf clean the `dist` folder, which is the target of the `build`
 
 ## Build & build:production
 ```
-$ npm run build
+$ npm run lint && npm run build
 ```
 Builds the app into the 'dist' folder for deployment
 ```
