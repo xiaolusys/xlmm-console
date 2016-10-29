@@ -187,7 +187,12 @@ class EditNinepic extends Component {
   chooseProduct = (e) => {
     const { modelid } = e.currentTarget.dataset;
     const oldModelIds = this.props.form.getFieldProps('detailModelids').value;
-    const tmp = oldModelIds.split(',');
+    let tmp = '';
+    if (typeof(oldModelIds) === 'undefined') {
+      tmp = [];
+    } else {
+      tmp = oldModelIds.split(',');
+    }
     let isIn = false;
     for (let i = 0; i < tmp.length; i++) {
       if (modelid === tmp[i]) {
@@ -199,7 +204,13 @@ class EditNinepic extends Component {
     } else {
       message.error('已经添加了！');
     }
-    const mds = tmp.join(',');
+    const tmp2 = [];
+    for (let j = 0; j < tmp.length; j++) {
+        if (tmp[j] !== '') {
+          tmp2.push(tmp[j]);
+        }
+    }
+    const mds = tmp2.join(',');
     this.props.form.setFieldsValue({ detailModelids: mds });
   }
 
