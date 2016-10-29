@@ -13,6 +13,8 @@ import { BasicForm } from './BasicForm';
 import { MaterialForm } from './MaterialForm';
 import { PicturesForm } from './PicturesForm';
 
+const filtersName = 'supplierProductList';
+
 const actionCreators = {
   fetchUptoken,
   fetchProduct,
@@ -46,7 +48,6 @@ export class ProductEdit extends Component {
     categories: React.PropTypes.object,
     material: React.PropTypes.object,
     uptoken: React.PropTypes.object,
-    filters: React.PropTypes.object,
     fetchCategories: React.PropTypes.func,
     fetchSupplier: React.PropTypes.func,
     fetchProduct: React.PropTypes.func,
@@ -76,6 +77,7 @@ export class ProductEdit extends Component {
     activeTabKey: 'basic',
     productLink: '',
     crawlProductModalVisible: true,
+    filters: {},
   }
 
   componentWillMount() {
@@ -92,11 +94,18 @@ export class ProductEdit extends Component {
   componentWillReceiveProps(nextProps) {
     const { product, material } = nextProps;
     if (product.updated || material.updated) {
-      this.context.router.goBack();
-      message.error('保存成功！');
+      // this.context.router.goBack();
+      message.success('保存成功！');
     }
     if (product.failure || material.failure) {
-      message.error('服务器出错，保存失败！');
+      const msgs = [];
+      if (product.error) {
+        msgs.push(product.error.detail);
+      }
+      if (material.error) {
+        msgs.push(material.error.detail);
+      }
+      message.error(`请求错误: ${msgs.join(',')}`);
     }
   }
 

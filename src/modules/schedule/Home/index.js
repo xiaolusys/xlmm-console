@@ -4,16 +4,27 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/supplyChain/schedules';
+import { fetchSchedules } from 'redux/modules/supplyChain/schedules';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
 import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
+
+const propsFiltersName = 'scheduleList';
+
+const actionCreators = {
+  fetchSchedules,
+  getStateFilters,
+  setStateFilters,
+};
 
 @connect(
   state => ({
     schedules: state.schedules,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
@@ -22,6 +33,9 @@ class List extends Component {
     form: React.PropTypes.object,
     fetchSchedules: React.PropTypes.func,
     schedules: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -46,15 +60,25 @@ class List extends Component {
   }
 
   componentWillMount() {
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    if (stateFilters) {
+      this.setFilters(stateFilters[propsFiltersName]);
+    }
     this.props.fetchSchedules(this.getFilters());
+  }
+
+  componentWillUnmount() {
+    const { filters } = this.state;
+    this.props.setStateFilters(propsFiltersName, filters);
   }
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
+    filters.page = 1;
     if (filters.dateRange) {
       filters.saleTimeStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
       filters.saleTimeEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
-      delete filters.dateRange;
     }
     this.setFilters(filters);
     this.props.fetchSchedules(this.getFilters());
@@ -69,6 +93,11 @@ class List extends Component {
   }
 
   getFilters = () => (this.state.filters)
+
+  getFilterSelectValue = (field) => {
+    const fieldValue = this.state.filters[field];
+    return fieldValue ? { value: fieldValue } : {};
+  }
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -85,7 +114,7 @@ class List extends Component {
       title: '日期',
       dataIndex: 'upshelfTime',
       key: 'datetime',
-      render: (upshelfTime) => (map(upshelfTime.split('T'), (t) => (<p>{t}</p>))),
+      render: (upshelfTime) => (map((upshelfTime || '').split('T'), (t) => (<p>{t}</p>))),
     }, {
       title: '类型',
       dataIndex: 'scheduleTypeLable',
@@ -154,12 +183,15 @@ class List extends Component {
   pagination = () => {
     const { schedules } = this.props;
     const self = this;
+    const { page, pageSize } = this.state.filters;
     return {
       total: schedules.count || 0,
       showTotal: total => `共 ${total} 条`,
       showSizeChanger: true,
-      onShowSizeChange(current, pageSize) {
-        self.setFilters({ pageSize: pageSize, page: current });
+      defaultCurrent: page,
+      defaultPageSize: pageSize,
+      onShowSizeChange(current, curPageSize) {
+        self.setFilters({ pageSize: curPageSize, page: current });
         self.props.fetchSchedules(self.getFilters());
       },
       onChange(current) {
@@ -178,14 +210,14 @@ class List extends Component {
           <Row type="flex" justify="start" align="middle">
             <Col sm={6}>
               <Form.Item label="排期类型" {...this.formItemLayout()} >
-                <Select {...getFieldProps('scheduleType')} allowClear placeholder="请选择排期类型" notFoundContent="无可选项">
+                <Select {...getFieldProps('scheduleType')} {...this.getFilterSelectValue('scheduleType')} labelInValue allowClear placeholder="请选择排期类型" notFoundContent="无可选项">
                   {map(constants.scheduleTypes, (type) => (<Select.Option value={type.id}>{type.lable}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="日期" {...this.formItemLayout()} >
-                <DatePicker.RangePicker {...getFieldProps('dateRange')} />
+                <DatePicker.RangePicker {...getFieldProps('dateRange')} {...this.getFilterSelectValue('dateRange')} labelInValue />
               </Form.Item>
             </Col>
           </Row>

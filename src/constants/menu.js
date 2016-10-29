@@ -10,4 +10,12 @@ export default [{
   name: '选品类目',
   link: '/categories',
   icon: 'tags-o',
+}, {
+  name: 'App推送',
+  link: '/apppushmsgs',
+  icon: 'tags-o',
+}, {
+  name: '九张图',
+  link: '/ninepics',
+  icon: 'tags-o',
 }];

@@ -43,62 +43,28 @@ class Pictures extends Component {
   }
 
   componentWillMount() {
-    const { product } = this.props;
-    const { setFieldsValue, getFieldsValue } = this.props.form;
-    const { model } = product;
-    if (product.success && !isEmpty(model.headImgs)) {
-      setFieldsValue({
-        mainPic: [{
-          uid: model.headImgs,
-          url: model.headImgs,
-          status: 'done',
-        }],
-      });
-    }
-    if (product.success && !isEmpty(model.contentImgs)) {
-      const detailPics = [];
-      each(model.contentImgs, (img) => {
-        detailPics.push({
-          uid: img,
-          url: img,
-          status: 'done',
-        });
-      });
-      setFieldsValue({ detailPics: detailPics });
-    }
-    if (product.success && !isEmpty(product.skuExtras)) {
-      map(groupBy(product.skuExtras, 'color'), (values, key) => {
-        const item = values[0];
-        if (isEmpty(item.picPath)) {
-          return;
-        }
-        setFieldsValue({
-          [key]: [{
-            uid: item.picPath,
-            url: item.picPath,
-            status: 'done',
-          }],
-        });
-      });
-    }
+    this.amountProps(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.amountProps(nextProps);
   }
 
   onRemove = (file) => {
     const { setFieldsValue, getFieldsValue } = this.props.form;
     const fieldsValue = getFieldsValue();
     map(fieldsValue, (values, field) => {
+      const items = [];
       each(values, (value) => {
-        const items = [];
         if (file.uid !== value.uid) {
           items.push(value);
         }
-        setFieldsValue({
+      });
+      setFieldsValue({
           [field]: items,
-        });
       });
     });
   }
-
 
   onSaveClick = () => {
     const { getFieldsValue, getFieldValue } = this.props.form;
@@ -166,6 +132,47 @@ class Pictures extends Component {
     return e && e.fileList;
   }
 
+  amountProps(nextProps) {
+    const { product } = nextProps;
+    const { setFieldsInitialValue, getFieldsValue } = this.props.form;
+    const { model } = product;
+    if (product.success && !isEmpty(model.headImgs)) {
+      setFieldsInitialValue({
+        mainPic: [{
+          uid: model.headImgs,
+          url: model.headImgs,
+          status: 'done',
+        }],
+      });
+    }
+    if (product.success && !isEmpty(model.contentImgs)) {
+      const detailPics = [];
+      each(model.contentImgs, (img) => {
+        detailPics.push({
+          uid: img,
+          url: img,
+          status: 'done',
+        });
+      });
+      setFieldsInitialValue({ detailPics: detailPics });
+    }
+    if (product.success && !isEmpty(product.skuExtras)) {
+      map(groupBy(product.skuExtras, 'color'), (values, key) => {
+        const item = values[0];
+        if (isEmpty(item.picPath)) {
+          return;
+        }
+        setFieldsInitialValue({
+          [key]: [{
+            uid: item.picPath,
+            url: item.picPath,
+            status: 'done',
+          }],
+        });
+      });
+    }
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 2 },
     wrapperCol: { span: 20 },
@@ -210,7 +217,7 @@ class Pictures extends Component {
           {...this.formItemLayout()}
           label="详情"
           help="可一次性选中多张图片上传"
-          required>
+          required >
           <Uploader
             {...getFieldProps('detailPics', {
               valuePropName: 'fileList',
@@ -221,14 +228,16 @@ class Pictures extends Component {
             multiple
             />
         </Form.Item>
-        <Row style={{ marginTop: 10 }}>
-          <Col offset="8" span="2">
-            <Button onClick={this.onCancelClick}>取消</Button>
-          </Col>
-          <Col span="2">
-            <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
-          </Col>
-        </Row>
+        <Form.Item wrapperCol={{ span: 16, offset: 2 }} style={{ marginTop: 120 }}>
+          <Row >
+            <Col offset="8" span="2">
+              <Button onClick={this.onCancelClick}>返回</Button>
+            </Col>
+            <Col span="2">
+              <Button type="primary" onClick={this.onSaveClick} loading={material.isLoading}>保存</Button>
+            </Col>
+          </Row>
+        </Form.Item>
       </Form>
     );
   }

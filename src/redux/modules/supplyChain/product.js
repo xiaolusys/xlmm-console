@@ -17,8 +17,8 @@ export default createReducer({
     ...payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
+      ...state,
+      ...status,
   }),
   [`CRAWL_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
@@ -57,12 +57,15 @@ export default createReducer({
     ...status,
     updated: false,
   }),
-  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-    ...payload.data,
-    updated: true,
-  }),
+  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => {
+    const resp = {
+      ...state,
+      ...status,
+      ...payload.data,
+      updated: true,
+    };
+    return resp;
+  },
   [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,

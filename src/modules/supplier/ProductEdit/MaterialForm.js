@@ -52,7 +52,7 @@ class Material extends Component {
   componentWillReceiveProps(nextProps) {
     const { getFieldValue } = this.props.form;
     const { product, preference } = nextProps;
-    if (preference.success && product.success && product.model && !isEmpty(product.model.extras)) {
+    if (preference.success && product.success && product.model && !isEmpty(product.model.extras || product.updated)) {
       const { newProperties } = product.model.extras;
       this.props.form.setFieldsInitialValue({
         materials: this.findSelectedMaterials(newProperties, preference),
@@ -246,7 +246,7 @@ class Material extends Component {
         </If>
         <Row style={{ marginTop: 10 }}>
           <Col offset="8" span="2">
-            <Button onClick={this.onCancelClick}>取消</Button>
+            <Button onClick={this.onCancelClick}>返回</Button>
           </Col>
           <Col span="2">
             <Button type="primary" onClick={this.onSaveClick} loading={product.isLoading || material.isLoading}>保存</Button>

@@ -8,17 +8,23 @@ import moment from 'moment';
 import stringcase from 'stringcase';
 import { fetchSuppliers, deleteSupplier } from 'redux/modules/supplyChain/suppliers';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
+
+const propsFiltersName = 'supplierList';
 
 const actionCreators = {
-  fetchSuppliers: fetchSuppliers,
-  fetchFilters: fetchFilters,
-  deleteSupplier: deleteSupplier,
+  fetchSuppliers,
+  fetchFilters,
+  deleteSupplier,
+  getStateFilters,
+  setStateFilters,
 };
 
 @connect(
   state => ({
     filters: state.supplierFilters,
     suppliers: state.suppliers,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -27,12 +33,15 @@ class HomeWithForm extends Component {
 
   static propTypes = {
     location: React.PropTypes.any,
+    filters: React.PropTypes.object,
+    suppliers: React.PropTypes.object,
     fetchFilters: React.PropTypes.func,
     fetchSuppliers: React.PropTypes.func,
     deleteSupplier: React.PropTypes.func,
-    filters: React.PropTypes.object,
-    suppliers: React.PropTypes.object,
     form: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -55,7 +64,17 @@ class HomeWithForm extends Component {
 
   componentWillMount() {
     this.props.fetchFilters();
-    this.props.fetchSuppliers();
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    if (stateFilters) {
+      this.setFilters(stateFilters[propsFiltersName]);
+    }
+    this.props.fetchSuppliers(this.getFilters());
+  }
+
+  componentWillUnmount() {
+    const { filters } = this.state;
+    this.props.setStateFilters(propsFiltersName, filters);
   }
 
   onSubmitClick = (e) => {
@@ -64,7 +83,6 @@ class HomeWithForm extends Component {
     if (filters.dateRange) {
       filters.createdStart = moment(filters.dateRange[0]).format('YYYY-MM-DD');
       filters.createdEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
-      delete filters.dateRange;
     }
     this.setFilters(filters);
     this.props.fetchSuppliers(this.getFilters());
@@ -109,6 +127,11 @@ class HomeWithForm extends Component {
   }
 
   getFilters = () => (this.state.filters)
+
+  getFilterSelectValue = (field) => {
+    const fieldValue = this.state.filters[field];
+    return fieldValue ? { value: fieldValue } : {};
+  }
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -170,6 +193,7 @@ class HomeWithForm extends Component {
   tableProps = () => {
     const self = this;
     const { suppliers } = this.props;
+    const { page, pageSize } = this.state.filters;
     return {
       className: 'margin-top-sm',
       rowKey: (record) => (record.id),
@@ -183,8 +207,10 @@ class HomeWithForm extends Component {
         total: suppliers.count || 0,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
-        onShowSizeChange(current, pageSize) {
-          self.setFilters({ pageSize: pageSize, page: current });
+        defaultCurrent: page,
+        defaultPageSize: pageSize,
+        onShowSizeChange(current, curPageSize) {
+          self.setFilters({ pageSize: curPageSize, page: current });
           self.props.fetchSuppliers(self.getFilters());
         },
         onChange(current) {
@@ -207,21 +233,21 @@ class HomeWithForm extends Component {
           <Row type="flex" justify="start" align="middle">
             <Col sm={6}>
               <Form.Item label="类目" {...this.formItemLayout()} >
-                <Select {...getFieldProps('category')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
+                <Select {...getFieldProps('category')} {...this.getFilterSelectValue('category')} labelInValue allowClear placeholder="请选择类目" notFoundContent="无可选项">
                   {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="类型" {...this.formItemLayout()} >
-                <Select {...getFieldProps('supplierType')} allowClear placeholder="请选择供应商类型" notFoundContent="无可选项">
+                <Select {...getFieldProps('supplierType')} {...this.getFilterSelectValue('supplierType')} labelInValue allowClear placeholder="请选择供应商类型" notFoundContent="无可选项">
                   {map(filters.supplierType, (type) => (<Select.Option value={type[0]}>{type[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="区域" {...this.formItemLayout()} >
-                <Select {...getFieldProps('supplierZone')} allowClear placeholder="请选择供应商区域" notFoundContent="无可选项">
+                <Select {...getFieldProps('supplierZone')} {...this.getFilterSelectValue('supplierZone')} labelInValue allowClear placeholder="请选择供应商区域" notFoundContent="无可选项">
                   {map(filters.supplierZone, (zone) => (<Select.Option value={zone[0]}>{zone[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
@@ -230,12 +256,12 @@ class HomeWithForm extends Component {
           <Row>
             <Col sm={6}>
               <Form.Item label="录入时间" {...this.formItemLayout()} >
-                <DatePicker.RangePicker {...getFieldProps('dateRange')} />
+                <DatePicker.RangePicker {...getFieldProps('dateRange')} {...this.getFilterSelectValue('dateRange')} labelInValue />
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="名称" {...this.formItemLayout()} >
-                <Input {...getFieldProps('supplierName')} placeholder="请输入供应商名称" />
+                <Input {...getFieldProps('supplierName')} placeholder="请输入供应商名称" {...this.getFilterSelectValue('supplierName')} labelInValue />
               </Form.Item>
             </Col>
           </Row>

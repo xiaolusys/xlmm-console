@@ -6,13 +6,27 @@ import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, In
 import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
 import { fetchSchedule } from 'redux/modules/supplyChain/schedule';
 import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct } from 'redux/modules/supplyChain/scheduleProducts';
 import { fetchUsers } from 'redux/modules/auth/users';
-import { merge, map } from 'lodash';
 import stringcase from 'stringcase';
+import { merge, map } from 'lodash';
 
-const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct, updatePosition, updateAssignedWorker, deleteProduct, fetchUsers };
+const propsFiltersName = 'scheduleProductList';
+
+const actionCreators = {
+  fetchSchedule,
+  fetchProducts,
+  addProduct,
+  updateProduct,
+  updatePosition,
+  updateAssignedWorker,
+  deleteProduct,
+  fetchUsers,
+  getStateFilters,
+  setStateFilters,
+};
 
 @connect(
   state => ({
@@ -20,9 +34,11 @@ const actionCreators = { fetchSchedule, fetchProducts, addProduct, updateProduct
     schedule: state.schedule,
     users: state.users,
     filters: state.supplierFilters,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
 class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
@@ -41,6 +57,9 @@ class ProductsWithForm extends Component {
     scheduleProducts: React.PropTypes.object,
     users: React.PropTypes.object,
     filters: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -61,6 +80,7 @@ class ProductsWithForm extends Component {
       pageSize: 10,
       page: 1,
       ordering: 'order_weight',
+      scheduleId: this.props.location.query.id,
     },
     selectedRowKeys: [],
     modalVisible: false,
@@ -76,6 +96,12 @@ class ProductsWithForm extends Component {
   componentWillMount() {
     const { id } = this.props.location.query;
     this.props.fetchSchedule(id);
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    const filters = stateFilters[propsFiltersName];
+    if (filters && filters.scheduleId === id) {
+      this.setFilters(filters);
+    }
     this.props.fetchProducts(id, this.getFilters());
     this.props.fetchUsers({
       isStaff: 'True',
@@ -93,6 +119,11 @@ class ProductsWithForm extends Component {
         selectedRowKeys: [],
       });
     }
+  }
+
+  componentWillUnmount() {
+    const { filters } = this.state;
+    this.props.setStateFilters(propsFiltersName, filters);
   }
 
   onOkClick = (selected) => {
@@ -140,18 +171,18 @@ class ProductsWithForm extends Component {
       previewModalVisible: true,
       previewLink: `${protocol}//${host}/mall/product/details/${productid}?preview=true`,
     });
-
   }
 
   onSubmitClick = (e) => {
     const { id } = this.props.location.query;
     const filters = this.props.form.getFieldsValue();
-    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[0]))) {
-      filters.minPrice = Number(filters.priceRange.split(',')[0]);
+    console.log('click', filters.priceRange);
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.key.split(',')[0]))) {
+      filters.minPrice = Number(filters.priceRange.key.split(',')[0]);
     }
 
-    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[1]))) {
-      filters.maxPrice = Number(filters.priceRange.split(',')[1]);
+    if (filters.priceRange && !isNaN(Number(filters.priceRange.key.split(',')[1]))) {
+      filters.maxPrice = Number(filters.priceRange.key.split(',')[1]);
     }
 
     if (!filters.priceRange) {
@@ -159,13 +190,7 @@ class ProductsWithForm extends Component {
       filters.maxPrice = undefined;
     }
 
-    if (!filters.saleSupplier) {
-      filters.saleSupplier = this.supplierIds();
-    }
-
     filters.page = 1;
-
-    delete filters.priceRange;
 
     this.setFilters(filters);
     this.props.fetchProducts(id, this.getFilters());
@@ -223,6 +248,11 @@ class ProductsWithForm extends Component {
 
   setFilters = (filters) => {
     this.setState(merge(this.state.filters, filters));
+  }
+
+  getFilterSelectValue = (field) => {
+    const fieldValue = this.state.filters[field];
+    return fieldValue ? { value: fieldValue } : {};
   }
 
   setDistance = (e) => {
@@ -329,7 +359,6 @@ class ProductsWithForm extends Component {
       title: '图片',
       dataIndex: 'productPic',
       key: 'productPic',
-      // fixed: 'left',
       render: (productPic, record) => {
         const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
         return (
@@ -439,13 +468,17 @@ class ProductsWithForm extends Component {
       render: (text, record) => (
         <div>
           <ul style={{ display: 'block' }}>
-            <li >
-              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>资料录入</a>
-              // <Link disabled={schedule.lockStatus || record.inProduct} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
+            <li>
+              <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
+            </li>
+            <li>
+              <Link disabled={schedule.lockStatus || !record.modelId} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
             </li>
             <li >
-              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus}>上传图片</a>
-              // <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
+              <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>OLD资料录入</a>
+            </li>
+            <li >
+              <a target="_blank" href={`/mm/add_aggregeta/?search_model=${record.modelId}`} disabled={schedule.lockStatus || !record.modelId}>OLD上传图片</a>
             </li>
             <li >
               <Popconfirm placement="left" title={`确认删除(${record.productName})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
@@ -466,13 +499,16 @@ class ProductsWithForm extends Component {
     const { id } = this.props.location.query;
     const { scheduleProducts, schedule } = this.props;
     const { selectedRowKeys } = this.state;
+    const { page, pageSize } = this.state.filters;
     return {
       pagination: {
         total: scheduleProducts.count || 0,
         showTotal: (total) => (`共 ${total} 条`),
         showSizeChanger: true,
-        onShowSizeChange(current, pageSize) {
-          self.setFilters({ pageSize: pageSize, page: current });
+        defaultCurrent: page,
+        defaultPageSize: pageSize,
+        onShowSizeChange(current, curPageSize) {
+          self.setFilters({ pageSize: curPageSize, page: current });
           self.props.fetchProducts(id, self.getFilters());
         },
         onChange(current) {
@@ -521,21 +557,21 @@ class ProductsWithForm extends Component {
           <Row type="flex" justify="start" align="middle">
             <Col sm={6}>
               <Form.Item label="类目" {...this.formItemLayout()} >
-                <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
+                <Select {...getFieldProps('saleCategory')} {...this.getFilterSelectValue('saleCategory')} labelInValue allowClear placeholder="请选择类目" notFoundContent="无可选项">
                   {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="价格范围" {...this.formItemLayout()} >
-                <Select {...getFieldProps('priceRange')} allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
+                <Select {...getFieldProps('priceRange')} {...this.getFilterSelectValue('priceRange')} labelInValue allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
                   {map(constants.priceRanges, (range) => (<Select.Option value={range.value}>{range.lable}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="供应商" {...this.formItemLayout()} >
-                <Select {...getFieldProps('saleSupplier')} allowClear placeholder="请选择供应商" notFoundContent="无可选项">
+                <Select {...getFieldProps('saleSupplier')} {...this.getFilterSelectValue('saleSupplier')} labelInValue allowClear placeholder="请选择供应商" notFoundContent="无可选项">
                   {map(this.suppliers(), (supplier) => (<Select.Option value={supplier.id}>{supplier.name}</Select.Option>))}
                 </Select>
               </Form.Item>

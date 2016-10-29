@@ -10,17 +10,23 @@ import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import * as constants from 'constants';
 import { fetchProducts, deleteProduct } from 'redux/modules/supplyChain/products';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
+
+const propsFiltersName = 'supplierProductList';
 
 const actionCreators = {
   fetchProducts,
   deleteProduct,
   fetchFilters,
+  getStateFilters,
+  setStateFilters,
 };
 
 @connect(
   state => ({
     filters: state.supplierFilters,
     products: state.products,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -34,6 +40,9 @@ class ProductsWithForm extends Component {
     filters: React.PropTypes.object,
     products: React.PropTypes.object,
     form: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -62,12 +71,24 @@ class ProductsWithForm extends Component {
   }
 
   componentWillMount() {
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    const filters = stateFilters[propsFiltersName];
+    const curSupplierId = this.props.location.query.supplierId;
+    if (filters && filters.saleSupplier && filters.saleSupplier === curSupplierId) {
+      this.setFilters(filters);
+    }
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
   }
 
   componentWillReceiveProps(nextProps) {
 
+  }
+
+  componentWillUnmount() {
+    const { filters } = this.state;
+    this.props.setStateFilters(propsFiltersName, filters);
   }
 
   onCreateProductClick = (e) => {
@@ -77,22 +98,21 @@ class ProductsWithForm extends Component {
 
   onSubmitClick = (e) => {
     const filters = this.props.form.getFieldsValue();
-    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[0]))) {
-      filters.minPrice = Number(filters.priceRange.split(',')[0]);
+    const priceRange = filters.priceRange;
+    if (priceRange && !isNaN(Number(priceRange.key.split(',')[0]))) {
+      filters.minPrice = Number(priceRange.key.split(',')[0]);
     }
 
-    if (filters.priceRange && !isNaN(Number(filters.priceRange.split(',')[1]))) {
-      filters.maxPrice = Number(filters.priceRange.split(',')[1]);
+    if (priceRange && !isNaN(Number(priceRange.key.split(',')[1]))) {
+      filters.maxPrice = Number(priceRange.key.split(',')[1]);
     }
 
-    if (!filters.priceRange) {
+    if (!priceRange.key) {
       filters.minPrice = undefined;
       filters.maxPrice = undefined;
     }
 
     filters.page = 1;
-
-    delete filters.priceRange;
 
     this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
@@ -129,11 +149,11 @@ class ProductsWithForm extends Component {
   }
 
   onPreviewClick = (e) => {
-    const { productid } = e.currentTarget.dataset;
+    const { productid, modelid } = e.currentTarget.dataset;
     const { protocol, host } = window.location;
     this.setState({
       previewModalVisible: true,
-      previewLink: `${protocol}//${host}/mall/product/details/${productid}?preview=true`,
+      previewLink: `${protocol}//${host}/mall/product/details/${modelid}?preview=true`,
     });
   }
 
@@ -142,6 +162,11 @@ class ProductsWithForm extends Component {
   }
 
   getFilters = () => (this.state.filters)
+
+  getFilterSelectValue = (field) => {
+    const fieldValue = this.state.filters[field];
+    return fieldValue ? { value: fieldValue } : {};
+  }
 
   formItemLayout = () => ({
     labelCol: { span: 8 },
@@ -246,7 +271,7 @@ class ProductsWithForm extends Component {
     render: (id, record) => (
       <ul style={{ display: 'block' }}>
         <li>
-          <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
+          <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`} >编辑</Link>
         </li>
         <li>
           <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
@@ -254,7 +279,7 @@ class ProductsWithForm extends Component {
           </Popconfirm>
         </li>
         <li>
-          <a data-productid={id} onClick={this.onPreviewClick}>预览</a>
+          <a data-productid={id} data-modelid={record.modelId} onClick={this.onPreviewClick} disabled={record.modelId == null} >预览</a>
         </li>
       </ul>
     ),
@@ -263,16 +288,17 @@ class ProductsWithForm extends Component {
   tableProps = () => {
     const self = this;
     const { products } = this.props;
-    const { selectedRowKeys, page } = this.state;
+    const { page, pageSize } = this.state.filters;
     return {
       rowKey: (record) => (record.id),
       pagination: {
         total: products.count,
-        current: page,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
-        onShowSizeChange(current, pageSize) {
-          self.setFilters({ pageSize: pageSize, page: current });
+        defaultCurrent: page,
+        defaultPageSize: pageSize,
+        onShowSizeChange(current, curPageSize) {
+          self.setFilters({ pageSize: curPageSize, page: current });
           self.props.fetchProducts(self.getFilters());
         },
         onChange(current) {
@@ -296,14 +322,14 @@ class ProductsWithForm extends Component {
           <Row type="flex" justify="start" align="middle">
             <Col sm={6}>
               <Form.Item label="类目" {...this.formItemLayout()} >
-                <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
+                <Select {...getFieldProps('saleCategory')} {...this.getFilterSelectValue('saleCategory')} labelInValue allowClear placeholder="请选择类目" notFoundContent="无可选项">
                   {map(filters.categorys, (category) => (<Select.Option value={category[0]}>{category[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
             </Col>
             <Col sm={6}>
               <Form.Item label="价格范围" {...this.formItemLayout()} >
-                <Select {...getFieldProps('priceRange')} allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
+                <Select {...getFieldProps('priceRange')} {...this.getFilterSelectValue('priceRange')} labelInValue allowClear placeholder="请选择价格区间" notFoundContent="无可选项">
                   {map(constants.priceRanges, (range) => (<Select.Option value={range.value}>{range.lable}</Select.Option>))}
                 </Select>
               </Form.Item>

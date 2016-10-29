@@ -10,6 +10,9 @@ axios.defaults = assign(axios.defaults, {
     post: { 'Content-Type': 'application/json' },
     put: { 'Content-Type': 'application/json' },
   },
+  validateStatus: function (status) {
+    return status < 500; // Reject only if the status code is greater than or equal to 500
+  },
   transformRequest: [(data) => (data ? JSON.stringify(changeCaseKeys(data, 'underscored', 10)) : {})],
   transformResponse: [(data) => {
     let payload = {};
