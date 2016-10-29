@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, Input } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Popconfirm, Table, Popover, Form, Input } from 'antd';
 import * as constants from 'constants';
-import { fetchAppPushMsgs, deleteAppPushMsg } from 'redux/modules/appPushMsg/apppushmsgs';
+import { fetchAppPushMsgs, deleteAppPushMsg, manualPushMsg } from 'redux/modules/appPushMsg/apppushmsgs';
 import { assign, map } from 'lodash';
 import stringcase from 'stringcase';
 import moment from 'moment';
@@ -13,6 +13,7 @@ import { fetchFilters } from 'redux/modules/appPushMsg/apppushmsgFilters';
 const actionCreators = {
   fetchAppPushMsgs: fetchAppPushMsgs,
   deleteAppPushMsg: deleteAppPushMsg,
+  manualPushMsg: manualPushMsg,
   fetchFilters: fetchFilters,
 };
 
@@ -33,6 +34,7 @@ class List extends Component {
     form: React.PropTypes.object,
     fetchAppPushMsgs: React.PropTypes.func,
     deleteAppPushMsg: React.PropTypes.func,
+    manualPushMsg: React.PropTypes.func,
     apppushmsgs: React.PropTypes.object,
     filters: React.PropTypes.object,
   };
@@ -85,8 +87,33 @@ class List extends Component {
   }
 
   onDeleteClick = (e) => {
-    const { apppushmsgid } = e.currentTarget.dataset;
-    this.props.deleteAppPushMsg(apppushmsgid);
+    const { deleteid } = e.currentTarget.dataset;
+    this.setState({ deleteid: deleteid });
+  }
+  onDeleteConfirm = (e) => {
+    const { deleteid } = this.state;
+    if (deleteid) {
+      this.props.deleteAppPushMsg(deleteid);
+      this.setState({ deleteid: null });
+    }
+  }
+  onDeleteCancel = (e) => {
+    this.setState({ deleteid: null });
+  }
+
+  onPushClick = (e) => {
+    const { pushid } = e.currentTarget.dataset;
+    this.setState({ pushid: pushid });
+  }
+  onPushConfirm = (e) => {
+    const { pushid } = this.state;
+    if (pushid) {
+      this.props.manualPushMsg(pushid);
+      this.setState({ pushid: null });
+    }
+  }
+  onPushCancel = (e) => {
+    this.setState({ pushid: null });
   }
 
   setFilters = function(filters) {
@@ -143,7 +170,13 @@ class List extends Component {
         <span>
           <Link to={`apppushmsgs/edit?id=${id}`} >编辑</Link>
           <span className="ant-divider"></span>
-          <a data-apppushmsgid={id} onClick={self.onDeleteClick}>删除</a>
+          <Popconfirm title="删除这条记录?" onConfirm={this.onDeleteConfirm} onCancel={this.onDeleteCancel} okText="删除" cancelText="取消">
+            <a data-deleteid={id} onClick={this.onDeleteClick}>删除</a>
+          </Popconfirm>
+          <span className="ant-divider"></span>
+          <Popconfirm title="确定手动推送该记录?" onConfirm={this.onPushConfirm} onCancel={this.onPushCancel} okText="推送" cancelText="取消">
+            <a data-pushid={id} onClick={self.onPushClick}>手动推送</a>
+          </Popconfirm>
         </span>
       ),
     }];

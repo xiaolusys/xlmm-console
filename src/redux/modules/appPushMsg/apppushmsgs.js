@@ -42,3 +42,10 @@ export const deleteAppPushMsg = (id, filters) => ({
     dispatch(fetchAppPushMsgs(filters));
   },
 });
+
+export const manualPushMsg = (id) => ({
+  url: `${apisBase.apppushmsg}apppushmsg/${id}/push_msg`,
+  method: 'post',
+  type: `ACTION_${name}`,
+});
+
