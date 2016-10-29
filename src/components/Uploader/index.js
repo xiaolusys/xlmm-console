@@ -18,6 +18,7 @@ export class Uploader extends Component {
     fileList: React.PropTypes.array,
     onRemove: React.PropTypes.func,
     onChange: React.PropTypes.func,
+    data: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -49,7 +50,7 @@ export class Uploader extends Component {
   }
 
   render() {
-    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange } = this.props;
+    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange, data } = this.props;
     const headers = {
       Accept: 'application/json',
     };
@@ -65,7 +66,7 @@ export class Uploader extends Component {
           onChange={onChange}
           headers={headers}
           beforeUpload={this.beforeUpload}
-          data={this.data}>
+          data={data}>
           <Icon type="plus" />
           <div className="ant-upload-text">{text}</div>
         </Upload>

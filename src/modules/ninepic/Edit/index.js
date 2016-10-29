@@ -164,6 +164,7 @@ class EditNinepic extends Component {
   onPicChange = ({ fileList }) => {
     each(fileList, (file) => {
       if (file.status === 'done' && file.response) {
+        console.log('debug file : ', file);
         file.url = `${imageUrlPrefixs}${file.response.key}`;
         message.success(`上传成功: ${file.name}`);
       } else if (file.status === 'error') {
@@ -245,6 +246,16 @@ class EditNinepic extends Component {
       </div>);
   }
 
+  data = (file) => {
+    console.log('debug file is here :--->', file);
+    const { uptoken } = this.props;
+    const timeStamp = new Date().getTime();
+    return {
+      key: `upload/${timeStamp}.${file.name.split('.').pop()}`,
+      token: uptoken,
+    };
+  }
+
   render() {
     const { prefixCls, ninepic, form, filters, uptoken, promotionPros } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
@@ -274,8 +285,10 @@ class EditNinepic extends Component {
                   uptoken={uptoken.token}
                   fileList={getFieldValue('fileList')}
                   multiple={multiple}
+                  accept="image/*"
                   onRemove={this.onPicRemove}
                   onChange={this.onPicChange}
+                  data={this.data}
                   />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="款式id">
