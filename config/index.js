@@ -9,7 +9,7 @@ module.exports = {
     apiPort: 80,
     port: 7070,
   },
-  local: {
+  imeron: {
     apiHost: '192.168.1.11',
     apiPort: 9000,
     port: 7070,
