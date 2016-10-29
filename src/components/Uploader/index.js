@@ -30,8 +30,9 @@ export class Uploader extends Component {
 
   data = (file) => {
     const { prefixs, uptoken } = this.props;
+    const timeStamp = new Date().getTime();
     return {
-      key: `${prefixs}/${this.uuid()}.${file.name.split('.').pop()}`,
+      key: `${timeStamp}.${file.name.split('.').pop()}`,
       token: uptoken,
     };
   }

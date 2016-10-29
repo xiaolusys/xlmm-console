@@ -164,6 +164,7 @@ class EditNinepic extends Component {
   onPicChange = ({ fileList }) => {
     each(fileList, (file) => {
       if (file.status === 'done' && file.response) {
+        console.log('debug file : ', file);
         file.url = `${imageUrlPrefixs}${file.response.key}`;
         message.success(`上传成功: ${file.name}`);
       } else if (file.status === 'error') {
