@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card, Alert } from 'antd';
 import Modals from 'modules/Modals';
 import { fetchAppPushMsg, saveAppPushMsg, resetAppPushMsg } from 'redux/modules/appPushMsg/apppushmsg';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
@@ -132,6 +132,12 @@ class Editapppushmsg extends Component {
                 <Select {...getFieldProps('platform')} value={getFieldValue('platform')} placeholder="Platform Choose ...">
                   {filters.platform.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
                 </Select>
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="推送状态">
+                <Select {...getFieldProps('status')} value={getFieldValue('status')} placeholder="Status Choose ...">
+                  {filters.status.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+                </Select>
+                <Alert message="推送状态为**有效**表示推送成功, 新建记录默认为**失败**表示将要推送!" type="Warning" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="跳转界面">
                 <Select {...getFieldProps('targetUrl')} value={getFieldValue('targetUrl')} placeholder="RedirectPage Choose ...">
