@@ -24,7 +24,7 @@ export default (config = {}) => {
         type: `${type}_${isRejected ? FAILURE : SUCCESS}`,
         ...newPayload ? { payload: newPayload } : {},
         ...!!meta ? { meta } : {},
-        status: isRejected ? { isLoading: false, failure: true, success: false } : { isLoading: false, failure: false, success: true },
+        status: isRejected ? { isLoading: false, failure: true, success: false, error: newPayload.response ? newPayload.response.data : {} } : { isLoading: false, failure: false, success: true },
       });
 
       /**

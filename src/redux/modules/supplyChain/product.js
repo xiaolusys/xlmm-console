@@ -17,8 +17,8 @@ export default createReducer({
     ...payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
+      ...state,
+      ...status,
   }),
   [`CRAWL_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,

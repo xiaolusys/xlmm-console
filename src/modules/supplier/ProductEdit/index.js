@@ -98,7 +98,14 @@ export class ProductEdit extends Component {
       message.success('保存成功！');
     }
     if (product.failure || material.failure) {
-      message.error('服务器出错，保存失败！');
+      const msgs = [];
+      if (product.error) {
+        msgs.push(product.error.detail);
+      }
+      if (material.error) {
+        msgs.push(material.error.detail);
+      }
+      message.error(`请求错误: ${msgs.join(',')}`);
     }
   }
 

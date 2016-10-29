@@ -54,6 +54,19 @@ const transformSku = (preferences) => {
   return items;
 };
 
+const addSkuItem = (originSkuItems, skuItem) => {
+  const { id, skuValue } = skuItem;
+  each(originSkuItems, (item) => {
+    if (item.id === Number(id)) {
+      each(item.values, (itemValue) => {
+        if (itemValue.label === '其他') {
+          itemValue.children = union(itemValue.children, [skuValue]);
+        }
+      });
+    }
+  });
+};
+
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
@@ -69,21 +82,15 @@ export default createReducer({
     ...status,
   }),
   [`ADD_${name}`]: (state, { payload, status }) => {
-    const { id, skuValue } = payload;
-    const items = state.items.toJS();
-    each(items, (item) => {
-      if (item.id === Number(id)) {
-        each(item.values, (itemValue) => {
-          if (itemValue.label === '其他') {
-            itemValue.children = union(itemValue.children, [skuValue]);
-          }
-        });
-      }
+    const { skuItems } = payload;
+    const propItems = state.items.toJS();
+    each(skuItems, (item) => {
+      addSkuItem(propItems, item);
     });
     return {
       ...state,
       ...status,
-      items: Immutable.fromJS(items),
+      items: Immutable.fromJS(propItems),
     };
   },
   [`RESET_${name}`]: (state, { payload, status }) => ({
@@ -105,8 +112,17 @@ export const fetchSku = (categoryId) => ({
 export const addSku = (id, skuValue) => ({
   type: `ADD_${name}`,
   payload: {
-    id: id,
-    skuValue: skuValue,
+    skuItems: [{
+      id: id,
+      skuValue: skuValue,
+    }],
+  },
+});
+
+export const batchAddSku = (skuItems) => ({
+  type: `ADD_${name}`,
+  payload: {
+    skuItems: skuItems,
   },
 });
 

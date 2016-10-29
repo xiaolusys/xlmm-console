@@ -3,10 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
 import { If } from 'jsx-control-statements';
-import { fetchSku, addSku } from 'redux/modules/supplyChain/sku';
+import { fetchSku, addSku, batchAddSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
-import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, assign, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
+import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, last, map, assign, merge, sortBy, toInteger, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys } from 'utils/object';
 import { imageUrlPrefixs } from 'constants';
@@ -15,6 +15,7 @@ import changeCaseKeys from 'change-case-keys';
 const actionCreators = {
   fetchSku,
   addSku,
+  batchAddSku,
   saveProduct,
   updateProduct,
   fetchPreference,
@@ -23,7 +24,6 @@ const actionCreators = {
 @connect(
   state => ({
     sku: state.sku,
-    preference: state.preference,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -40,6 +40,7 @@ class Basic extends Component {
     preference: React.PropTypes.object,
     fetchSku: React.PropTypes.func,
     addSku: React.PropTypes.func,
+    batchAddSku: React.PropTypes.func,
     saveProduct: React.PropTypes.func,
     updateProduct: React.PropTypes.func,
     fetchPreference: React.PropTypes.func,
@@ -60,7 +61,6 @@ class Basic extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchPreference();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -78,7 +78,8 @@ class Basic extends Component {
       });
     }
     if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
-      const selected = this.findSkuValues(product, sku);
+      const selected = this.findAndUnionSkuValues(product, sku);
+      const skuItems = this.findSkuItems(product, sku);
       this.props.form.setFieldsInitialValue({
         saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
         fileList: [{
@@ -86,13 +87,23 @@ class Basic extends Component {
           url: product.picUrl,
           status: 'done',
         }],
-        skuItems: this.findSkuItems(product, sku),
+        skuItems: skuItems,
         ...selected,
       });
       this.setState({
         skus: selected,
         skuItems: product.skuExtras,
       });
+    }
+    if (product.failure || sku.failure) {
+      const msgs = [];
+      if (product.error) {
+        msgs.push(product.error.detail);
+      }
+      if (sku.error) {
+        msgs.push(sku.error.detail);
+      }
+      message.error(`请求错误: ${msgs.join(',')}`);
     }
   }
 
@@ -106,10 +117,10 @@ class Basic extends Component {
   onSkuItemsChange = (values) => {
     if (includes(values, 0)) {
       this.setState({ skuItems: this.generateSkuTable() });
-      this.props.form.setFieldsValue({ skuItems: 0 });
+      this.props.form.setFieldsValue({ skuItems: [0] });
       return;
     }
-    this.setState({ skuItems: [] });
+    this.setState({ skuItems: values });
     this.props.form.setFieldsValue({ skuItems: values });
   }
 
@@ -256,6 +267,9 @@ class Basic extends Component {
   findSkuItems = (product, sku) => {
     const skuItems = [];
     const unionSkuName = '统一规格';
+    if (!product.skuExtras || product.skuExtras.length === 0) {
+      return skuItems;
+    }
     const firstSku = product.skuExtras[0];
     each(sku.items.toJS(), (item) => {
       if (firstSku.color === unionSkuName) {
@@ -274,36 +288,70 @@ class Basic extends Component {
     return skuItems;
   }
 
-  findSkuValues = (product, sku) => {
+  findAndUnionSkuValues = (product, sku) => {
+    const skuItems = sku.items.toJS();
+    const skuItemValues = [];
+    const extraSkuItems = [];
     const colors = [];
     const sizes = [];
     const selected = {};
     let colorId = 0;
     let sizeId = 0;
-    each(sku.items.toJS(), (item) => {
+    each(skuItems, (item) => {
       if (item.name === '尺码') {
         sizeId = item.id;
       }
       if (item.name === '颜色') {
         colorId = item.id;
       }
+      each(item.values, (value) => {
+        each(value.children, (children) => {
+          skuItemValues.push(children.value);
+        });
+      });
     });
 
     map(groupBy(product.skuExtras, 'color'), (items, key) => {
-      colors.push(JSON.stringify({
+      const itemKey = JSON.stringify({
         id: colorId,
         name: '颜色',
         value: key,
-      }));
+      });
+      colors.push(itemKey);
+      if (!includes(skuItemValues, itemKey)) {
+        each(skuItems, (item) => {
+          if (item.id === colorId) {
+            extraSkuItems.push({
+              id: colorId,
+              skuValue: this.generateSkuValue(colorId, '颜色', key),
+            });
+          }
+        });
+      }
     });
 
     map(groupBy(product.skuExtras, 'propertiesName'), (items, key) => {
-      sizes.push(JSON.stringify({
+      const itemKey = JSON.stringify({
         id: sizeId,
         name: '尺码',
         value: key,
-      }));
+      });
+      sizes.push(itemKey);
+      if (!includes(skuItemValues, itemKey)) {
+        each(skuItems, (item) => {
+          if (item.id === sizeId) {
+            extraSkuItems.push({
+              id: sizeId,
+              skuValue: this.generateSkuValue(sizeId, '尺码', key),
+            });
+          }
+        });
+      }
     });
+    if (extraSkuItems.length > 0) {
+      this.props.batchAddSku(extraSkuItems);
+    }
+
     if (!isEmpty(colors)) {
       selected[`skus-${colorId}`] = colors;
     }
@@ -501,9 +549,9 @@ class Basic extends Component {
               onChange={this.onSkuItemsChange}
               value={getFieldValue('skuItems')}
               multiple>
-              {sku.items.toJS().map((item) => (
-                <Select.Option value={item.id}>{item.name}</Select.Option>
-              ))}
+              {sku.items.toJS().map((item) =>
+                (<Select.Option value={item.id}>{item.name}</Select.Option>)
+              )}
             </Select>
           </Form.Item>
           {sku.items.toJS().map((skuItem) => {

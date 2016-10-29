@@ -52,7 +52,7 @@ class Material extends Component {
   componentWillReceiveProps(nextProps) {
     const { getFieldValue } = this.props.form;
     const { product, preference } = nextProps;
-    if (preference.success && product.success && product.model && !isEmpty(product.model.extras)) {
+    if (preference.success && product.success && product.model && !isEmpty(product.model.extras || product.updated)) {
       const { newProperties } = product.model.extras;
       this.props.form.setFieldsInitialValue({
         materials: this.findSelectedMaterials(newProperties, preference),
