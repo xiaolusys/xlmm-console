@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card, Alert } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
@@ -109,6 +109,7 @@ class EditNinepic extends Component {
         memo: ninepic.memo,
         fileList: detailPics,
         redirectUrl: ninepic.redirectUrl,
+        isPushed: ninepic.isPushed,
         startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
       });
     } else {
@@ -146,6 +147,7 @@ class EditNinepic extends Component {
       sortOrder: params.sortOrder,
       detailModelids: params.detailModelids,
       redirectUrl: params.redirectUrl,
+      isPushed: params.isPushed,
       picArry: detailPics,
       memo: params.memo,
     });
@@ -266,6 +268,12 @@ class EditNinepic extends Component {
                 <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
                   {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
                 </Select>
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="执行推送">
+                <Select {...getFieldProps('isPushed')} value={getFieldValue('isPushed')} placeholder="执行推送!">
+                  {filters.isPushed.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                </Select>
+                <Alert message="选择稍后推送后系统将自动检查推送app消息给用户，推送内容为标题填写的内容" type="info" showIcon />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="描述">
                 <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
