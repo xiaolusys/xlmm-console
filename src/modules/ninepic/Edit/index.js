@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card, Alert } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card, Alert, Tabs } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
@@ -12,6 +12,7 @@ import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
 import { fetchPromotionPros } from 'redux/modules/ninePic/ninepicPromotionPros';
 import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
+const TabPane = Tabs.TabPane;
 
 
 const actionCreators = {
@@ -110,6 +111,7 @@ class EditNinepic extends Component {
         fileList: detailPics,
         redirectUrl: ninepic.redirectUrl,
         isPushed: ninepic.isPushed,
+        historyDescriptions: ninepic.historyDescriptions,
         startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
       });
     } else {
@@ -217,12 +219,23 @@ class EditNinepic extends Component {
     this.props.form.setFieldsValue({ detailModelids: mds });
   }
 
+  promotionProHistoryDescriptionsPopContent = (promotionPro) => {
+    const self = this;
+    if (promotionPro && promotionPro.historyDescriptions !== []) {
+      return (
+        <div>
+          {promotionPro.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>{item.id}: {item.description}</a></p>))};
+        </div>
+      );
+    }
+    return (<div><p>没有历史推送...</p></div>);
+  }
   proCard = (promotionPro) => {
     const self = this;
     const { modelId } = promotionPro;
     return (
       <Col span={6}>
-        <Card style={{ width: 160 }} bodyStyle={{ padding: 0 }}>
+        <Card style={{ width: 140 }} bodyStyle={{ padding: 0 }}>
           <div className="custom-image">
             <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
               <img alt="" width="100%" src={promotionPro.picPath} />
@@ -231,21 +244,57 @@ class EditNinepic extends Component {
           <div className="custom-card">
             <h3>{promotionPro.saleTime}</h3>
             <span>{promotionPro.name.slice(0, 20)}</span>
-            <a data-modelid={modelId} onClick={self.chooseProduct}>款式: {promotionPro.modelId}</a>
+            <div>
+              <Button data-modelid={modelId} onClick={self.chooseProduct} size="small" type="primary">加入款式id</Button>
+              <Popover placement="right" title="历史推送内容(点击替换当前描述)" content={this.promotionProHistoryDescriptionsPopContent(promotionPro)} trigger="click">
+                <Button size="small" type="primary">历史推送内容</Button>
+              </Popover>
+            </div>
           </div>
         </Card>
       </Col>
     );
   }
 
-  promotionProducts = (promotionPros) => {
+  categoryPromotionPors = (categoryPromotionPor) => {
     const self = this;
     return (
       <div>
+        {categoryPromotionPor.values.map((item) => (<span>{this.proCard(item)}</span>))}
+      </div>
+    );
+  }
+
+  promotionProducts = (promotionPros) => {
+    const self = this;
+    console.log('debug promotionPros:', promotionPros);
+    return (
+      <div>
         <Row>
-          {promotionPros.map((item) => (<span>{this.proCard(item)}</span>))}
+          <Tabs defaultActiveKey="1" >
+            {promotionPros.map((item) => (<TabPane tab={item.name} key={item.name}>{this.categoryPromotionPors(item)}</TabPane>))}
+          </Tabs>
         </Row>
       </div>);
+  }
+
+  chooseDescription = (e) => {
+    const self = this;
+    const { historydescription } = e.currentTarget.dataset;
+    this.props.form.setFieldsValue({ description: historydescription });
+  }
+
+  historyDescriptionsPopContent = () => {
+    const self = this;
+    const { ninepic } = this.props;
+    if (ninepic && ninepic.success) {
+      return (
+        <div>
+          {ninepic.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>{item.id}: {item.description}</a></p>))};
+        </div>
+      );
+    }
+    return (<div><p>没有历史推送...</p></div>);
   }
 
   render() {
@@ -276,7 +325,9 @@ class EditNinepic extends Component {
                 <Alert message="选择稍后推送后系统将自动检查推送app消息给用户，推送内容为标题填写的内容" type="info" showIcon />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="描述">
-                <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
+                <Popover placement="right" title="历史推送内容(点击替换当前描述.)" content={this.historyDescriptionsPopContent()} trigger="click">
+                  <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
+                </Popover>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} style={{ height: 270 }} label="推广图片" required>
                 <Uploader
