@@ -7,11 +7,12 @@ axios.defaults = assign(axios.defaults, {
   headers: {
     get: { 'Content-Type': 'application/json, text/plain, */*' },
     patch: { 'Content-Type': 'application/json' },
+    PATCH: { 'Content-Type': 'application/json' },
     post: { 'Content-Type': 'application/json' },
     put: { 'Content-Type': 'application/json' },
   },
   validateStatus: function (status) {
-    return status < 500; // Reject only if the status code is greater than or equal to 500
+    return status === 403 || status < 400;
   },
   transformRequest: [(data) => (data ? JSON.stringify(changeCaseKeys(data, 'underscored', 10)) : {})],
   transformResponse: [(data) => {

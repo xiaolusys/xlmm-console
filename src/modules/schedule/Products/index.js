@@ -176,7 +176,6 @@ class ProductsWithForm extends Component {
   onSubmitClick = (e) => {
     const { id } = this.props.location.query;
     const filters = this.props.form.getFieldsValue();
-    console.log('click', filters.priceRange);
     if (filters.priceRange && !isNaN(Number(filters.priceRange.key.split(',')[0]))) {
       filters.minPrice = Number(filters.priceRange.key.split(',')[0]);
     }

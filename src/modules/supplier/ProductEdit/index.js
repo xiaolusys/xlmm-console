@@ -97,15 +97,11 @@ export class ProductEdit extends Component {
       // this.context.router.goBack();
       message.success('保存成功！');
     }
-    if (product.failure || material.failure) {
-      const msgs = [];
-      if (product.error) {
-        msgs.push(product.error.detail);
-      }
-      if (material.error) {
-        msgs.push(material.error.detail);
-      }
-      message.error(`请求错误: ${msgs.join(',')}`);
+    if (product.failure) {
+      message.error(`请求错误: ${product.error.detail || ''}`);
+    }
+    if (material.failure) {
+      message.error(`请求错误: ${material.error.detail || ''}`);
     }
   }
 

@@ -172,6 +172,12 @@ class HomeWithForm extends Component {
       sorter: true,
       render: (figures) => (<span>{figures ? figures.returnGoodRate : '-'}</span>),
     }, {
+      title: '创建时间',
+      key: 'created',
+      dataIndex: 'created',
+      width: 160,
+      render: (created) => (<p>{(created || '').split('T')[0]}</p>),
+    }, {
       title: '操作',
       dataIndex: 'id',
       key: 'operation',
