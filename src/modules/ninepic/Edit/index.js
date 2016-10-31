@@ -219,12 +219,23 @@ class EditNinepic extends Component {
     this.props.form.setFieldsValue({ detailModelids: mds });
   }
 
+  promotionProHistoryDescriptionsPopContent = (promotionPro) => {
+    const self = this;
+    if (promotionPro && promotionPro.historyDescriptions !== []) {
+      return (
+        <div>
+          {promotionPro.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>{item.id}: {item.description}</a></p>))};
+        </div>
+      );
+    }
+    return (<div><p>没有历史推送...</p></div>);
+  }
   proCard = (promotionPro) => {
     const self = this;
     const { modelId } = promotionPro;
     return (
       <Col span={6}>
-        <Card style={{ width: 160 }} bodyStyle={{ padding: 0 }}>
+        <Card style={{ width: 140 }} bodyStyle={{ padding: 0 }}>
           <div className="custom-image">
             <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
               <img alt="" width="100%" src={promotionPro.picPath} />
@@ -233,7 +244,12 @@ class EditNinepic extends Component {
           <div className="custom-card">
             <h3>{promotionPro.saleTime}</h3>
             <span>{promotionPro.name.slice(0, 20)}</span>
-            <Button data-modelid={modelId} onClick={self.chooseProduct} size="small" type="primary">加入款式id</Button>
+            <div>
+              <Button data-modelid={modelId} onClick={self.chooseProduct} size="small" type="primary">加入款式id</Button>
+              <Popover placement="right" title="历史推送内容(点击替换当前描述)" content={this.promotionProHistoryDescriptionsPopContent(promotionPro)} trigger="click">
+                <Button size="small" type="primary">历史推送内容</Button>
+              </Popover>
+            </div>
           </div>
         </Card>
       </Col>
@@ -309,7 +325,7 @@ class EditNinepic extends Component {
                 <Alert message="选择稍后推送后系统将自动检查推送app消息给用户，推送内容为标题填写的内容" type="info" showIcon />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="描述">
-                <Popover placement="right" title="历史推送内容" content={this.historyDescriptionsPopContent()} trigger="click">
+                <Popover placement="right" title="历史推送内容(点击替换当前描述.)" content={this.historyDescriptionsPopContent()} trigger="click">
                   <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
                 </Popover>
               </Form.Item>
