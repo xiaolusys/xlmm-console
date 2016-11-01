@@ -491,6 +491,11 @@ class Basic extends Component {
         key: 'stdSalePrice',
         dataIndex: 'stdSalePrice',
         render: (data, record) => <Input type="text" data-type="stdSalePrice" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      }, {
+        title: this.columnTitle('SKU商家编码', 'supplierSkucode'),
+        key: 'supplierSkucode',
+        dataIndex: 'supplierSkucode',
+        render: (data, record) => <Input type="text" data-type="supplierSkucode" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
       }],
       pagination: false,
     };
@@ -582,7 +587,7 @@ class Basic extends Component {
           })}
           <If condition={!isEmpty(this.state.skuItems)}>
             <Row>
-              <Col offset="1" span="12">
+              <Col offset="1" span="16">
                 <Table {...this.tableProps()} dataSource={this.state.skuItems} />
               </Col>
             </Row>

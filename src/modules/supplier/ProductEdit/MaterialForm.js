@@ -239,8 +239,16 @@ class Material extends Component {
 
   sortSizeTable = (dataTable, reverse = false) => {
     const firstSize = first(dataTable)['尺码'];
-    if (sizeSortCursor.indexOf(firstSize.slice(0, 2)) > -1) {
-      dataTable = sortBy(dataTable, (size) => (sizeSortCursor.indexOf(size['尺码'].slice(0, 2))));
+    if (!isNaN(firstSize)) {
+      dataTable = sortBy(dataTable, '尺码');
+    } else if (sizeSortCursor.indexOf(firstSize.slice(0, 2)) > -1) {
+      dataTable = sortBy(dataTable, (size) => {
+        const index = sizeSortCursor.indexOf(size['尺码'].slice(0, 2));
+        if (index > -1) {
+          return index;
+        }
+        return sizeSortCursor.indexOf(size['尺码'].slice(0, 1));
+      });
     } else if (sizeSortCursor.indexOf(firstSize.slice(0, 1)) > -1) {
       dataTable = sortBy(dataTable, (size) => (sizeSortCursor.indexOf(size['尺码'].slice(0, 1))));
     } else {
@@ -268,8 +276,8 @@ class Material extends Component {
     if (origin) {
       data = merge(data, origin);
     }
-    data = uniqBy(data, '尺码');
-    this.setState({ table: this.sortSizeTable(data) });
+    data = this.sortSizeTable(uniqBy(data, '尺码'));
+    this.setState({ table: data });
   }
 
   render() {
