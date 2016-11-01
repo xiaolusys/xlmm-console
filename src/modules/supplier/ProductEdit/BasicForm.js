@@ -90,20 +90,16 @@ class Basic extends Component {
         skuItems: skuItems,
         ...selected,
       });
-      this.setState({
+      assign(this.state, {
         skus: selected,
         skuItems: product.skuExtras,
       });
     }
-    if (product.failure || sku.failure) {
-      const msgs = [];
-      if (product.error) {
-        msgs.push(product.error.detail);
-      }
-      if (sku.error) {
-        msgs.push(sku.error.detail);
-      }
-      message.error(`请求错误: ${msgs.join(',')}`);
+    if (product.failure) {
+      message.error(`请求错误: ${product.error.detail || ''}`);
+    }
+    if (sku.failure) {
+      message.error(`请求错误: ${sku.error.detail || ''}`);
     }
   }
 
@@ -111,17 +107,23 @@ class Basic extends Component {
     let catgoryId = values[values.length - 1].split('-');
     catgoryId = catgoryId[catgoryId.length - 1];
     this.props.fetchSku(catgoryId);
-    this.props.form.setFieldsValue({ saleCategory: values });
+    this.props.form.setFieldsInitialValue({ saleCategory: values });
   }
 
   onSkuItemsChange = (values) => {
-    if (includes(values, 0)) {
-      this.setState({ skuItems: this.generateSkuTable() });
-      this.props.form.setFieldsValue({ skuItems: [0] });
+    if (isEmpty(values)) {
+      this.setState({ skuItems: [], skus: {} });
+      this.props.form.setFieldsInitialValue({ skuItems: [] });
       return;
     }
-    this.setState({ skuItems: values });
-    this.props.form.setFieldsValue({ skuItems: values });
+    if (includes(values, 0)) {
+      this.setState({ skuItems: this.generateSkuTable([]) });
+      this.props.form.setFieldsInitialValue({ skuItems: [0] });
+      return;
+    }
+    const skuTable = this.generateSkuTable(values);
+    this.setState({ skuItems: skuTable });
+    this.props.form.setFieldsInitialValue({ skuItems: values });
   }
 
   onSkusChange = (values, label, extra) => {
@@ -221,7 +223,7 @@ class Basic extends Component {
       });
     } else {
       this.props.saveProduct(params);
-      this.context.router.goBack();
+      // this.context.router.goBack();
     }
   }
 
@@ -290,6 +292,7 @@ class Basic extends Component {
 
   findAndUnionSkuValues = (product, sku) => {
     const skuItems = sku.items.toJS();
+    const skuExtras = product.skuExtras;
     const skuItemValues = [];
     const extraSkuItems = [];
     const colors = [];
@@ -310,8 +313,10 @@ class Basic extends Component {
         });
       });
     });
-
-    map(groupBy(product.skuExtras, 'color'), (items, key) => {
+    if ((sizeId === 0 && colorId === 0) || (!isEmpty(skuExtras) && skuExtras[0].color === '统一规格')) {
+      return selected;
+    }
+    map(groupBy(skuExtras, 'color'), (items, key) => {
       const itemKey = JSON.stringify({
         id: colorId,
         name: '颜色',
@@ -330,7 +335,7 @@ class Basic extends Component {
       }
     });
 
-    map(groupBy(product.skuExtras, 'propertiesName'), (items, key) => {
+    map(groupBy(skuExtras, 'propertiesName'), (items, key) => {
       const itemKey = JSON.stringify({
         id: sizeId,
         name: '尺码',
@@ -581,7 +586,7 @@ class Basic extends Component {
                 <Table {...this.tableProps()} dataSource={this.state.skuItems} />
               </Col>
             </Row>
-          </If>
+          </If>);
         </Form>
         <Row style={{ marginTop: 10 }}>
           <Col offset="8" span="2">

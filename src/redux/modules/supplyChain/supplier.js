@@ -67,7 +67,7 @@ export const saveSupplier = (params) => ({
 
 export const updateSupplier = (id, params) => ({
   url: `${apisBase.supply}supplier/${id}`,
-  method: 'PATCH',
+  method: 'patch',
   type: `UPDATE_${name}`,
   data: params,
 });

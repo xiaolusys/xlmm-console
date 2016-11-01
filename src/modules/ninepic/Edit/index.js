@@ -180,7 +180,6 @@ class EditNinepic extends Component {
 
   onPromotionDateChange = (date, dateString) => {
     const self = this;
-    console.log(date, dateString);
     this.props.fetchPromotionPros(dateString);
   }
 

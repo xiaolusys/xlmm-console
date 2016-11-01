@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Col, Input, Form, FormItem, Row, Select, Table } from 'antd';
-import { find, isEmpty } from 'lodash';
+import { Button, Col, Input, Form, FormItem, Row, Select, Table, message } from 'antd';
+import { find, isEmpty, each, last } from 'lodash';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { fetchProvinces, fetchCities, fetchDistricts } from 'redux/modules/supplyChain/district';
 import { fetchSupplier, saveSupplier, updateSupplier, resetSupplier } from 'redux/modules/supplyChain/supplier';
@@ -71,11 +71,41 @@ class EditWithForm extends Component {
     const { supplier } = nextProps;
     if (!supplier.isLoading && supplier.success) {
       this.props.form.setFieldsInitialValue({
-        ...supplier,
+        supplierName: supplier.supplierName,
+        supplierCode: supplier.supplierCode,
+        mainPage: supplier.mainPage,
+        category: supplier.category,
+        platform: supplier.platform,
+        supplierType: supplier.supplierType,
+        progress: supplier.progress,
+        province: supplier.province,
+        city: supplier.city,
+        district: supplier.district,
+        wareBy: supplier.wareBy,
+        address: supplier.address,
+        contact: supplier.contact,
+        mobile: supplier.mobile,
+        qq: supplier.qq,
+        weixin: supplier.weixin,
+        speciality: supplier.speciality,
+        memo: supplier.memo,
       });
     }
-    if (supplier.updated) {
-      this.context.router.goBack();
+    if (supplier.updated && supplier.success) {
+      message.success('保存成功');
+      // this.context.router.goBack();
+    }
+    if (supplier.failure) {
+      const errMsgs = [];
+      if (supplier.error.detail) {
+        errMsgs.push(supplier.error.detail);
+      } else {
+        each(supplier.error.values, (err) => {
+          errMsgs.push(err[0]);
+        });
+      }
+      message.error(`保存异常: ${errMsgs.join(',')}`);
+      // this.context.router.goBack();
     }
   }
 
@@ -100,7 +130,7 @@ class EditWithForm extends Component {
     this.props.form.setFieldsValue({ district: value });
   }
 
-  onSubmitCliick = (e) => {
+  onSubmitClick = (e) => {
     this.props.form.validateFields((errors, values) => {
       if (!!errors) {
         return;
@@ -110,15 +140,16 @@ class EditWithForm extends Component {
     const { provinces, cities } = this.props.district;
     const { id } = this.props.location.query;
     const params = this.props.form.getFieldsValue();
-    params.zoneName = `${this.getValue(params.province, provinces)}/${this.getValue(params.city, cities)}/${params.district}`;
+    const baseAddr = `${this.getValue(params.province, provinces)}/${this.getValue(params.city, cities)}/${params.district}`;
+    params.address = `${baseAddr}/${last(params.address.split('/'))}`;
     delete params.province;
     delete params.city;
     delete params.district;
-    if (!id) {
-      this.props.saveSupplier(params);
+    if (id) {
+      this.props.updateSupplier(id, params);
       return;
     }
-    this.props.updateSupplier(id, params);
+    this.props.saveSupplier(params);
   }
 
   getValue = (id, items) => (find(items, (item) => (item.id === id)).name);
@@ -201,7 +232,7 @@ class EditWithForm extends Component {
             <Input {...getFieldProps('memo')} value={getFieldValue('memo')} placeholder="备注" />
           </Form.Item>
           <Row>
-            <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitCliick}>保存</Button></Col>
+            <Col span={2} offset={6}><Button type="primary" onClick={this.onSubmitClick}>保存</Button></Col>
           </Row>
         </Form>
       </div>

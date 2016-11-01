@@ -110,7 +110,6 @@ class List extends Component {
   render() {
     const { prefixCls, categories } = this.props;
     const { getFieldProps } = this.props.form;
-    console.log(categories.items);
     return (
       <div className={`${prefixCls}`} >
         <Button type="primary" onClick={this.onCreateCategoryClick}>新建类目</Button>
