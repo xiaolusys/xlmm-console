@@ -223,7 +223,7 @@ class EditNinepic extends Component {
     if (promotionPro && promotionPro.historyDescriptions !== []) {
       return (
         <div>
-          {promotionPro.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>{item.id}: {item.description}</a></p>))};
+          {promotionPro.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>ID:{item.id}=> 保存{item.saveTimes}次 ＆ 分享{item.shareTimes}次,{item.description}</a></p>))};
         </div>
       );
     }
@@ -289,7 +289,8 @@ class EditNinepic extends Component {
     if (ninepic && ninepic.success) {
       return (
         <div>
-          {ninepic.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>{item.id}: {item.description}</a></p>))};
+          {ninepic.historyDescriptions.map((item) => (<p>
+            <a data-historydescription={item.description} onClick={self.chooseDescription}>ID:{item.id}=> 保存{item.saveTimes}次 ＆ 分享{item.shareTimes}次 {item.description}</a></p>))};
         </div>
       );
     }
