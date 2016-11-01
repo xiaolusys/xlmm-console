@@ -107,23 +107,23 @@ class Basic extends Component {
     let catgoryId = values[values.length - 1].split('-');
     catgoryId = catgoryId[catgoryId.length - 1];
     this.props.fetchSku(catgoryId);
-    this.props.form.setFieldsInitialValue({ saleCategory: values });
+    this.props.form.setFieldsValue({ saleCategory: values });
   }
 
   onSkuItemsChange = (values) => {
     if (isEmpty(values)) {
       this.setState({ skuItems: [], skus: {} });
-      this.props.form.setFieldsInitialValue({ skuItems: [] });
+      this.props.form.setFieldsValue({ skuItems: [] });
       return;
     }
     if (includes(values, 0)) {
       this.setState({ skuItems: this.generateSkuTable([]) });
-      this.props.form.setFieldsInitialValue({ skuItems: [0] });
+      this.props.form.setFieldsValue({ skuItems: [0] });
       return;
     }
     const skuTable = this.generateSkuTable(values);
     this.setState({ skuItems: skuTable });
-    this.props.form.setFieldsInitialValue({ skuItems: values });
+    this.props.form.setFieldsValue({ skuItems: values });
   }
 
   onSkusChange = (values, label, extra) => {
