@@ -313,10 +313,9 @@ class Basic extends Component {
         });
       });
     });
-    if ((sizeId === 0 && colorId === 0) || (!isEmpty(skuExtras) && skuExtras[0].color === '统一规格')) {
-      return selected;
-    }
+
     map(groupBy(skuExtras, 'color'), (items, key) => {
+      if (key === '统一规格' || key === '') return;
       const itemKey = JSON.stringify({
         id: colorId,
         name: '颜色',
@@ -336,6 +335,7 @@ class Basic extends Component {
     });
 
     map(groupBy(skuExtras, 'propertiesName'), (items, key) => {
+      if (key === '统一规格' || key === '') return;
       const itemKey = JSON.stringify({
         id: sizeId,
         name: '尺码',
@@ -357,11 +357,11 @@ class Basic extends Component {
       this.props.batchAddSku(extraSkuItems);
     }
 
-    if (!isEmpty(colors)) {
+    if (!isEmpty(colors) && colorId > 0) {
       selected[`skus-${colorId}`] = colors;
     }
 
-    if (!isEmpty(sizes)) {
+    if (!isEmpty(sizes) && sizeId > 0) {
       selected[`skus-${sizeId}`] = sizes;
     }
     return selected;
