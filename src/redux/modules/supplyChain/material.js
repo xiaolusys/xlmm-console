@@ -1,7 +1,6 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 import _ from 'lodash';
-
 const initialState = {
 
 };

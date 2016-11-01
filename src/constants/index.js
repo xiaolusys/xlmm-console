@@ -9,3 +9,5 @@ export const apisBase = {
 };
 export const uploadUrl = (window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com');
 export const imageUrlPrefixs = 'http://img.xiaolumeimei.com/';
+
+export const sizeSortCursor = 'SMLXSXMXLXXL0A1B2C3D4E5F607080909510112013014015016017018019宝妈爸'.split('');

@@ -3,9 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { If } from 'jsx-control-statements';
 import { Button, Col, Form, Input, Row, Select, Table } from 'antd';
-import { each, groupBy, isEmpty, includes, map, merge, sortBy, union, uniqBy } from 'lodash';
+import { assign, each, first, groupBy, isNull, isEmpty, includes, map, merge, parseInt, sortBy, union, uniqBy } from 'lodash';
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { saveMaterial, updateMaterial } from 'redux/modules/supplyChain/material';
+import { sizeSortCursor } from 'constants';
 
 const actionCreators = {
   fetchPreference,
@@ -42,7 +43,8 @@ class Material extends Component {
   }
 
   state = {
-
+    incrIndexs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    table: [],
   }
 
   componentWillMount() {
@@ -52,14 +54,16 @@ class Material extends Component {
   componentWillReceiveProps(nextProps) {
     const { getFieldValue } = this.props.form;
     const { product, preference } = nextProps;
-    if (preference.success && product.success && product.model && !isEmpty(product.model.extras || product.updated)) {
+    if (preference.success && product.success && product.model &&
+      isEmpty(this.state.table) && (!isEmpty(product.model.extras) || product.updated)) {
       const { newProperties } = product.model.extras;
       this.props.form.setFieldsInitialValue({
         materials: this.findSelectedMaterials(newProperties, preference),
         ...this.generateInitial(newProperties),
       });
     }
-    if (!isEmpty(getFieldValue('尺码对照参数')) && !(product.success && product.model && !isEmpty(product.model.extras))) {
+    if (!isEmpty(getFieldValue('尺码对照参数')) && isEmpty(this.state.table)
+        && !(product.success && product.model && !isEmpty(product.model.extras))) {
       this.dataSource(null, null);
     }
   }
@@ -98,10 +102,11 @@ class Material extends Component {
         });
       }
     });
+    const data = uniqBy(this.state.table, '尺码');
     if (!isEmpty(getFieldValue('尺码对照参数'))) {
       newProperties.push({
         name: '尺码表',
-        value: uniqBy(this.state.table, '尺码'),
+        value: this.sortSizeTable(data),
       });
     }
     const params = {
@@ -113,6 +118,29 @@ class Material extends Component {
       return;
     }
     this.props.saveMaterial(params);
+  }
+
+  onIncrColumnValueClick = (value, label) => {
+    if (isEmpty(value)) {
+      return;
+    }
+    const type = value.split('-')[0];
+    const incr = parseInt(value.split('-')[1]);
+    const { table } = this.state;
+    let nextItemValue = null;
+    each(table, (rowItem) => {
+      if (isNull(nextItemValue)) {
+        nextItemValue = rowItem[type];
+      } else {
+        if (isNaN(nextItemValue)) {
+          rowItem[type] = nextItemValue;
+        } else {
+          nextItemValue = parseFloat(nextItemValue) + incr;
+          rowItem[type] = nextItemValue.toString();
+        }
+      }
+    });
+    this.setState({ table: table });
   }
 
   formItemLayout = () => ({
@@ -170,6 +198,17 @@ class Material extends Component {
     );
   }
 
+  columnTitle = (text, type) => (
+    <div>
+      <label>{text}</label>
+      <Select defaultValue="0" style={{ width: 45, marginLeft: 10 }} onChange={this.onIncrColumnValueClick}>
+        {this.state.incrIndexs.map((incr) => (
+          <Select.Option value={`${type}-${incr}`} >{incr}</Select.Option>
+        ))}
+      </Select>
+    </div>
+  );
+
   columns = () => {
     const { getFieldValue } = this.props.form;
     const properties = getFieldValue('尺码对照参数') || [];
@@ -181,7 +220,7 @@ class Material extends Component {
     }];
     each(properties, (property) => {
       columns.push({
-        title: property,
+        title: this.columnTitle(property, property),
         dataIndex: property,
         key: property,
         render: (text, record) => (<Input
@@ -190,10 +229,24 @@ class Material extends Component {
           value={text}
           placehplder={`请输入${property}`}
           onInput={this.onInput}
-          />),
+          />
+        ),
       });
     });
-    return uniqBy(columns, 'key');
+    const cols = uniqBy(columns, 'key');
+    return cols;
+  }
+
+  sortSizeTable = (dataTable, reverse = false) => {
+    const firstSize = first(dataTable)['尺码'];
+    if (sizeSortCursor.indexOf(firstSize.slice(0, 2)) > -1) {
+      dataTable = sortBy(dataTable, (size) => (sizeSortCursor.indexOf(size['尺码'].slice(0, 2))));
+    } else if (sizeSortCursor.indexOf(firstSize.slice(0, 1)) > -1) {
+      dataTable = sortBy(dataTable, (size) => (sizeSortCursor.indexOf(size['尺码'].slice(0, 1))));
+    } else {
+      dataTable = sortBy(dataTable, '尺码');
+    }
+    return dataTable;
   }
 
   dataSource = (params, origin) => {
@@ -215,7 +268,8 @@ class Material extends Component {
     if (origin) {
       data = merge(data, origin);
     }
-    this.setState({ table: sortBy((uniqBy(data, '尺码')), '尺码') });
+    data = uniqBy(data, '尺码');
+    this.setState({ table: this.sortSizeTable(data) });
   }
 
   render() {

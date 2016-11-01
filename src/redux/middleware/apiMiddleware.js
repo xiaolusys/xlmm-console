@@ -25,12 +25,14 @@ axios.defaults = assign(axios.defaults, {
     }
     return payload;
   }],
-  paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' }),
+  paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10)),
   timeout: 1000 * 10,
   maxRedirects: 3,
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'csrfmiddlewaretoken',
 });
+
+// reverse array: Qs.stringify(changeCaseKeys(params, 'underscored', 10), { arrayFormat: 'indices' })
 
 export const apiMiddleware = store => next => action => {
   if (action.url) {
