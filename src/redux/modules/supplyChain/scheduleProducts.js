@@ -24,6 +24,22 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`ADD_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`UPDATE_PRODUCT_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`UPDATE_POSITION_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`UPDATE_ASSIGNED_WORKER_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`DELETE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -54,7 +70,7 @@ export const addProduct = (scheduleId, productIds, filters) => ({
 export const updateProduct = (scheduleId, productId, params, filters) => ({
   url: `${apisBase.supply}saleschedule/${scheduleId}/modify_manage_detail/${productId}`,
   method: 'patch',
-  type: `UPDATE_PRODUCT${name}`,
+  type: `UPDATE_PRODUCT_${name}`,
   data: {
     ...params,
   },
