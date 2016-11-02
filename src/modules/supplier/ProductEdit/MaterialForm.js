@@ -240,7 +240,7 @@ class Material extends Component {
   sortSizeTable = (dataTable, reverse = false) => {
     const firstSize = first(dataTable)['尺码'];
     if (!isNaN(firstSize)) {
-      dataTable = sortBy(dataTable, '尺码');
+      dataTable = sortBy(dataTable, (size) => (parseInt(size['尺码'])));
     } else if (sizeSortCursor.indexOf(firstSize.slice(0, 2)) > -1) {
       dataTable = sortBy(dataTable, (size) => {
         const index = sizeSortCursor.indexOf(size['尺码'].slice(0, 2));

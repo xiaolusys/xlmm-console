@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Col, Form, Icon, Input, Row, Select, Table, message } from 'antd';
+import { Alert, Button, Col, Form, Icon, Input, Row, Select, Table, message } from 'antd';
 import { Uploader } from 'components/Uploader';
 import { each, isEmpty, groupBy, map } from 'lodash';
 import { imageUrlPrefixs } from 'constants';
@@ -183,6 +183,12 @@ class Pictures extends Component {
     const { getFieldProps, getFieldValue, getFieldsValue } = this.props.form;
     return (
       <Form>
+        <Form.Item>
+          <Alert
+            message={product.memo}
+            type="warning"
+            />
+        </Form.Item>
         <Form.Item
           {...this.formItemLayout()}
           label="商品主图"

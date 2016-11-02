@@ -75,6 +75,7 @@ class Basic extends Component {
         productLink: product.productLink,
         title: product.title,
         supplierSku: product.supplierSku,
+        memo: product.memo,
       });
     }
     if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
@@ -214,6 +215,7 @@ class Basic extends Component {
       saleCategory: this.getCategory(getFieldValue('saleCategory')),
       saleSupplier: supplierId,
       supplierSku: getFieldValue('supplierSku'),
+      memo: getFieldValue('memo'),
       skuExtras: skuItems,
     };
     if (productId) {
@@ -544,6 +546,15 @@ class Basic extends Component {
               fileList={getFieldValue('fileList')}
               onRemove={this.onRemove}
               onChange={this.onChange}
+              />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="备注提醒" required>
+            <Input
+              {...getFieldProps('memo')}
+              value={getFieldValue('memo')}
+              placeholder="请输入备注提醒"
+              type="textarea"
+              rows={2}
               />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类目" required>
