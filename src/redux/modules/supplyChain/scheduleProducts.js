@@ -24,6 +24,10 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`DELETE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
 }, initialState);
 
 export const fetchProducts = (scheduleId, filters) => ({
