@@ -141,7 +141,7 @@ class Editapppushmsg extends Component {
       return (
         <div>
           <Tag color="blue">{paramsKv.name}</Tag>
-          <Select style={{ width: 120 }}>
+          <Select style={{ width: 360 }}>
             {paramsKv.value.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
           </Select>
         </div>
