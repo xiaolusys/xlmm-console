@@ -62,8 +62,7 @@ class Material extends Component {
         ...this.generateInitial(newProperties),
       });
     }
-    if (!isEmpty(getFieldValue('尺码对照参数')) && isEmpty(this.state.table)
-        && !(product.success && product.model && !isEmpty(product.model.extras))) {
+    if (!isEmpty(getFieldValue('尺码对照参数')) && isEmpty(this.state.table) && product.success) {
       this.dataSource(null, null);
     }
   }
