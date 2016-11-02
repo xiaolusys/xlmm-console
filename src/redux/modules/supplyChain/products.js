@@ -23,6 +23,10 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`DELETE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
 }, initialState);
 
 export const fetchProducts = (filters) => ({
@@ -37,6 +41,7 @@ export const fetchProducts = (filters) => ({
 export const deleteProduct = (id, filters) => ({
   url: `${apisBase.supply}saleproduct/${id}`,
   method: 'delete',
+  type: `DELETE_${name}`,
   success: (resolved, dispatch) => {
     dispatch(fetchProducts(filters));
   },

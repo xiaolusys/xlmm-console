@@ -72,6 +72,13 @@ class HomeWithForm extends Component {
     this.props.fetchSuppliers(this.getFilters());
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { suppliers } = nextProps;
+    if (suppliers.failure) {
+      suppliers.error(`请求错误: ${suppliers.error.detail || ''}`);
+    }
+  }
+
   componentWillUnmount() {
     const { filters } = this.state;
     this.props.setStateFilters(propsFiltersName, filters);

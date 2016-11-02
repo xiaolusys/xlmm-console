@@ -111,6 +111,7 @@ class ProductsWithForm extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { schedule, scheduleProducts } = nextProps;
     if (nextProps.scheduleProducts.success) {
       this.setState({
         desinger: 0,
@@ -118,6 +119,13 @@ class ProductsWithForm extends Component {
         delProductId: null,
         selectedRowKeys: [],
       });
+    }
+
+    if (scheduleProducts.failure) {
+      scheduleProducts.error(`请求错误: ${scheduleProducts.error.detail || ''}`);
+    }
+    if (schedule.failure) {
+      schedule.error(`请求错误: ${schedule.error.detail || ''}`);
     }
   }
 

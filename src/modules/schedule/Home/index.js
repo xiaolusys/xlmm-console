@@ -68,6 +68,13 @@ class List extends Component {
     this.props.fetchSchedules(this.getFilters());
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { schedules } = nextProps;
+    if (schedules.failure) {
+      schedules.error(`请求错误: ${schedules.error.detail || ''}`);
+    }
+  }
+
   componentWillUnmount() {
     const { filters } = this.state;
     this.props.setStateFilters(propsFiltersName, filters);

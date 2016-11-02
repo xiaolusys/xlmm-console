@@ -7,9 +7,9 @@ axios.defaults = assign(axios.defaults, {
   headers: {
     get: { 'Content-Type': 'application/json, text/plain, */*' },
     patch: { 'Content-Type': 'application/json' },
-    PATCH: { 'Content-Type': 'application/json' },
     post: { 'Content-Type': 'application/json' },
     put: { 'Content-Type': 'application/json' },
+    delete: { 'Content-Type': 'application/json' },
   },
   validateStatus: function (status) {
     return status === 403 || status < 400;

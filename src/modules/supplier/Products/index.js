@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, Table, Popover, Popconfirm } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, message, Table, Popover, Popconfirm } from 'antd';
 import Modals from 'modules/Modals';
 import moment from 'moment';
 import stringcase from 'stringcase';
@@ -83,7 +83,10 @@ class ProductsWithForm extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
+    const { products } = nextProps;
+    if (products.failure) {
+      message.error(`请求错误: ${products.error.detail || ''}`);
+    }
   }
 
   componentWillUnmount() {
