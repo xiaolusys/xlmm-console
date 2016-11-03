@@ -56,6 +56,13 @@ class Editapppushmsg extends Component {
     apppushmsgs: [],
     modalVisible: false,
     theParamsVisible: 0,
+    oldParamsVisible: true,
+
+    paramsModelId: null,
+    paramsIsNative: null,
+    paramsUrl: null,
+    paramsActivityId: null,
+    paramsCid: null,
   }
 
   componentWillMount() {
@@ -103,24 +110,28 @@ class Editapppushmsg extends Component {
         cat: params.cat,
         platform: params.platform,
         pushTime: moment(params.pushTime).format('YYYY-MM-DD HH:mm:ss'),
+        paramsModelId: this.state.paramsModelId,
+        paramsIsNative: this.state.paramsisNative,
+        paramsUrl: this.state.paramsUrl,
+        paramsActivityId: this.state.paramsActivityId,
+        paramsCid: this.state.paramsCid,
     });
   }
 
   onTargetUrlSelect = (value) => {
     const self = this;
     this.setState({ theParamsVisible: value });
+    this.setState({ oldParamsVisible: false });
   }
 
   setParamsPanal = () => {
     const self = this;
-    const { filters } = this.props;
+    const { filters, apppushmsg } = this.props;
     const { theParamsVisible } = this.state;
-    console.log('theParamsVisible', theParamsVisible);
     const hasParamsValue = [5, 9, 15, 16];
     const hiddenParamsValue = [1, 2, 3, 4, 8, 10, 11, 12, 13, 14];
     if (filters && filters.paramsKvs && hasParamsValue.indexOf(theParamsVisible) >= 0) {
       const paramsKvs = filters.paramsKvs[theParamsVisible];
-      console.log('paramsKvs: ', paramsKvs);
       if (paramsKvs) {
         return (
           <div>
@@ -135,14 +146,42 @@ class Editapppushmsg extends Component {
       );
   }
 
+  selectParamsValue = (value) => {
+    const self = this;
+    const stateFieldName = value.label[0];
+    const stateFieldValue = value.key;
+    if (stateFieldName === 'is_native') {
+      this.setState({ paramsIsNative: stateFieldValue });
+    }
+    if (stateFieldName === 'cid') {
+      this.setState({ paramsCid: stateFieldValue });
+    }
+    if (stateFieldName === 'activity_id') {
+      this.setState({ paramsActivityId: stateFieldValue });
+    }
+    if (stateFieldName === 'url') {
+      this.setState({ paramsUrl: stateFieldValue });
+    }
+  }
+
+  inputParamsValue = (e) => {
+    const value = e.target.value;
+    const reg = /^-?\d*\.?\d*$/;
+    if (reg.test(value)) {
+      this.setState({ paramsModelId: value });
+    } else {
+      this.setState({ paramsUrl: value });
+    }
+  }
+
   selectParams = (paramsKv) => {
     const self = this;
     if (paramsKv.value.length > 0) {
       return (
         <div>
           <Tag color="blue">{paramsKv.name}</Tag>
-          <Select style={{ width: 360 }}>
-            {paramsKv.value.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+          <Select style={{ width: 360 }} labelInValue onSelect={this.selectParamsValue}>
+            {paramsKv.value.map((item) => (<Select.Option value={item.value}>{paramsKv.key} : {item.name}</Select.Option>))}
           </Select>
         </div>
         );
@@ -150,13 +189,14 @@ class Editapppushmsg extends Component {
     return (
       <div>
         <Tag color="blue">{paramsKv.name}</Tag>
-        <Input placeholder={paramsKv.name} />
+        <Input placeholder={paramsKv.name} onChange={this.inputParamsValue} />
       </div>
     );
   }
+
   paramsDiv = () => {
     const paramsInfo = this.props.form.getFieldValue('paramsInfo');
-    if (paramsInfo) {
+    if (paramsInfo && this.state.oldParamsVisible) {
       return (
         <div>
           {paramsInfo.map((item) => (
