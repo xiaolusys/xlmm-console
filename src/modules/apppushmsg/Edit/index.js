@@ -111,7 +111,7 @@ class Editapppushmsg extends Component {
         platform: params.platform,
         pushTime: moment(params.pushTime).format('YYYY-MM-DD HH:mm:ss'),
         paramsModelId: this.state.paramsModelId,
-        paramsIsNative: this.state.paramsisNative,
+        paramsIsNative: this.state.paramsIsNative,
         paramsUrl: this.state.paramsUrl,
         paramsActivityId: this.state.paramsActivityId,
         paramsCid: this.state.paramsCid,
