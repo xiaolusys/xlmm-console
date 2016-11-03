@@ -229,7 +229,7 @@ class Editapppushmsg extends Component {
                 <Input {...getFieldProps('desc', { rules: [{ required: true, title: '推送内容' }] })} value={getFieldValue('desc')} type="textarea" rows={7} laceholder="推送内容" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="推送时间">
-                <DatePicker {...getFieldProps('pushTime', { rules: [{ required: true, title: '推送时间' }] })} value={getFieldValue('pushTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('pushTime', { rules: [{ required: true }] })} value={getFieldValue('pushTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="推送对象">
                 <Select {...getFieldProps('platform')} value={getFieldValue('platform')} placeholder="Platform Choose ...">
