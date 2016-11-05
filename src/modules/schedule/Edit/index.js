@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon } from 'antd';
+import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, message } from 'antd';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedule';
@@ -65,6 +65,23 @@ class EditSchedule extends Component {
         lockStatus: schedule.lockStatus,
       });
       this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
+    }
+    if (schedule) {
+      if (schedule.failure) {
+        const errMsgs = [];
+        console.log('schedule error:', schedule.error);
+        if (schedule.error && schedule.error.detail) {
+          errMsgs.push(schedule.error.detail);
+        } else {
+            _.each(schedule.error, (err) => {
+              errMsgs.push(err[0]);
+            });
+        }
+        if (schedule.error) {
+          message.error(`保存异常: ${errMsgs.join(',')}`);
+        }
+        schedule.error = null;
+      }
     }
   }
 
