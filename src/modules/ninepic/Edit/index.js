@@ -236,7 +236,7 @@ class EditNinepic extends Component {
       <Col span={6}>
         <Card style={{ width: 140 }} bodyStyle={{ padding: 0 }}>
           <div className="custom-image">
-            <a target="_blank" href={`http://m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
+            <a target="_blank" href={`//m.xiaolumeimei.com/mall/product/details/${promotionPro.modelId}`} >
               <img alt="" width="100%" src={promotionPro.picPath} />
             </a>
           </div>
