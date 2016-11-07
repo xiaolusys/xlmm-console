@@ -548,7 +548,7 @@ class Basic extends Component {
               onChange={this.onChange}
               />
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="备注提醒" required>
+          <Form.Item {...this.formItemLayout()} label="备注提醒">
             <Input
               {...getFieldProps('memo')}
               value={getFieldValue('memo')}
