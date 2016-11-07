@@ -27,7 +27,7 @@ deploy:
     user: root
     commands:
       - docker pull registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console
-      - docker run --rm --volumes-from=static registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console cp -rf console /data/console
+      - docker run --rm --v /var/data:/data registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console cp -rf console /data/console
   ssh:
     host: 
       - euho.xiaolumm.com
