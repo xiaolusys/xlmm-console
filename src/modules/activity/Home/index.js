@@ -5,20 +5,22 @@ import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message } from 'antd';
 import * as constants from 'constants';
 import { fetchActivities } from 'redux/modules/activity/activities';
-// import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
+import { fetchFilters } from 'redux/modules/activity/activityFilters';
 import { assign, isEmpty, map } from 'lodash';
-// import moment from 'moment';
+import moment from 'moment';
 import stringcase from 'stringcase';
 
 const propsFiltersName = 'scheduleList';
 
 const actionCreators = {
   fetchActivities,
+  fetchFilters,
 };
 
 @connect(
   state => ({
     activities: state.activities,
+    filters: state.fetchFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -29,7 +31,9 @@ class List extends Component {
     prefixCls: React.PropTypes.object,
     form: React.PropTypes.object,
     fetchActivities: React.PropTypes.func,
+    fetchFilters: React.PropTypes.func,
     activities: React.PropTypes.object,
+    filters: React.PropTypes.object,
   };
 
   static contextTypes = {
@@ -54,7 +58,8 @@ class List extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchActivities({});
+    this.props.fetchActivities();
+    this.props.fetchFilters();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -64,8 +69,8 @@ class List extends Component {
     }
   }
 
-  onCreateScheduleClick = (e) => {
-    this.context.router.push('schedule/edit');
+  onCreateActivityClick = (e) => {
+    this.context.router.push('activity/edit');
   }
 
   onTableChange = (pagination, filters, sorter) => {
@@ -168,15 +173,15 @@ class List extends Component {
   })
 
   render() {
-    const { prefixCls, activities } = this.props;
+    const { prefixCls, activities, filters } = this.props;
     const { getFieldProps } = this.props.form;
-    console.log('activities: ', activities);
+    console.log('activities: ', activities, filters);
     return (
       <div className={`${prefixCls}`} >
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
-              <Button type="primary" onClick={this.onCreateScheduleClick}>新建活动</Button>
+              <Button type="primary" onClick={this.onCreateActivityClick}>新建活动</Button>
             </Col>
           </Row>
         </Form>
