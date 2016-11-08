@@ -15,6 +15,10 @@ export default [{
   link: '/apppushmsgs',
   icon: 'tags-o',
 }, {
+  name: '商城活动',
+  link: '/activities',
+  icon: 'tags-o',
+}, {
   name: '九张图',
   link: '/ninepics',
   icon: 'tags-o',
