@@ -8,6 +8,9 @@ import { fetchActivity, saveActivity, resetActivity } from 'redux/modules/activi
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/activity/activityFilters';
+import { Uploader } from 'components/Uploader';
+import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
+import { imageUrlPrefixs } from 'constants';
 
 
 const actionCreators = {
@@ -15,11 +18,13 @@ const actionCreators = {
   fetchActivity,
   saveActivity,
   resetActivity,
+  fetchUptoken,
 };
 
 @connect(
   state => ({
     activity: state.activity,
+    uptoken: state.uptoken,
     filters: state.activityFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
@@ -33,6 +38,8 @@ class Editactivity extends Component {
     fetchFilters: React.PropTypes.func,
     filters: React.PropTypes.object,
     saveActivity: React.PropTypes.func,
+    fetchUptoken: React.PropTypes.func,
+    uptoken: React.PropTypes.object,
     resetActivity: React.PropTypes.func,
     activity: React.PropTypes.object,
     form: React.PropTypes.object,
@@ -66,6 +73,7 @@ class Editactivity extends Component {
     if (id) {
       this.props.fetchActivity(id);
     }
+    this.props.fetchUptoken();
     this.props.fetchFilters();
   }
 
@@ -77,15 +85,24 @@ class Editactivity extends Component {
     }
 
     if (activity && activity.success) {
+      const actImg = [];
+      const actLogo = [];
+      const maskLink = [];
+      const shareIcon = [];
+      if (activity.actImg) { actImg.push({ uid: activity.actImg, url: activity.actImg, status: 'done' }); }
+      if (activity.actLogo) { actLogo.push({ uid: activity.actLogo, url: activity.actLogo, status: 'done' }); }
+      if (activity.maskLink) { maskLink.push({ uid: activity.maskLink, url: activity.maskLink, status: 'done' }); }
+      if (activity.shareIcon) { shareIcon.push({ uid: activity.shareIcon, url: activity.shareIcon, status: 'done' }); }
       this.props.form.setFieldsInitialValue({
+        id: activity.id,
         title: activity.title,
         actDesc: activity.actDesc,
-        actImg: activity.actImg,
-        actLogo: activity.actLogo,
+        actImg: actImg,
+        maskLink: maskLink,
+        actLogo: actLogo,
+        shareIcon: shareIcon,
         actLink: activity.actLink,
-        maskLink: activity.maskLink,
         actApplink: activity.actApplink,
-        shareIcon: activity.shareIcon,
         scheduleId: activity.scheduleId,
         shareLink: activity.shareLink,
         actType: activity.actType,
@@ -97,6 +114,13 @@ class Editactivity extends Component {
         loginRequiredDisplay: activity.loginRequiredDisplay,
         isActive: activity.isActive,
         isActiveDisplay: activity.isActiveDisplay,
+      });
+    } else {
+      this.props.form.setFieldsInitialValue({
+        actImg: [],
+        actLogo: [],
+        maskLink: [],
+        shareIcon: [],
       });
     }
   }
@@ -112,8 +136,101 @@ class Editactivity extends Component {
       }
     });
     const params = this.props.form.getFieldsValue();
+    let actImg = '';
+    let maskLink = '';
+    let actLogo = '';
+    let shareIcon = '';
+    if (params.actImg.length > 0) { actImg = params.actImg[0].url; }
+    if (params.maskLink.length > 0) { maskLink = params.maskLink[0].url; }
+    if (params.actLogo.length > 0) { actLogo = params.actLogo[0].url; }
+    if (params.shareIcon.length > 0) { shareIcon = params.shareIcon[0].url; }
     this.props.saveActivity(this.props.activity.id, {
+        title: params.title,
+        actDesc: params.actDesc,
+        actImg: actImg,
+        maskLink: maskLink,
+        actLogo: actLogo,
+        shareIcon: shareIcon,
+        actLink: params.actLink,
+        scheduleId: params.scheduleId,
+        actType: params.actType,
+        startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
+        endTime: moment(params.endTime).format('YYYY-MM-DD HH:mm:ss'),
+        loginRequired: params.loginRequired,
+        isActive: params.isActive,
     });
+  }
+
+  onActImgRemove = (file) => {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ actImg: [] });
+  }
+
+  onActImgChange = ({ fileList }) => {
+    const self = this;
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.success(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ actImg: fileList });
+  }
+
+  onMaskLinkRemove = (file) => {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ maskLink: [] });
+  }
+
+  onMaskLinkChange = ({ fileList }) => {
+    const self = this;
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.success(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ maskLink: fileList });
+  }
+
+  onActLogoRemove = (file) => {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ actLogo: [] });
+  }
+
+  onActLogoChange = ({ fileList }) => {
+    const self = this;
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.success(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ actLogo: fileList });
+  }
+
+  onShareIconRemove = (file) => {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ shareIcon: [] });
+  }
+
+  onShareIconChange = ({ fileList }) => {
+    const self = this;
+    each(fileList, (file) => {
+      if (file.status === 'done' && file.response) {
+        file.url = `${imageUrlPrefixs}${file.response.key}`;
+        message.success(`上传成功: ${file.name}`);
+      } else if (file.status === 'error') {
+        message.error(`上传失败: ${file.name}`);
+      }
+    });
+    this.props.form.setFieldsValue({ shareIcon: fileList });
   }
 
   onActTypeSelect = (value) => {
@@ -127,12 +244,12 @@ class Editactivity extends Component {
       this.setState({ scheduleIdInputVisible: false });
     }
   }
+
   onScheduleSelect = (value) => {
     const self = this;
     const { filters } = this.props;
     for (let i = 0; i < filters.schedules.length; i++) {
       if (filters.schedules[i].id === value) {
-        console.log(filters.schedules[i], value);
         this.props.form.setFieldsValue({
         startTime: moment(filters.schedules[i].upshelfTime).format('YYYY-MM-DD HH:mm:ss'),
         endTime: moment(filters.schedules[i].offshelfTime).format('YYYY-MM-DD HH:mm:ss'),
@@ -172,13 +289,14 @@ class Editactivity extends Component {
       <div></div>
       );
   }
+
   formItemLayout = () => ({
     labelCol: { span: 4 },
     wrapperCol: { span: 18 },
   })
 
   render() {
-    const { prefixCls, activity, form, filters } = this.props;
+    const { prefixCls, activity, form, filters, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { activitys } = this.state;
     return (
@@ -205,6 +323,46 @@ class Editactivity extends Component {
               </Form.Item>
               {this.inputActLink()}
               {this.inputSchedule()}
+              <Form.Item {...this.formItemLayout()} label="入口图片" help="只能上传一张，如果要替换请先删除。" >
+                <Uploader
+                  {...getFieldProps('actImg', {
+                    valuePropName: 'fileList',
+                  })}
+                  onRemove={this.onActImgRemove}
+                  onChange={this.onActImgChange}
+                  uptoken={uptoken.token}
+                  />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="弹窗图片" help="只能上传一张，如果要替换请先删除。" >
+                <Uploader
+                  {...getFieldProps('maskLink', {
+                    valuePropName: 'fileList',
+                  })}
+                  onRemove={this.onMaskLinkRemove}
+                  onChange={this.onMaskLinkChange}
+                  uptoken={uptoken.token}
+                  />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="品牌LOGO" help="只能上传一张，如果要替换请先删除。" >
+                <Uploader
+                  {...getFieldProps('actLogo', {
+                    valuePropName: 'fileList',
+                  })}
+                  onRemove={this.onActLogoRemove}
+                  onChange={this.onActLogoChange}
+                  uptoken={uptoken.token}
+                  />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="分享图标" help="只能上传一张，如果要替换请先删除。" >
+                <Uploader
+                  {...getFieldProps('shareIcon', {
+                    valuePropName: 'fileList',
+                  })}
+                  onRemove={this.onShareIconRemove}
+                  onChange={this.onShareIconChange}
+                  uptoken={uptoken.token}
+                  />
+              </Form.Item>
               <Checkbox {...getFieldProps('isActive')} checked={getFieldValue('isActive')}>是否上线</Checkbox>
               <Checkbox {...getFieldProps('loginRequired')} checked={getFieldValue('loginRequired')}>是否需要登陆</Checkbox>
               <Row>
