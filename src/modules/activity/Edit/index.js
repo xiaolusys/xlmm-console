@@ -298,6 +298,7 @@ class Editactivity extends Component {
 
   render() {
     const { prefixCls, activity, form, filters, uptoken } = this.props;
+    console.log('filters:', filters);
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { activitys } = this.state;
     return (

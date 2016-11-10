@@ -8,9 +8,11 @@ import { fetchActivityProducts, deleteActivityProduct } from 'redux/modules/acti
 import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
+import { fetchActivitProductFilters } from 'redux/modules/activity/activityProductFilters';
 
 
 const actionCreators = {
+  fetchActivitProductFilters,
   fetchActivityProducts,
   deleteActivityProduct,
 };
@@ -18,6 +20,7 @@ const actionCreators = {
 @connect(
   state => ({
     activityProducts: state.activityProducts,
+    filters: state.activityProductFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -28,6 +31,8 @@ class ActivityProductsList extends Component {
     prefixCls: React.PropTypes.object,
     form: React.PropTypes.object,
     fetchActivityProducts: React.PropTypes.func,
+    fetchActivitProductFilters: React.PropTypes.func,
+    filters: React.PropTypes.object,
     deleteActivityProduct: React.PropTypes.func,
     activityProducts: React.PropTypes.object,
   };
@@ -56,6 +61,7 @@ class ActivityProductsList extends Component {
   componentWillMount() {
     const { id } = this.props.location.query;
     this.props.fetchActivityProducts(id);
+    this.props.fetchActivitProductFilters();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -68,6 +74,13 @@ class ActivityProductsList extends Component {
     const { deleteid } = e.currentTarget.dataset;
     this.setState({ deleteid: deleteid });
   }
+
+  onCreateActivityProductClick = (e) => {
+    const { id } = this.props.location.query;
+    const path = ['activity/product/edit?activityId=', id].join('');
+    this.context.router.push(path);
+  }
+
   onActivityProDeleteConfirm = (e) => {
     const { deleteid } = this.state;
     console.log(deleteid);
@@ -142,7 +155,7 @@ class ActivityProductsList extends Component {
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
-              <Button type="primary" onClick={this.onCreateActivityClick}>增加活动产品</Button>
+              <Button type="primary" onClick={this.onCreateActivityProductClick}>增加活动产品</Button>
             </Col>
           </Row>
         </Form>

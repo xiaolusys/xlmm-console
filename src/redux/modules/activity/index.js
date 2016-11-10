@@ -2,12 +2,14 @@ import activities from './activities';
 import activity from './activity';
 import activityFilters from './activityFilters';
 import activityProducts from './activityProducts';
-// import promotionPros from './ninepicPromotionPros';
+import activityProduct from './activityProduct';
+import activityProductFilters from './activityProductFilters';
 
 export default {
   activities,
   activity,
   activityFilters,
   activityProducts,
-  // promotionPros,
+  activityProduct,
+  activityProductFilters,
 };
