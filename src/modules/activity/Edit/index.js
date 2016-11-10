@@ -153,7 +153,7 @@ class Editactivity extends Component {
         shareIcon: shareIcon,
         actLink: params.actLink,
         scheduleId: params.scheduleId,
-        actType: params.actType,
+        actType: this.props.form.getFieldProps('actType').value,
         startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
         endTime: moment(params.endTime).format('YYYY-MM-DD HH:mm:ss'),
         loginRequired: params.loginRequired,
@@ -236,6 +236,7 @@ class Editactivity extends Component {
   onActTypeSelect = (value) => {
     const self = this;
     console.log('ac type: ', value);
+    this.props.form.setFieldsValue({ actType: value });
     if (value === 'topic') {
       this.setState({ actLinkInputVisible: false });
       this.setState({ scheduleIdInputVisible: true });

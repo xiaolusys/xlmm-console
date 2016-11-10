@@ -10,7 +10,6 @@ import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
 
-const propsFiltersName = 'scheduleList';
 
 const actionCreators = {
   fetchActivities,
@@ -173,9 +172,8 @@ class List extends Component {
   })
 
   render() {
-    const { prefixCls, activities, filters } = this.props;
+    const { prefixCls, activities } = this.props;
     const { getFieldProps } = this.props.form;
-    console.log('activities: ', activities, filters);
     return (
       <div className={`${prefixCls}`} >
         <Form horizontal className="ant-advanced-search-form">

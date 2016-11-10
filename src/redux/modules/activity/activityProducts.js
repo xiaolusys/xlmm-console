@@ -6,7 +6,7 @@ const initialState = {
   count: 0,
 };
 
-const name = 'ACTIVITIES';
+const name = 'ACTIVITYPRODUCTS';
 
 export default createReducer({
   [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
@@ -16,8 +16,8 @@ export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    count: payload.data.count,
     items: payload.data,
+    count: payload.data.length,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -25,11 +25,18 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchActivities = (filters) => ({
-  url: `${apisBase.promotion}activity`,
+export const fetchActivityProducts = (id) => ({
+  url: `${apisBase.promotion}activity/${id}/active_pros`,
   method: 'get',
   type: `FETCH_${name}`,
-  params: {
-    ...filters,
+});
+
+export const deleteActivityProduct = (id, params) => ({
+  url: `${apisBase.promotion}activity/destroy_pro`,
+  method: 'delete',
+  type: `DELETE_${name}`,
+  data: params,
+  success: (resp, dispatch) => {
+    dispatch(fetchActivityProducts(id));
   },
 });
