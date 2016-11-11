@@ -99,17 +99,14 @@ class List extends Component {
   }
 
   setOrderValId = (e) => {
-    console.log('key code is :', e.keyCode);
     if (e.keyCode === 13) {
       const { activityid } = e.currentTarget.dataset;
       const { target } = e;
-      console.log('activityid', activityid, target.value);
       const { activities } = this.props;
       const activityidInt = parseInt(activityid, 10);
       if (activities && activities.items) {
         map(activities.items.results, (item) => {
           if (item && item.id === activityidInt) {
-            console.log('item -->', item);
             this.props.saveActivity(activityid, {
               orderVal: target.value,
               title: item.title,
