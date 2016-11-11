@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message, InputNumber } from 'antd';
 import * as constants from 'constants';
 import { fetchActivities } from 'redux/modules/activity/activities';
+import { saveActivity } from 'redux/modules/activity/activity';
 import { fetchFilters } from 'redux/modules/activity/activityFilters';
 import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
@@ -14,6 +15,7 @@ import stringcase from 'stringcase';
 const actionCreators = {
   fetchActivities,
   fetchFilters,
+  saveActivity,
 };
 
 @connect(
@@ -31,6 +33,7 @@ class List extends Component {
     form: React.PropTypes.object,
     fetchActivities: React.PropTypes.func,
     fetchFilters: React.PropTypes.func,
+    saveActivity: React.PropTypes.func,
     activities: React.PropTypes.object,
     filters: React.PropTypes.object,
   };
@@ -95,6 +98,40 @@ class List extends Component {
     return this.setState(assign(this.state.filters, filters));
   }
 
+  setOrderValId = (e) => {
+    console.log('key code is :', e.keyCode);
+    if (e.keyCode === 13) {
+      const { activityid } = e.currentTarget.dataset;
+      const { target } = e;
+      console.log('activityid', activityid, target.value);
+      const { activities } = this.props;
+      const activityidInt = parseInt(activityid, 10);
+      if (activities && activities.items) {
+        map(activities.items.results, (item) => {
+          if (item && item.id === activityidInt) {
+            console.log('item -->', item);
+            this.props.saveActivity(activityid, {
+              orderVal: target.value,
+              title: item.title,
+              actDesc: item.actDesc,
+              actImg: item.actImg,
+              maskLink: item.maskLink,
+              actLogo: item.actLogo,
+              shareIcon: item.shareIcon,
+              actLink: item.actLink,
+              scheduleId: item.scheduleId,
+              actType: item.actType,
+              startTime: moment(item.startTime).format('YYYY-MM-DD HH:mm:ss'),
+              endTime: moment(item.endTime).format('YYYY-MM-DD HH:mm:ss'),
+              loginRequired: item.loginRequired,
+              isActive: item.isActive,
+            });
+          }
+        });
+      }
+    }
+  }
+
   columns = () => {
     const self = this;
     return [{
@@ -117,6 +154,9 @@ class List extends Component {
       title: '排序值',
       dataIndex: 'orderVal',
       key: 'orderVal',
+      render: (orderVal, record) => (
+        <InputNumber min={0} max={10000} data-activityid={record.id} onKeyDown={this.setOrderValId} defaultValue={orderVal} />
+        ),
     }, {
       title: '上线',
       dataIndex: 'isActiveDisplay',

@@ -48,7 +48,6 @@ export const fetchActivityProduct = (id) => ({
 
 export const saveActivityProduct = (id, activityID, params) => {
   if (activityID) {
-    console.log('create.....');
     return ({
       url: `${apisBase.promotion}activity/${activityID}/create_pro`,
       method: 'post',
