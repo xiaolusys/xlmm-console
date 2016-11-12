@@ -6,6 +6,7 @@ import supplierRoutes from 'modules/supplier/routes';
 import categoriesRoutes from 'modules/categories/routes';
 import ninepicRoutes from 'modules/ninepic/routes';
 import apppushmsgRoutes from 'modules/apppushmsg/routes';
+import activitiesRoutes from 'modules/activity/routes';
 
 export default (
   <Route path="/" component={App}>
@@ -14,5 +15,6 @@ export default (
     {categoriesRoutes}
     {ninepicRoutes}
     {apppushmsgRoutes}
+    {activitiesRoutes}
   </Route>
 );

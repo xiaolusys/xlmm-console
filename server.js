@@ -30,6 +30,7 @@ app.use(mocks());
 app.use('/apis', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/apis`)));
 app.use('/rest', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/rest`)));
 app.use('/admin', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/admin`)));
+app.use('/sale', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/sale`)));
 app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
