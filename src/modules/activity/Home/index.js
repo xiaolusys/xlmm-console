@@ -165,6 +165,10 @@ class List extends Component {
       dataIndex: 'isActiveDisplay',
       key: 'isActiveDisplay',
     }, {
+      title: '备注',
+      dataIndex: 'memoDisplay',
+      key: 'memoDisplay',
+    }, {
       title: '操作',
       dataIndex: 'id',
       key: 'operation',
