@@ -21,7 +21,7 @@ const actionCreators = {
 @connect(
   state => ({
     activities: state.activities,
-    filters: state.fetchFilters,
+    filters: state.activityFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -89,6 +89,12 @@ class List extends Component {
         break;
     }
     this.setFilters({ ordering: ordering });
+    this.props.fetchActivities(this.getFilters());
+  }
+
+  onIsActiveSelect = (value) => {
+    const self = this;
+    this.setFilters({ isActive: value });
     this.props.fetchActivities(this.getFilters());
   }
 
@@ -209,10 +215,13 @@ class List extends Component {
   })
 
   render() {
-    const { prefixCls, activities } = this.props;
+    const { prefixCls, activities, filters } = this.props;
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
+        <Select onSelect={this.onIsActiveSelect} style={{ width: 120 }} >
+          {filters.isActive.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+        </Select>
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
