@@ -22,6 +22,19 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`CORRELATE_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`CORRELATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    ...payload.data,
+  }),
+  [`CORRELATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`SAVE_${name}_REQUEST`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -52,5 +65,15 @@ export const saveActivity = (id, params) => ({
   type: `SAVE_${name}`,
   data: params,
 });
+
+export const correlateSchedule = (id) => {
+  console.log('activity id :', id);
+  return ({
+    url: `${apisBase.promotion}activity/${id}/correlate_schedule`,
+    method: 'post',
+    type: `CORRELATE_${name}`,
+    data: { schedule_id: null },
+  });
+};
 
 export const resetActivity = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));
