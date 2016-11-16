@@ -8,7 +8,7 @@ import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, last, map, assign, merge, sortBy, toInteger, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
-import { replaceAllKeys } from 'utils/object';
+import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import { imageUrlPrefixs } from 'constants';
 import changeCaseKeys from 'change-case-keys';
 
@@ -97,10 +97,11 @@ class Basic extends Component {
       });
     }
     if (product.failure) {
-      message.error(`请求错误: ${product.error.detail || ''}`);
+      console.log('product', product, product.error, product.error.values);
+      message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
     }
     if (sku.failure) {
-      message.error(`请求错误: ${sku.error.detail || ''}`);
+      message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
     }
   }
 
@@ -204,15 +205,20 @@ class Basic extends Component {
     const { productId, supplierId } = this.props.location.query;
     const { getFieldValue } = this.props.form;
     const { skuItems } = this.state;
+    const categories = getFieldValue('saleCategory');
     if (getFieldValue('fileList').length !== 1) {
       message.warning('上传一张图片!');
+      return;
+    }
+    if (isEmpty(categories)) {
+      message.warning('请选择类目!');
       return;
     }
     const params = {
       title: getFieldValue('title'),
       productLink: getFieldValue('productLink'),
       picUrl: getFieldValue('fileList')[0].url,
-      saleCategory: this.getCategory(getFieldValue('saleCategory')),
+      saleCategory: this.getCategory(categories),
       saleSupplier: supplierId,
       supplierSku: getFieldValue('supplierSku'),
       memo: getFieldValue('memo'),
@@ -220,13 +226,13 @@ class Basic extends Component {
     };
     if (productId) {
       this.props.updateProduct(productId, params);
-      this.setState({
-        skuItems: changeCaseKeys(skuItems, 'camelize', 10),
-      });
     } else {
       this.props.saveProduct(params);
       // this.context.router.goBack();
     }
+    this.setState({
+      skuItems: changeCaseKeys(skuItems, 'camelize', 10),
+    });
   }
 
   onCancelClick = (e) => {
@@ -602,7 +608,7 @@ class Basic extends Component {
                 <Table {...this.tableProps()} dataSource={this.state.skuItems} />
               </Col>
             </Row>
-          </If>);
+          </If>
         </Form>
         <Row style={{ marginTop: 10 }}>
           <Col offset="8" span="2">

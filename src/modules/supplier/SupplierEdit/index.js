@@ -6,6 +6,7 @@ import { find, isEmpty, each, last } from 'lodash';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { fetchProvinces, fetchCities, fetchDistricts } from 'redux/modules/supplyChain/district';
 import { fetchSupplier, saveSupplier, updateSupplier, resetSupplier } from 'redux/modules/supplyChain/supplier';
+import { toErrorMsg } from 'utils/object';
 
 const actionCreators = {
   fetchFilters,
@@ -96,15 +97,7 @@ class EditWithForm extends Component {
       // this.context.router.goBack();
     }
     if (supplier.failure) {
-      const errMsgs = [];
-      if (supplier.error.detail) {
-        errMsgs.push(supplier.error.detail);
-      } else {
-        each(supplier.error.values, (err) => {
-          errMsgs.push(err[0]);
-        });
-      }
-      message.error(`保存异常: ${errMsgs.join(',')}`);
+      message.error(`保存异常: ${toErrorMsg(supplier.error)}`);
       // this.context.router.goBack();
     }
   }
