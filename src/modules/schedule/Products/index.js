@@ -381,7 +381,12 @@ class ProductsWithForm extends Component {
       dataIndex: 'productName',
       key: 'productName',
       width: 200,
-      render: (productName, record) => (<a target="_blank" href={record.productLink}>{productName}</a>),
+      render: (productName, record) => (
+        <div>
+          <p><span>类目:</span>{record.saleCategory}</p>
+          <a target="_blank" href={record.productLink}>{productName}</a>
+        </div>
+      ),
     }, {
       title: '吊牌价',
       dataIndex: 'productOriginPrice',
