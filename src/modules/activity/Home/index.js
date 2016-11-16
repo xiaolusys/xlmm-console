@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message, InputNumber } from 'antd';
 import * as constants from 'constants';
 import { fetchActivities } from 'redux/modules/activity/activities';
-import { saveActivity } from 'redux/modules/activity/activity';
+import { saveActivity, correlateSchedule } from 'redux/modules/activity/activity';
 import { fetchFilters } from 'redux/modules/activity/activityFilters';
 import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
@@ -16,6 +16,7 @@ const actionCreators = {
   fetchActivities,
   fetchFilters,
   saveActivity,
+  correlateSchedule,
 };
 
 @connect(
@@ -34,6 +35,7 @@ class List extends Component {
     fetchActivities: React.PropTypes.func,
     fetchFilters: React.PropTypes.func,
     saveActivity: React.PropTypes.func,
+    correlateSchedule: React.PropTypes.func,
     activities: React.PropTypes.object,
     filters: React.PropTypes.object,
   };
@@ -97,7 +99,17 @@ class List extends Component {
     this.setFilters({ isActive: value });
     this.props.fetchActivities(this.getFilters());
   }
-
+  onCorrelateActivitySchedule = () => {
+    console.log(this.state);
+    if (this.state.acids) {
+      this.state.acids.map((acid) => (this.props.correlateSchedule(acid)));
+    }
+  }
+  setSelectedAcId = (selected) => {
+    const acIds = [];
+    selected.map((item) => (acIds.push(item.id)));
+    this.state.acids = acIds;
+  }
   getFilters = () => (this.state.filters)
 
   setFilters = function(filters) {
@@ -192,7 +204,7 @@ class List extends Component {
       rowSelection: {
         onChange: (selectedRowKeys, selectedRows) => {
           const selected = map(selectedRows, (row) => ({ id: row.id, name: row.title }));
-          self.setSelected(selected);
+          self.setSelectedAcId(selected);
         },
       },
       pagination: {
@@ -226,6 +238,7 @@ class List extends Component {
         <Select onSelect={this.onIsActiveSelect} style={{ width: 120 }} >
           {filters.isActive.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
         </Select>
+        <Button type="primary" onClick={this.onCorrelateActivitySchedule}>同步排期</Button>
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
