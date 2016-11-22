@@ -206,8 +206,8 @@ class Basic extends Component {
     const { getFieldValue } = this.props.form;
     const { skuItems } = this.state;
     const categories = getFieldValue('saleCategory');
-    if (getFieldValue('fileList').length !== 1) {
-      message.warning('上传一张图片!');
+    if (!getFieldValue('fileList') || getFieldValue('fileList').length !== 1) {
+      message.warning('请上传一张图片!');
       return;
     }
     if (isEmpty(categories)) {
