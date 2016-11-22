@@ -311,7 +311,7 @@ class EditNinepic extends Component {
                 <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="开始时间">
-                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true, title: '开始时间' }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="类别">
                 <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
@@ -326,8 +326,9 @@ class EditNinepic extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="描述">
                 <Popover placement="right" title="历史推送内容(点击替换当前描述.)" content={this.historyDescriptionsPopContent()} trigger="click">
-                  <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
+                  <Button>查看历史推送内容</Button>
                 </Popover>
+                <Input {...getFieldProps('description')} value={getFieldValue('description')} placeholder="推送描述内容" type="textarea" rows={7} />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} style={{ height: 270 }} label="推广图片" required>
                 <Uploader

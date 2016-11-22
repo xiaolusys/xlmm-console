@@ -65,6 +65,7 @@ class Editactivity extends Component {
     oldParamsVisible: true,
     actLinkInputVisible: false,
     scheduleIdInputVisible: false,
+    actLink: null,
   }
 
   componentWillMount() {
@@ -151,7 +152,7 @@ class Editactivity extends Component {
         maskLink: maskLink,
         actLogo: actLogo,
         shareIcon: shareIcon,
-        actLink: params.actLink,
+        actLink: this.state.actLink,
         scheduleId: params.scheduleId,
         actType: this.props.form.getFieldProps('actType').value,
         startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
@@ -258,12 +259,16 @@ class Editactivity extends Component {
       }
     }
   }
+  setAcLinState = (e) => {
+    const self = this;
+    this.setState({ actLink: e.target.value });
+  }
   inputActLink = () => {
     const { actLinkInputVisible } = this.state;
     if (actLinkInputVisible) {
       return (
-        <Form.Item {...this.formItemLayout()} label="活动链接">
-          <Input />
+        <Form.Item {...this.formItemLayout()} label="活动链接" >
+          <Input onChange={this.setAcLinState} />
         </Form.Item>
         );
     }
@@ -298,7 +303,6 @@ class Editactivity extends Component {
 
   render() {
     const { prefixCls, activity, form, filters, uptoken } = this.props;
-    console.log('filters:', filters);
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { activitys } = this.state;
     return (
