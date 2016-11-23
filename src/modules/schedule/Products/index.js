@@ -12,6 +12,7 @@ import { fetchProducts, addProduct, updateProduct, updatePosition, updateAssigne
 import { fetchUsers } from 'redux/modules/auth/users';
 import stringcase from 'stringcase';
 import { merge, map } from 'lodash';
+import { toErrorMsg } from 'utils/object';
 
 const propsFiltersName = 'scheduleProductList';
 
@@ -122,10 +123,10 @@ class ProductsWithForm extends Component {
     }
 
     if (scheduleProducts.failure) {
-      scheduleProducts.error(`请求错误: ${scheduleProducts.error.detail || ''}`);
+      scheduleProducts.error(`请求错误: ${toErrorMsg(scheduleProducts.error)}`);
     }
     if (schedule.failure) {
-      schedule.error(`请求错误: ${schedule.error.detail || ''}`);
+      schedule.error(`请求错误: ${toErrorMsg(schedule.error)}`);
     }
   }
 

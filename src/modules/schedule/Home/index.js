@@ -7,6 +7,7 @@ import * as constants from 'constants';
 import { fetchSchedules } from 'redux/modules/supplyChain/schedules';
 import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
 import { assign, isEmpty, map } from 'lodash';
+import { toErrorMsg } from 'utils/object';
 import moment from 'moment';
 
 const propsFiltersName = 'scheduleList';
@@ -71,7 +72,7 @@ class List extends Component {
   componentWillReceiveProps(nextProps) {
     const { schedules } = nextProps;
     if (schedules.failure) {
-      schedules.error(`请求错误: ${schedules.error.detail || ''}`);
+      schedules.error(`请求错误: ${toErrorMsg(schedules.error)}`);
     }
   }
 

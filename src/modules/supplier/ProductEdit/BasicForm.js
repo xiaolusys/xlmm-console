@@ -511,7 +511,7 @@ class Basic extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 10 },
+    wrapperCol: { span: 14 },
   })
 
   render() {

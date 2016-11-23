@@ -144,7 +144,7 @@ class Material extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 10 },
+    wrapperCol: { span: 16 },
   })
 
   findSelectedMaterials = (newProperties, preference) => {

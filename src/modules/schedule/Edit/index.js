@@ -8,6 +8,7 @@ import * as constants from 'constants';
 import * as actionCreators from 'redux/modules/supplyChain/schedule';
 import _ from 'lodash';
 import moment from 'moment';
+import { toErrorMsg } from 'utils/object';
 
 @connect(
   state => ({
@@ -66,22 +67,9 @@ class EditSchedule extends Component {
       });
       this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
     }
-    if (schedule) {
-      if (schedule.failure) {
-        const errMsgs = [];
-        console.log('schedule error:', schedule.error);
-        if (schedule.error && schedule.error.detail) {
-          errMsgs.push(schedule.error.detail);
-        } else {
-            _.each(schedule.error, (err) => {
-              errMsgs.push(err[0]);
-            });
-        }
-        if (schedule.error) {
-          message.error(`保存异常: ${errMsgs.join(',')}`);
-        }
-        schedule.error = null;
-      }
+
+    if (schedule.failure) {
+      message.error(`保存异常: ${toErrorMsg(schedule.error)}`);
     }
   }
 
