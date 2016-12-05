@@ -20,12 +20,15 @@ export default (config = {}) => {
       const { type, payload, meta } = action;
       const initialAction = { isLoading: true, success: false, failure: false };
       const [REQUEST, SUCCESS, FAILURE] = (meta || {}).promiseTypeSuffixes || promiseTypeSuffixes;
-      const getAction = (newPayload, isRejected) => ({
-        type: `${type}_${isRejected ? FAILURE : SUCCESS}`,
-        ...newPayload ? { payload: newPayload } : {},
-        ...!!meta ? { meta } : {},
-        status: isRejected ? { isLoading: false, failure: true, success: false, error: newPayload.response ? newPayload.response.data : {} } : { isLoading: false, failure: false, success: true },
-      });
+      const getAction = (newPayload, isRejected) => {
+        const errorDetail = newPayload.response ? newPayload.response.data : newPayload.data || {};
+        return {
+          type: `${type}_${isRejected ? FAILURE : SUCCESS}`,
+          ...newPayload ? { payload: newPayload } : {},
+          ...!!meta ? { meta } : {},
+          status: isRejected ? { isLoading: false, failure: true, success: false, error: errorDetail } : { isLoading: false, failure: false, success: true },
+        };
+      };
 
       /**
        * Assign values for promise and data variables. In the case the payload
