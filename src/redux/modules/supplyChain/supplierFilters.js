@@ -9,6 +9,7 @@ const initialState = {
   supplierType: [],
   supplierZone: [],
   wareBy: [],
+  stockingMode: [],
 };
 
 const name = 'SUPPLIERS_FILTERS';

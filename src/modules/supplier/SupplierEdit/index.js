@@ -82,6 +82,7 @@ class EditWithForm extends Component {
         province: supplier.province,
         city: supplier.city,
         district: supplier.district,
+        stockingMode: supplier.stockingMode,
         wareBy: supplier.wareBy,
         address: supplier.address,
         contact: supplier.contact,
@@ -201,6 +202,11 @@ class EditWithForm extends Component {
           <Form.Item {...this.formItemLayout()} label="仓库">
             <Select {...getFieldProps('wareBy', { rules: [{ required: true, type: 'number', message: '请选择仓库！' }] })} value={getFieldValue('wareBy')} placeholder="请选择仓库">
               {filters.wareBy.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+            </Select>
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="存货模式">
+            <Select {...getFieldProps('stockingMode', { rules: [{ required: true, type: 'number', message: '请选择存货模式！' }] })} value={getFieldValue('stockingMode')} placeholder="请选择存货模式">
+              {filters.stockingMode.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="地址">
