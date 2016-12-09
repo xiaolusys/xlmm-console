@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message } from 'antd';
 import * as constants from 'constants';
 import { fetchSchedules } from 'redux/modules/supplyChain/schedules';
 import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
@@ -72,7 +72,7 @@ class List extends Component {
   componentWillReceiveProps(nextProps) {
     const { schedules } = nextProps;
     if (schedules.failure) {
-      schedules.error(`请求错误: ${toErrorMsg(schedules.error)}`);
+      message.error(`请求错误: ${toErrorMsg(schedules.error)}`);
     }
   }
 

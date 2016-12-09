@@ -97,7 +97,6 @@ class Basic extends Component {
       });
     }
     if (product.failure) {
-      console.log('product', product, product.error, product.error.values);
       message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
     }
     if (sku.failure) {

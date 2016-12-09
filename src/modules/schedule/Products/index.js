@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, Popover, Select, Form, Popconfirm } from 'antd';
+import { Row, Col, Icon, Dropdown, Menu, Button, DatePicker, Table, Checkbox, Input, message, Popover, Select, Form, Popconfirm } from 'antd';
 import { If } from 'jsx-control-statements';
 import Modals from 'modules/Modals';
 import * as constants from 'constants';
@@ -123,10 +123,10 @@ class ProductsWithForm extends Component {
     }
 
     if (scheduleProducts.failure) {
-      scheduleProducts.error(`请求错误: ${toErrorMsg(scheduleProducts.error)}`);
+      message.error(`请求错误: ${toErrorMsg(scheduleProducts.error)}`);
     }
     if (schedule.failure) {
-      schedule.error(`请求错误: ${toErrorMsg(schedule.error)}`);
+      message.error(`请求错误: ${toErrorMsg(schedule.error)}`);
     }
   }
 
