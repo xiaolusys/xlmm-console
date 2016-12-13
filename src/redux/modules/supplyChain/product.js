@@ -45,6 +45,7 @@ export default createReducer({
   [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+    ...payload.data,
     updated: true,
   }),
   [`SAVE_${name}_FAILURE`]: (state, { payload, status }) => ({

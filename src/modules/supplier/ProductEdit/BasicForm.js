@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Cascader, Popover, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
+import { Button, Card, Checkbox, Col, Form, Input, Cascader, Popover, Radio, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
 import { If } from 'jsx-control-statements';
 import { fetchSku, addSku, batchAddSku } from 'redux/modules/supplyChain/sku';
 import { saveProduct, updateProduct } from 'redux/modules/supplyChain/product';
@@ -9,7 +9,7 @@ import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, last, map, assign, merge, sortBy, toInteger, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
-import { imageUrlPrefixs } from 'constants';
+import { imageUrlPrefixs, productTypes, boutiqueSkuTpl } from 'constants';
 import changeCaseKeys from 'change-case-keys';
 
 const actionCreators = {
@@ -58,49 +58,57 @@ class Basic extends Component {
   state = {
     skus: {},
     skuItems: [],
+    isBoutique: false,
+    productType: 0,
   }
 
   componentWillMount() {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { product, sku } = nextProps;
-    if (product.success && !product.update) {
-      this.props.form.setFieldsInitialValue({
-        fileList: [{
-          uid: product.picUrl,
-          url: product.picUrl,
-          status: 'done',
-        }],
-        productLink: product.productLink,
-        title: product.title,
-        supplierSku: product.supplierSku,
-        memo: product.memo,
-      });
-    }
-    if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
-      const selected = this.findAndUnionSkuValues(product, sku);
-      const skuItems = this.findSkuItems(product, sku);
-      this.props.form.setFieldsInitialValue({
-        saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
-        fileList: [{
-          uid: product.picUrl,
-          url: product.picUrl,
-          status: 'done',
-        }],
-        skuItems: skuItems,
-        ...selected,
-      });
-      assign(this.state, {
-        skus: selected,
-        skuItems: product.skuExtras,
-      });
-    }
-    if (product.failure) {
-      message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
-    }
-    if (sku.failure) {
-      message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
+    try {
+      const { product, sku } = nextProps;
+      if (product.success && !product.update) {
+        this.props.form.setFieldsInitialValue({
+          fileList: [{
+            uid: product.picUrl,
+            url: product.picUrl,
+            status: 'done',
+          }],
+          productLink: product.productLink,
+          title: product.title,
+          supplierSku: product.supplierSku,
+          memo: product.memo,
+        });
+      }
+      if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
+        const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
+        const skuItems = this.findSkuItems(product.skuExtras, sku);
+        this.props.form.setFieldsInitialValue({
+          saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
+          fileList: [{
+            uid: product.picUrl,
+            url: product.picUrl,
+            status: 'done',
+          }],
+          skuItems: skuItems,
+          ...selected,
+        });
+        assign(this.state, {
+          skus: selected,
+          skuItems: product.skuExtras,
+          isBoutique: product.extras.isBoutique || false,
+          productType: product.extras.productType || 0,
+        });
+      }
+      if (product.failure) {
+        message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
+      }
+      if (sku.failure) {
+        message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
+      }
+    } catch (exc) {
+      console.log(exc);
     }
   }
 
@@ -222,7 +230,12 @@ class Basic extends Component {
       supplierSku: getFieldValue('supplierSku'),
       memo: getFieldValue('memo'),
       skuExtras: skuItems,
+      extras: {
+        isBoutique: this.state.isBoutique,
+        productType: this.state.productType,
+      },
     };
+    console.log('params:', params);
     if (productId) {
       this.props.updateProduct(productId, params);
     } else {
@@ -236,6 +249,24 @@ class Basic extends Component {
 
   onCancelClick = (e) => {
     this.context.router.goBack();
+  }
+
+  onClickAddBoutique = (e) => {
+    const isBoutique = e.target.checked;
+    const productType = this.state.productType;
+    this.setState({
+      isBoutique: isBoutique,
+    });
+    this.updateBoutiqueSkus(productType, isBoutique);
+  }
+
+  onClickProductType = (e) => {
+    const isBoutique = this.state.isBoutique;
+    const productType = e.target.value;
+    this.setState({
+      productType: productType,
+    });
+    this.updateBoutiqueSkus(productType, isBoutique);
   }
 
   onSkuValueInput = (e) => {
@@ -273,13 +304,13 @@ class Basic extends Component {
     return value;
   }
 
-  findSkuItems = (product, sku) => {
+  findSkuItems = (skuExtras, sku) => {
     const skuItems = [];
     const unionSkuName = '统一规格';
-    if (!product.skuExtras || product.skuExtras.length === 0) {
+    if (!skuExtras || skuExtras.length === 0) {
       return skuItems;
     }
-    const firstSku = product.skuExtras[0];
+    const firstSku = skuExtras[0];
     each(sku.items.toJS(), (item) => {
       if (firstSku.color === unionSkuName) {
         if (firstSku.color === item.name) {
@@ -297,9 +328,8 @@ class Basic extends Component {
     return skuItems;
   }
 
-  findAndUnionSkuValues = (product, sku) => {
+  findAndUnionSkuValues = (skuExtras, sku) => {
     const skuItems = sku.items.toJS();
-    const skuExtras = product.skuExtras;
     const skuItemValues = [];
     const extraSkuItems = [];
     const colors = [];
@@ -433,6 +463,36 @@ class Basic extends Component {
     return sortBy(skuItems, 'color');
   }
 
+  updateBoutiqueSkus = (productType, isBoutique) => {
+    const { getFieldValue } = this.props.form;
+    const { product, sku } = this.props;
+    if (isEmpty(product.skuExtras) && toInteger(productType) === 1 && isBoutique === true) {
+      const selected = this.findAndUnionSkuValues(boutiqueSkuTpl, sku);
+      const skuItems = this.findSkuItems(boutiqueSkuTpl, sku);
+      this.props.form.setFieldsInitialValue({
+        skuItems: skuItems,
+        ...selected,
+      });
+      assign(this.state, {
+        skus: selected,
+        skuItems: boutiqueSkuTpl,
+      });
+    }
+
+    if (isEmpty(product.skuExtras) && isBoutique === false) {
+      const selected = this.findAndUnionSkuValues([], sku);
+      const skuItems = this.findSkuItems([], sku);
+      this.props.form.setFieldsInitialValue({
+        skuItems: skuItems,
+        ...selected,
+      });
+      assign(this.state, {
+        skus: selected,
+        skuItems: [],
+      });
+    }
+  }
+
   columnTitle = (text, type) => {
     const content = (
       <div className="clearfix">
@@ -561,6 +621,27 @@ class Basic extends Component {
               type="textarea"
               rows={2}
               />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="商品类型">
+            <Row style={{ marginTop: 16 }}>
+              <Col span="10">
+                <Radio.Group
+                  {...getFieldProps('productType')}
+                  value={this.state.productType}
+                  onChange={this.onClickProductType}
+                  defaultValue="0">
+                  {map(productTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
+                </Radio.Group>
+              </Col>
+              <Col span="4">
+                <Checkbox
+                  {...getFieldProps('isBoutique')}
+                  checked={this.state.isBoutique}
+                  onChange={this.onClickAddBoutique}>
+                  加入精品汇
+                </Checkbox>
+              </Col>
+            </Row>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类目" required>
             <Cascader
