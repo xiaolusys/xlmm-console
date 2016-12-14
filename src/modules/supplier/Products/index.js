@@ -189,7 +189,9 @@ class ProductsWithForm extends Component {
       const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
       return (
         <Popover placement="right" content={conetnt} trigger="hover">
-          <img style={{ width: '80px' }} src={productPic} role="presentation" />
+          <a target="_blank" href={`/admin/pay/modelproduct/${record.modelId}/change/`} title={record.modelId}>
+            <img style={{ width: '80px' }} src={productPic} role="presentation" />
+          </a>
         </Popover>
       );
     },

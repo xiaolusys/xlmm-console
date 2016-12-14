@@ -149,11 +149,13 @@ class List extends Component {
       title: '操作',
       dataIndex: 'id',
       key: 'modifyID',
-      render: (id) => (
+      render: (id, record) => (
         <span>
           <Link to={`ninepics/edit?id=${id}`} >编辑</Link>
           <span className="ant-divider"></span>
           <a data-ninepicid={id} onClick={self.onDeleteNinepicClick}>删除</a>
+          <span className="ant-divider"></span>
+          <a href={`/${record.redirectUrl}`} target="_blank" disabled={record.redirectUrl === ''}>预览</a>
         </span>
       ),
     }];
