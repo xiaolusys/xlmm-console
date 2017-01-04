@@ -4,6 +4,7 @@ import auth from './modules/auth';
 import ninePic from './modules/ninePic';
 import appPushMsg from './modules/appPushMsg';
 import activity from './modules/activity';
+import operations from './modules/operations';
 
 const reducer = combineReducers({
   ...supplyChain,
@@ -11,6 +12,7 @@ const reducer = combineReducers({
   ...ninePic,
   ...appPushMsg,
   ...activity,
+  ...operations,
 });
 
 export default reducer;
