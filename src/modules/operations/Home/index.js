@@ -21,7 +21,10 @@ class Panes extends TabPane {
       <TabPane tab="小鹿妈妈" key="1">
         <Link to="operations/changemmupper" >更改上级妈妈</Link>
       </TabPane>
-      <TabPane tab="普通用户" key="2">
+      <TabPane tab="精品券" key="2">
+        <Link to="operations/gifttransfercoupon" >赠送精品券</Link>
+      </TabPane>
+      <TabPane tab="普通用户" key="3">
         test
       </TabPane>
     </Tabs>
