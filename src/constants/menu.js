@@ -22,4 +22,8 @@ export default [{
   name: '九张图',
   link: '/ninepics',
   icon: 'tags-o',
+}, {
+  name: '运营操作',
+  link: '/operations',
+  icon: 'solution',
 }];
