@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Input, Select, Icon, Form, Tabs, Table, Collapse, Button, message } from 'antd';
+import { Input, Select, Icon, Form, Tabs, Col, Row, Table, Collapse, Button, message } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
@@ -92,6 +92,7 @@ class GiftTransFerCoupon extends Component {
          });
         this.props.form.setFieldsInitialValue({
           modelIds: results.data.modelIds,
+          buyerId: results.data.buyerId,
         });
       } else {
             message.error(results.info);
@@ -237,7 +238,27 @@ class GiftTransFerCoupon extends Component {
         </Panel>
       </Collapse>
 
-      <Form horizontal className={`${prefixCls}`}>
+      <Form inline className={`${prefixCls}`}>
+        <div className="gutter-example">
+          <Row gutter={1}>
+            <Col className="gutter-row" span={8}>
+              <Form.Item label="用户id">
+                <Input {...getFieldProps('buyerId', { rules: [{ required: true, title: '用户id' }] })} value={getFieldValue('buyerId')} placeholder="用户id" />
+              </Form.Item>
+            </Col>
+            <Col className="gutter-row" span={8}>
+              <Form.Item label="款式id">
+                <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+              </Form.Item>
+            </Col>
+            <Col className="gutter-row" span={8}>
+              <Form.Item label="款式id">
+                <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </div>
+
         <Form.Item {...this.formItemLayout()} label="款式id">
           <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
         </Form.Item>
