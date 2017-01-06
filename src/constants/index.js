@@ -8,6 +8,7 @@ export const apisBase = {
   xiaolumm: '/apis/xiaolumm/v1/',
   apppushmsg: '/apis/protocol/v1/',
   promotion: '/sale/promotion/promotion/',
+  coupon: '/coupon/',
 };
 export const uploadUrl = (window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com');
 export const imageUrlPrefixs = 'http://img.xiaolumeimei.com/';
