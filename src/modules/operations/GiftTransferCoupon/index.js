@@ -152,38 +152,43 @@ class GiftTransFerCoupon extends Component {
     key: 'id',
   },
   {
-    title: 'saleTradeId',
+    title: '交易id',
     dataIndex: 'saleTradeId',
     key: 'saleTradeId',
   },
     {
-    title: 'num',
+    title: '数量',
     dataIndex: 'num',
     key: 'num',
   },
     {
-    title: 'status',
-    dataIndex: 'status',
-    key: 'status',
+    title: '状态',
+    dataIndex: 'statusDisplay',
+    key: 'statusDisplay',
+  },
+  {
+    title: '标题',
+    dataIndex: 'title',
+    key: 'title',
   },
   ]
   usercouponsColumns = [{
-      title: 'title',
+      title: '标题',
       dataIndex: 'title',
       key: 'title',
   },
   {
-      title: 'customerId',
+      title: '用户id',
       dataIndex: 'customerId',
       key: 'customerId',
   },
   {
-      title: 'status',
-      dataIndex: 'status',
-      key: 'status',
+      title: '状态',
+      dataIndex: 'statusDisplay',
+      key: 'statusDisplay',
   },
   {
-      title: 'templateId',
+      title: '模板id',
       dataIndex: 'templateId',
       key: 'templateId',
   },
@@ -193,7 +198,7 @@ class GiftTransFerCoupon extends Component {
       key: 'id',
   },
     {
-      title: 'action',
+      title: '操作',
       dataIndex: 'id',
       key: 'action',
       render: (id, record) => (
@@ -345,18 +350,24 @@ class GiftTransFerCoupon extends Component {
           <Button type="primary" htmlType="submit">查询</Button>
         </Form.Item>
       </Form>
-
-      <Collapse onChange={callback}>
-        <Panel header="购券订单" key="saleOrders">
-          <Table columns={this.saleOrdersColumns} dataSource={saleOrders} size="small" />
-        </Panel>
-      </Collapse>
-
-      <Collapse onChange={callback}>
-        <Panel header="用户赠送精品券" key="usercoupons">
-          <Table columns={this.usercouponsColumns} dataSource={usercoupons} size="small" />
-        </Panel>
-      </Collapse>
+      <div className="gutter-example" style={{ marginBottom: 16, marginTop: 32 }} >
+        <Row gutter={1}>
+          <Col className="gutter-row" span={10}>
+            <Collapse onChange={callback}>
+              <Panel header="购券订单" key="saleOrders">
+                <Table columns={this.saleOrdersColumns} dataSource={saleOrders} size="small" />
+              </Panel>
+            </Collapse>
+          </Col>
+          <Col className="gutter-row" span={14}>
+            <Collapse onChange={callback}>
+              <Panel header="用户赠送精品券" key="usercoupons">
+                <Table columns={this.usercouponsColumns} dataSource={usercoupons} size="small" />
+              </Panel>
+            </Collapse>
+          </Col>
+        </Row>
+      </div>
 
       <div className="gutter-example" style={{ marginBottom: 16, marginTop: 32 }} >
         <Row gutter={1}>
