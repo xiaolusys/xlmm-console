@@ -7,13 +7,14 @@ import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
-import { fetchGiftTransferCoupon } from 'redux/modules/operations/giftTransferCoupon';
+import { fetchGiftTransferCoupon, putGiftTransferCoupon } from 'redux/modules/operations/giftTransferCoupon';
 const Panel = Collapse.Panel;
 
 const FormItem = Form.Item;
 
 const actionCreators = {
   fetchGiftTransferCoupon,
+  putGiftTransferCoupon,
 };
 
 function callback(key) {
@@ -25,6 +26,8 @@ const texts = [
   '1. 更具操作人指定用户id赠送精品精品券',
   '2. 当提示已经赠送过但是用户没有收到赠送优惠券,可以更换活动id后赠送',
   '3. 请更具用户订单数量赠送响应的精品券',
+  '4. 请点击查询后再选择 点击发送赠送精品券或者取消精品券操作',
+  '5. 赠送精品券时候使用title旁边的漏斗进行过滤可以更快的找到要赠送的模板类型',
   ];
 
 @connect(
@@ -37,6 +40,7 @@ class GiftTransFerCoupon extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     fetchGiftTransferCoupon: React.PropTypes.func,
+    putGiftTransferCoupon: React.PropTypes.func,
     giftTransferCoupon: React.PropTypes.object,
     form: React.PropTypes.object,
     saleOrders: React.PropTypes.object,
@@ -66,6 +70,7 @@ class GiftTransFerCoupon extends Component {
       usercoupons: [],
       filterDropdownVisible: false,
       searchTemplateText: '',
+      activityId: 1,
   }
 
   componentWillMount() {
@@ -93,9 +98,11 @@ class GiftTransFerCoupon extends Component {
         this.props.form.setFieldsInitialValue({
           modelIds: results.data.modelIds,
           buyerId: results.data.buyerId,
+          timeFrom: moment(results.data.timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+          timeTo: moment(results.data.timeTo).format('YYYY-MM-DD HH:mm:ss'),
         });
       } else {
-            message.error(results.info);
+          message.error(results.info);
       }
     }
   }
@@ -187,6 +194,18 @@ class GiftTransFerCoupon extends Component {
   },
   ]
 
+  sendBoutiqueCoupon = (e) => {
+    const self = this;
+    const { templateid } = e.currentTarget.dataset;
+    const params = this.props.form.getFieldsValue();
+    console.log('templateid', templateid, 'buyerId', params.buyerId);
+    this.props.putGiftTransferCoupon({
+      buyerId: params.buyerId,
+      templateId: templateid,
+      activityId: this.state.activityId,
+    });
+  }
+
   templatesDataColumns = () => {
     const self = this;
     const x = [{
@@ -215,7 +234,18 @@ class GiftTransFerCoupon extends Component {
           ),
           filterDropdownVisible: this.state.filterDropdownVisible,
           onFilterDropdownVisibleChange: visible => this.setState({ filterDropdownVisible: visible }),
-      }];
+      },
+      {
+          title: 'action',
+          dataIndex: 'id',
+          key: 'action',
+          render: (id, record) => (
+            <span>
+              <a data-templateid={id} onClick={self.sendBoutiqueCoupon}>赠送精品券</a>
+            </span>
+          ),
+      },
+      ];
       return x;
   }
 
