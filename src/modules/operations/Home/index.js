@@ -19,10 +19,23 @@ class Panes extends TabPane {
   return (<div>
     <Tabs defaultActiveKey="1" onChange={callback}>
       <TabPane tab="小鹿妈妈" key="1">
-        <Link to="operations/changemmupper" >更改上级妈妈</Link>
+        <div>
+          <h2>
+            <Link to="operations/changemmupper" >更改上级妈妈</Link>
+          </h2>
+        </div>
       </TabPane>
       <TabPane tab="精品券" key="2">
-        <Link to="operations/gifttransfercoupon" >赠送精品券</Link>
+        <div>
+          <h2>
+            <Link to="operations/gifttransfercoupon" >赠送精品券</Link>
+          </h2>
+        </div>
+        <div>
+          <h2>
+            <Link to="operations/sendelitescore" >赠送精品积分</Link>
+          </h2>
+        </div>
       </TabPane>
       <TabPane tab="普通用户" key="3">
         test
