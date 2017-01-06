@@ -83,6 +83,7 @@ class GiftTransFerCoupon extends Component {
       } else {
           message.error(results.info);
       }
+      sendResult.results = {};
     }
   }
 
