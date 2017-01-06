@@ -192,6 +192,16 @@ class GiftTransFerCoupon extends Component {
       dataIndex: 'id',
       key: 'id',
   },
+    {
+      title: 'action',
+      dataIndex: 'id',
+      key: 'action',
+      render: (id, record) => (
+        <span>
+          <a data-couponid={id} onClick={this.cancelBoutiqueCoupon}>取消赠券</a>
+        </span>
+      ),
+  },
   ]
 
   sendBoutiqueCoupon = (e) => {
@@ -203,6 +213,15 @@ class GiftTransFerCoupon extends Component {
       buyerId: params.buyerId,
       templateId: templateid,
       activityId: this.state.activityId,
+    });
+  }
+
+  cancelBoutiqueCoupon = (e) => {
+    const self = this;
+    const { couponid } = e.currentTarget.dataset;
+    console.log('取消赠券', couponid);
+    this.props.putGiftTransferCoupon({
+      cancelCouponId: couponid,
     });
   }
 
@@ -264,6 +283,11 @@ class GiftTransFerCoupon extends Component {
       timeTo: moment(params.timeTo).format('YYYY-MM-DD HH:mm:ss'),
       modelIds: params.modelIds,
     });
+  }
+
+  changeActivityId = (e) => {
+    const self = this;
+    this.state.activityId = e.target.value;
   }
 
   formItemLayout = () => ({
@@ -333,6 +357,14 @@ class GiftTransFerCoupon extends Component {
           <Table columns={this.usercouponsColumns} dataSource={usercoupons} size="small" />
         </Panel>
       </Collapse>
+
+      <div className="gutter-example" style={{ marginBottom: 16, marginTop: 32 }} >
+        <Row gutter={1}>
+          <Col className="gutter-row" span={2}>
+            <Input addonBefore="活动id" addonAfter="" defaultValue={this.state.activityId} onChange={this.changeActivityId} />
+          </Col>
+        </Row>
+      </div>
 
       <Collapse onChange={callback}>
         <Panel header="精品券模板" key="templates">
