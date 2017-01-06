@@ -24,9 +24,8 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchGitfTransferCoupon = (params) => ({
-  url: `${apisBase.coupon}release_coupon/`,
+export const fetchGiftTransferCoupon = (params) => ({
+  url: params ? `${apisBase.coupon}release_coupon/?buyer_id=${params.buyerId}&model_ids=${params.modelIds}&time_from=${params.timeFrom}&time_to=${params.timeTo}` : `${apisBase.coupon}release_coupon/`,
   method: 'get',
   type: `FETCH_${name}`,
-  data: params,
 });

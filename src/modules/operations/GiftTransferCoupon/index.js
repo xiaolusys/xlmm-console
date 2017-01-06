@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Input, Select, Icon, Form, Tabs, Col, Row, Table, Collapse, Button, message } from 'antd';
+import { Input, Select, Icon, Form, Tabs, Col, Row, Table, Collapse, Button, message, DatePicker } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
-import { fetchGitfTransferCoupon } from 'redux/modules/operations/giftTransferCoupon';
+import { fetchGiftTransferCoupon } from 'redux/modules/operations/giftTransferCoupon';
 const Panel = Collapse.Panel;
 
 const FormItem = Form.Item;
 
 const actionCreators = {
-  fetchGitfTransferCoupon,
+  fetchGiftTransferCoupon,
 };
 
 function callback(key) {
@@ -36,7 +36,7 @@ const texts = [
 class GiftTransFerCoupon extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
-    fetchGitfTransferCoupon: React.PropTypes.func,
+    fetchGiftTransferCoupon: React.PropTypes.func,
     giftTransferCoupon: React.PropTypes.object,
     form: React.PropTypes.object,
     saleOrders: React.PropTypes.object,
@@ -69,7 +69,7 @@ class GiftTransFerCoupon extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchGitfTransferCoupon();
+    this.props.fetchGiftTransferCoupon();
     const now = new Date();
     const todayDateArry = [now.getFullYear(), now.getMonth() + 1, now.getDate()];
     const todayDate = todayDateArry.join('-');
@@ -219,9 +219,34 @@ class GiftTransFerCoupon extends Component {
       return x;
   }
 
+  fetchGiftTransferCoupon = (e) => {
+    this.props.form.validateFields((errors, values) => {
+        if (!!errors) {
+          return;
+        }
+    });
+
+    const params = this.props.form.getFieldsValue();
+    console.log('params:', params);
+    this.props.fetchGiftTransferCoupon({
+      buyerId: params.buyerId,
+      timeFrom: moment(params.timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+      timeTo: moment(params.timeTo).format('YYYY-MM-DD HH:mm:ss'),
+      modelIds: params.modelIds,
+    });
+  }
+
   formItemLayout = () => ({
-    labelCol: { span: 3 },
+    labelCol: { span: 1 },
     wrapperCol: { span: 18 },
+  })
+  formItemLayout1 = () => ({
+    labelCol: { span: 3 },
+    wrapperCol: { span: 8 },
+  })
+  formItemLayout2 = () => ({
+    labelCol: { span: 6 },
+    wrapperCol: { span: 5 },
   })
 
   render() {
@@ -238,29 +263,32 @@ class GiftTransFerCoupon extends Component {
         </Panel>
       </Collapse>
 
-      <Form inline className={`${prefixCls}`}>
-        <div className="gutter-example">
+      <Form className={`${prefixCls}`} onSubmit={this.fetchGiftTransferCoupon}>
+        <div className="gutter-example" >
           <Row gutter={1}>
             <Col className="gutter-row" span={8}>
-              <Form.Item label="用户id">
+              <Form.Item {...this.formItemLayout1()} label="用户id">
                 <Input {...getFieldProps('buyerId', { rules: [{ required: true, title: '用户id' }] })} value={getFieldValue('buyerId')} placeholder="用户id" />
               </Form.Item>
             </Col>
             <Col className="gutter-row" span={8}>
-              <Form.Item label="款式id">
-                <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+              <Form.Item {...this.formItemLayout2()} label="开始时间">
+                <DatePicker {...getFieldProps('timeFrom', { rules: [{ required: true }] })} value={getFieldValue('timeFrom')} format="yyyy-MM-dd HH:mm:ss" showTime required />
               </Form.Item>
             </Col>
             <Col className="gutter-row" span={8}>
-              <Form.Item label="款式id">
-                <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+              <Form.Item {...this.formItemLayout2()} label="结束时间">
+                <DatePicker {...getFieldProps('timeTo', { rules: [{ required: true }] })} value={getFieldValue('timeTo')} format="yyyy-MM-dd HH:mm:ss" showTime required />
               </Form.Item>
             </Col>
           </Row>
         </div>
 
         <Form.Item {...this.formItemLayout()} label="款式id">
-          <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+          <Col className="gutter-row" span={16}>
+            <Input {...getFieldProps('modelIds', { rules: [{ required: true, title: '款式id' }] })} value={getFieldValue('modelIds')} placeholder="款式id" />
+          </Col>
+          <Button type="primary" htmlType="submit">查询</Button>
         </Form.Item>
       </Form>
 
