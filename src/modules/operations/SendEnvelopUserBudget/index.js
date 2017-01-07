@@ -26,6 +26,7 @@ const texts = [
   '2. 红包金额以人民币元为单位',
   '3. 请点击查看用户后发送红包',
   '4. 提示发送成功后请核对余额是否有添加',
+  '5. 备注是以django-admin loga_ction 形式添加',
   ];
 
 @connect(
@@ -80,6 +81,7 @@ class SendUserBudget extends Component {
           memo: '',
         });
       } else {
+          this.setState({ currentCustomerId: 1 });
           message.error(results.info);
       }
       sendResult.results = {};
