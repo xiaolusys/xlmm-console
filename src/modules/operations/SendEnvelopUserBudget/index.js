@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Input, Select, Icon, Form, Tabs, Card, Col, Tag, Row, Table, Collapse, Button, message, DatePicker } from 'antd';
+import { Input, Select, Icon, Form, Tabs, Card, Col, Tag, Row, Table, Collapse, Button, message, DatePicker, Badge } from 'antd';
 import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
@@ -124,7 +124,7 @@ class SendUserBudget extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
-    wrapperCol: { span: 18 },
+    wrapperCol: { span: 6 },
   })
   render() {
     const { prefixCls, form } = this.props;
@@ -138,31 +138,35 @@ class SendUserBudget extends Component {
         </Panel>
       </Collapse>
       <div className="gutter-example" style={{ marginBottom: 16, marginTop: 32 }}>
-        <Row type="flex" justify="start">
-          <div style={{ background: '#ECECEC', padding: '3px' }}>
-            <Card title="用户钱包基础信息" bordered={false} style={{ width: 300 }}>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Card style={{ background: '#ECECEC', padding: '30px' }} title="用户钱包基础信息" >
+              <Badge status="success" text={data.customerId} />
               <p>用户id: {data.customerId}</p>
               <p>昵称  : {data.nick}</p>
               <p>手机号: {data.mobile}</p>
               <p>钱包id: {data.id}</p>
               <p>余额  : {data.cash}元</p>
             </Card>
-          </div>
-          <Col span={2}><Tag color="#f50">用户id:</Tag></Col>
-          <Col span={4}><Input value={this.state.currentCustomerId} onChange={this.onInputCurrentCustomerChange} onPressEnter={this.fetchUserBudget} /></Col>
-          <Col span={4}><Button icon="search" onClick={this.fetchUserBudget} >查看钱包</Button></Col>
+          </Col>
+          <Col span={6}>
+            <Tag color="#f50">用户id:</Tag>
+            <Input style={{ width: 100 }} value={this.state.currentCustomerId} onChange={this.onInputCurrentCustomerChange} onPressEnter={this.fetchUserBudget} />
+            <Button icon="search" onClick={this.fetchUserBudget} >查看钱包</Button>
+          </Col>
+          <Col span={10} style={{ background: '#ECECEC', padding: '30px' }}>
+            <Form className={`${prefixCls}`} >
+              <Form.Item {...this.formItemLayout()} label="金额:">
+                <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的红包金额" />
+              </Form.Item>
+              <Form.Item {...this.formItemLayout()} label="备注:">
+                <Input {...getFieldProps('memo')} value={getFieldValue('memo')} />
+              </Form.Item>
+              <Button type="primary" loading={this.state.loading} onClick={this.enterLoading}>发送红包</Button>
+            </Form>
+          </Col>
         </Row>
       </div>
-
-      <Form className={`${prefixCls}`} >
-        <Form.Item {...this.formItemLayout()} label="金额:">
-          <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的红包金额" />
-        </Form.Item>
-        <Form.Item {...this.formItemLayout()} label="备注:">
-          <Input {...getFieldProps('memo')} value={getFieldValue('memo')} />
-        </Form.Item>
-        <Button type="primary" loading={this.state.loading} onClick={this.enterLoading}>发送红包</Button>
-      </Form>
     </div>);
     }
 }
