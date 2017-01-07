@@ -4,6 +4,7 @@ import { Oprations } from 'modules/operations/Home';
 import { ChangeMmUpper } from 'modules/operations/ChangeMmUpper';
 import { GiveTransferCoupon } from 'modules/operations/GiftTransferCoupon';
 import { SendEliteScore } from 'modules/operations/SendTransferEliteScore';
+import { SendEnvelopUserBudget } from 'modules/operations/SendEnvelopUserBudget';
 
 export default (
   <Route path="/operations" breadcrumbName="运营操作">
@@ -11,5 +12,6 @@ export default (
     <Route path="/operations/changemmupper" breadcrumbName="更改推荐关系" component={ChangeMmUpper} />
     <Route path="/operations/gifttransfercoupon" breadcrumbName="赠送精品券" component={GiveTransferCoupon} />
     <Route path="/operations/sendelitescore" breadcrumbName="赠送精品积分" component={SendEliteScore} />
+    <Route path="/operations/sendenvelopuserbudget" breadcrumbName="给用户钱包发送红包" component={SendEnvelopUserBudget} />
   </Route>
 );

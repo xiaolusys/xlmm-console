@@ -9,6 +9,7 @@ export const apisBase = {
   apppushmsg: '/apis/protocol/v1/',
   promotion: '/sale/promotion/promotion/',
   coupon: '/coupon/',
+  mm: '/mm/',
 };
 export const uploadUrl = (window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com');
 export const imageUrlPrefixs = 'http://img.xiaolumeimei.com/';

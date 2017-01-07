@@ -38,7 +38,11 @@ class Panes extends TabPane {
         </div>
       </TabPane>
       <TabPane tab="普通用户" key="3">
-        test
+        <div>
+          <h2>
+            <Link to="operations/sendenvelopuserbudget" >用户钱包发送红包</Link>
+          </h2>
+        </div>
       </TabPane>
     </Tabs>
   </div>);
