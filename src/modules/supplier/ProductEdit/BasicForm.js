@@ -463,9 +463,9 @@ class Basic extends Component {
     return sortBy(skuItems, 'color');
   }
 
-  isVirtualCoupon = (isBoutique, productType) => {
-    return isBoutique == true && productType == 1;
-  }
+  isVirtualCoupon = (isBoutique, productType) => (
+    isBoutique === true && productType === 1
+  )
 
   updateBoutiqueSkus = (productType, isBoutique) => {
     const { getFieldValue } = this.props.form;
