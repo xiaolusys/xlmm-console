@@ -19,6 +19,7 @@ export const boutiqueSkuTpl = [
 		remainNum: 10000,
 		picPath: '',
 		stdSalePrice: 0,
+		eliteScore: 0,
 		propertiesAlias: 'Associate-经理券',
 	},
 	{
@@ -30,6 +31,7 @@ export const boutiqueSkuTpl = [
 		remainNum: 10000,
 		picPath: '',
 		stdSalePrice: 0,
+		eliteScore: 0,
 		propertiesAlias: 'Director-主管券',
 	},
 	{
@@ -41,6 +43,7 @@ export const boutiqueSkuTpl = [
 		remainNum: 10000,
 		picPath: '',
 		stdSalePrice: 0,
+		eliteScore: 0,
 		propertiesAlias: 'Associate-经理券',
 	},
 	{
@@ -52,6 +55,7 @@ export const boutiqueSkuTpl = [
 		remainNum: 10000,
 		picPath: '',
 		stdSalePrice: 0,
+		eliteScore: 0,
 		propertiesAlias: 'Associate-经理券',
 	},
 	{
@@ -63,6 +67,7 @@ export const boutiqueSkuTpl = [
 		remainNum: 10000,
 		picPath: '',
 		stdSalePrice: 0,
+		eliteScore: 0,
 		propertiesAlias: 'Associate-经理券',
 	},
 ];

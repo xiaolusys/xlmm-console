@@ -463,6 +463,10 @@ class Basic extends Component {
     return sortBy(skuItems, 'color');
   }
 
+  isVirtualCoupon = (isBoutique, productType) => {
+    return isBoutique == true && productType == 1;
+  }
+
   updateBoutiqueSkus = (productType, isBoutique) => {
     const { getFieldValue } = this.props.form;
     const { product, sku } = this.props;
@@ -523,6 +527,23 @@ class Basic extends Component {
 
   tableProps = () => {
     const self = this;
+    let endCol = null;
+    if (this.isVirtualCoupon(this.state.isBoutique, this.state.productType)) {
+      endCol = {
+        title: this.columnTitle('精品积分', 'eliteScore'),
+        key: 'eliteScore',
+        dataIndex: 'eliteScore',
+        render: (data, record) => <Input type="text" data-type="eliteScore" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      };
+    } else {
+      endCol = {
+        title: this.columnTitle('商家编码', 'supplierSkucode'),
+        key: 'supplierSkucode',
+        dataIndex: 'supplierSkucode',
+        render: (data, record) => <Input type="text" data-type="supplierSkucode" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
+      };
+    }
+
     return {
       columns: [{
         title: '规格',
@@ -558,12 +579,7 @@ class Basic extends Component {
         key: 'stdSalePrice',
         dataIndex: 'stdSalePrice',
         render: (data, record) => <Input type="text" data-type="stdSalePrice" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
-      }, {
-        title: this.columnTitle('SKU商家编码', 'supplierSkucode'),
-        key: 'supplierSkucode',
-        dataIndex: 'supplierSkucode',
-        render: (data, record) => <Input type="text" data-type="supplierSkucode" data-sku={JSON.stringify(record)} value={data} onInput={this.onInput} />,
-      }],
+      }, endCol],
       pagination: false,
     };
   }
