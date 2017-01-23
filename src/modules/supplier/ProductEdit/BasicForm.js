@@ -463,8 +463,8 @@ class Basic extends Component {
     return sortBy(skuItems, 'color');
   }
 
-  isVirtualCoupon = (isBoutique, productType) => (
-    isBoutique === true && productType === 1
+  isVirtualCoupon = (productType, isBoutique) => (
+    isBoutique && productType.toString() === '1'
   )
 
   updateBoutiqueSkus = (productType, isBoutique) => {
@@ -528,7 +528,7 @@ class Basic extends Component {
   tableProps = () => {
     const self = this;
     let endCol = null;
-    if (this.isVirtualCoupon(this.state.isBoutique, this.state.productType)) {
+    if (this.isVirtualCoupon(this.state.productType, this.state.isBoutique) === true) {
       endCol = {
         title: this.columnTitle('精品积分', 'eliteScore'),
         key: 'eliteScore',
