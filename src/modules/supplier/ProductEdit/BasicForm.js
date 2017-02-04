@@ -101,6 +101,10 @@ class Basic extends Component {
           productType: product.extras.productType || 0,
         });
       }
+      if (product.updated) {
+        this.context.router.goBack();
+        return;
+      }
       if (product.failure) {
         message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
       }
@@ -235,7 +239,6 @@ class Basic extends Component {
         productType: this.state.productType,
       },
     };
-    console.log('params:', params);
     if (productId) {
       this.props.updateProduct(productId, params);
     } else {

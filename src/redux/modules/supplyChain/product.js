@@ -42,12 +42,15 @@ export default createReducer({
     ...status,
     updated: false,
   }),
-  [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-    ...payload.data,
-    updated: true,
-  }),
+  [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => {
+    const resp = {
+      ...state,
+      ...status,
+      ...payload.data,
+      updated: true,
+    };
+    return resp;
+  },
   [`SAVE_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
