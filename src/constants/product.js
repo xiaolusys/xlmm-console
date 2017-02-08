@@ -44,7 +44,7 @@ export const boutiqueSkuTpl = [
 		picPath: '',
 		stdSalePrice: 0,
 		eliteScore: 0,
-		propertiesAlias: 'Associate-经理券',
+		propertiesAlias: 'Partner-合伙人券',
 	},
 	{
 		cost: 0,
@@ -56,7 +56,7 @@ export const boutiqueSkuTpl = [
 		picPath: '',
 		stdSalePrice: 0,
 		eliteScore: 0,
-		propertiesAlias: 'Associate-经理券',
+		propertiesAlias: 'SP-高级合伙人券',
 	},
 	{
 		cost: 0,
@@ -68,6 +68,6 @@ export const boutiqueSkuTpl = [
 		picPath: '',
 		stdSalePrice: 0,
 		eliteScore: 0,
-		propertiesAlias: 'Associate-经理券',
+		propertiesAlias: 'VP-副总裁券',
 	},
 ];
