@@ -84,8 +84,12 @@ class Basic extends Component {
       if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
         const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
         const skuItems = this.findSkuItems(product.skuExtras, sku);
+        const categoryComb = [];
+        each(product.saleCategory.cid.split('-'), (c) => {
+          categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
+        });
         this.props.form.setFieldsInitialValue({
-          saleCategory: product.saleCategory ? [product.saleCategory.parentCid, product.saleCategory.cid] : [],
+          saleCategory: categoryComb,
           fileList: [{
             uid: product.picUrl,
             url: product.picUrl,
@@ -296,7 +300,10 @@ class Basic extends Component {
     });
   }
 
-  getCategory = (catgoryIds) => (catgoryIds[1].split('-')[1])
+  getCategory = (catgoryIds) => {
+    const categorys = catgoryIds[catgoryIds.length - 1].split('-');
+    return categorys[categorys.length - 1];
+  }
 
   getSkuByName = (sku, key) => {
     let value;
