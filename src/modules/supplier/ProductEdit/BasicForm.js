@@ -81,13 +81,15 @@ class Basic extends Component {
           memo: product.memo,
         });
       }
-      if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
+      if (product.success && product.extras && sku.success && (isEmpty(this.state.skus) || product.updated)) {
         const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
         const skuItems = this.findSkuItems(product.skuExtras, sku);
         const categoryComb = [];
-        each(product.saleCategory.cid.split('-'), (c) => {
-          categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
-        });
+        if (product.saleCategory) {
+          each(product.saleCategory.cid.split('-'), (c) => {
+            categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
+          });
+        }
         this.props.form.setFieldsInitialValue({
           saleCategory: categoryComb,
           fileList: [{
@@ -98,12 +100,14 @@ class Basic extends Component {
           skuItems: skuItems,
           ...selected,
         });
-        assign(this.state, {
+        if (product.extras) {
+          assign(this.state, {
           skus: selected,
-          skuItems: product.skuExtras,
-          isBoutique: product.extras.isBoutique || false,
-          productType: product.extras.productType || 0,
+          skuItems: product.skuExtras || [],
+          isBoutique: product.extras && product.extras.isBoutique || false,
+          productType: product.extras && product.extras.productType || 0,
         });
+        }
       }
       if (product.updated) {
         this.context.router.goBack();
