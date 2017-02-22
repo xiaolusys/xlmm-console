@@ -65,7 +65,9 @@ class EditWithForm extends Component {
       this.props.fetchFilters();
     }
     this.props.fetchProvinces();
-    this.props.fetchSupplier(id);
+    if (id) {
+      this.props.fetchSupplier(id);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -95,7 +97,7 @@ class EditWithForm extends Component {
     }
     if (supplier.updated && supplier.success) {
       message.success('保存成功');
-      // this.context.router.goBack();
+      this.context.router.goBack();
     }
     if (supplier.failure) {
       message.error(`保存异常: ${toErrorMsg(supplier.error)}`);

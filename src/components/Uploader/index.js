@@ -16,6 +16,7 @@ export class Uploader extends Component {
     multiple: React.PropTypes.boolean,
     accept: React.PropTypes.string,
     fileList: React.PropTypes.array,
+    onPreview: React.PropTypes.func,
     onRemove: React.PropTypes.func,
     onChange: React.PropTypes.func,
   };
@@ -32,8 +33,8 @@ export class Uploader extends Component {
     const { prefixs, uptoken } = this.props;
     const timeStamp = new Date().getTime();
     return {
-      // key: `${timeStamp}.${file.name.split('.').pop()}`,
-      key: `nine_pic${timeStamp}`,
+      key: `img_${timeStamp}.${file.name.split('.').pop()}`,
+      // key: `nine_pic${timeStamp}`,
       token: uptoken,
     };
   }
@@ -50,8 +51,15 @@ export class Uploader extends Component {
     return uuid;
   }
 
+  handlePreview = (file) => {
+    this.setState({
+      previewImage: file.url || file.thumbUrl,
+      previewVisible: true,
+    });
+  }
+
   render() {
-    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange } = this.props;
+    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange, onPreview } = this.props;
     const headers = {
       Accept: 'application/json',
     };
@@ -63,6 +71,7 @@ export class Uploader extends Component {
           listType="picture-card"
           multiple={multiple}
           accept={accept}
+          onPreview={this.handlePreview}
           onRemove={onRemove}
           onChange={onChange}
           headers={headers}

@@ -98,8 +98,8 @@ class GiftTransFerCoupon extends Component {
         this.props.form.setFieldsInitialValue({
           modelIds: results.data.modelIds,
           buyerId: results.data.buyerId,
-          timeFrom: moment(results.data.timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-          timeTo: moment(results.data.timeTo).format('YYYY-MM-DD HH:mm:ss'),
+          timeFrom: moment(results.data.timeFrom),
+          timeTo: moment(results.data.timeTo),
         });
       } else {
           message.error(results.info);
@@ -332,12 +332,12 @@ class GiftTransFerCoupon extends Component {
             </Col>
             <Col className="gutter-row" span={8}>
               <Form.Item {...this.formItemLayout2()} label="开始时间">
-                <DatePicker {...getFieldProps('timeFrom', { rules: [{ required: true }] })} value={getFieldValue('timeFrom')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('timeFrom', { rules: [{ required: true }] })} value={getFieldValue('timeFrom')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
             </Col>
             <Col className="gutter-row" span={8}>
               <Form.Item {...this.formItemLayout2()} label="结束时间">
-                <DatePicker {...getFieldProps('timeTo', { rules: [{ required: true }] })} value={getFieldValue('timeTo')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('timeTo', { rules: [{ required: true }] })} value={getFieldValue('timeTo')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
             </Col>
           </Row>

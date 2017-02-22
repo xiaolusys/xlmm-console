@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Alert, Button, Col, Form, Icon, Input, Row, Select, Table, message } from 'antd';
 import { Uploader } from 'components/Uploader';
@@ -17,6 +18,8 @@ const actionCreators = {
   state => ({}),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
+@wrapReactLifecycleMethodsWithTryCatch
 class Pictures extends Component {
 
   static propTypes = {
@@ -125,6 +128,21 @@ class Pictures extends Component {
     this.context.router.goBack();
   }
 
+  onDetailFieldChange = (feildName) => {
+    const innerFunc = ({ fileList }) => {
+      each(fileList, (file) => {
+        if (file.status === 'done' && file.response) {
+          file.url = `${imageUrlPrefixs}${file.response.key}`;
+          message.success(`上传成功: ${file.name}`);
+        } else if (file.status === 'error') {
+          message.error(`上传失败: ${file.name}`);
+        }
+      });
+      this.props.form.setFieldsValue({ [feildName]: fileList });
+    };
+    return innerFunc;
+  }
+
   normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
@@ -134,13 +152,15 @@ class Pictures extends Component {
 
   amountProps(nextProps) {
     const { product } = nextProps;
-    const { setFieldsInitialValue, getFieldsValue } = this.props.form;
+    const { setFieldsInitialValue, getFieldProps, getFieldsValue } = this.props.form;
     const { model } = product;
     if (product.success && !isEmpty(model.headImgs)) {
+      getFieldProps('mainPic');
       setFieldsInitialValue({
         mainPic: [{
           uid: model.headImgs,
           url: model.headImgs,
+          name: model.headImgs,
           status: 'done',
         }],
       });
@@ -151,9 +171,11 @@ class Pictures extends Component {
         detailPics.push({
           uid: img,
           url: img,
+          name: img,
           status: 'done',
         });
       });
+      getFieldProps('detailPics');
       setFieldsInitialValue({ detailPics: detailPics });
     }
     if (product.success && !isEmpty(product.skuExtras)) {
@@ -162,10 +184,12 @@ class Pictures extends Component {
         if (isEmpty(item.picPath)) {
           return;
         }
+        getFieldProps(key);
         setFieldsInitialValue({
           [key]: [{
             uid: item.picPath,
             url: item.picPath,
+            name: item.picPath,
             status: 'done',
           }],
         });
@@ -195,11 +219,10 @@ class Pictures extends Component {
           help="主图只能上传一张，如果要替换请先删除。"
           required>
           <Uploader
-            {...getFieldProps('mainPic', {
-              valuePropName: 'fileList',
-              normalize: this.normFile,
-            })}
+            {...getFieldProps('mainPic')}
+            fileList={getFieldValue('mainPic')}
             onRemove={this.onRemove}
+            onChange={this.onDetailFieldChange('mainPic')}
             uptoken={uptoken.token}
             />
         </Form.Item>
@@ -210,11 +233,10 @@ class Pictures extends Component {
             help={`头图（${key}）只能上传一张，如果要替换请先删除。`}
             required>
             <Uploader
-              {...getFieldProps(key, {
-                valuePropName: 'fileList',
-                normalize: this.normFile,
-              })}
+              {...getFieldProps(key)}
+              fileList={getFieldValue(key)}
               onRemove={this.onRemove}
+              onChange={this.onDetailFieldChange(key)}
               uptoken={uptoken.token}
               />
           </Form.Item>
@@ -225,11 +247,10 @@ class Pictures extends Component {
           help="可一次性选中多张图片上传"
           required >
           <Uploader
-            {...getFieldProps('detailPics', {
-              valuePropName: 'fileList',
-              normalize: this.normFile,
-            })}
+            {...getFieldProps('detailPics')}
+            fileList={getFieldValue('detailPics')}
             onRemove={this.onRemove}
+            onChange={this.onDetailFieldChange('detailPics')}
             uptoken={uptoken.token}
             multiple
             />

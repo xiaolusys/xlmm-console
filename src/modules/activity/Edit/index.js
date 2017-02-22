@@ -108,8 +108,8 @@ class Editactivity extends Component {
         shareLink: activity.shareLink,
         actType: activity.actType,
         actTypeDisplay: activity.actTypeDisplay,
-        startTime: moment(activity.startTime).format('YYYY-MM-DD HH:mm:ss'),
-        endTime: moment(activity.endTime).format('YYYY-MM-DD HH:mm:ss'),
+        startTime: moment(activity.startTime),
+        endTime: moment(activity.endTime),
         orderVal: activity.orderVal,
         loginRequired: activity.loginRequired,
         loginRequiredDisplay: activity.loginRequiredDisplay,
@@ -319,10 +319,10 @@ class Editactivity extends Component {
                 </Select>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="开始时间">
-                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true }] })} value={getFieldValue('startTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="结束时间">
-                <DatePicker {...getFieldProps('endTime', { rules: [{ required: true }] })} value={getFieldValue('endTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('endTime', { rules: [{ required: true }] })} value={getFieldValue('endTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="内容描述">
                 <Input {...getFieldProps('actDesc')} value={getFieldValue('actDesc')} type="textarea" rows={7} />

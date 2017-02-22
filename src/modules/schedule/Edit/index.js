@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, message } from 'antd';
@@ -16,6 +17,8 @@ import { toErrorMsg } from 'utils/object';
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
+@wrapReactLifecycleMethodsWithTryCatch
 class EditSchedule extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
@@ -59,9 +62,10 @@ class EditSchedule extends Component {
       this.context.router.goBack();
     }
     if (!schedule.isLoading && schedule.success) {
+      console.log('schedule', schedule, moment(schedule.offshelfTime).format('YYYY-MM-DD HH:mm:ss'));
       this.props.form.setFieldsInitialValue({
-        upshelfTime: moment(schedule.upshelfTime).format('YYYY-MM-DD HH:mm:ss'),
-        offshelfTime: moment(schedule.offshelfTime).format('YYYY-MM-DD HH:mm:ss'),
+        upshelfTime: moment(schedule.upshelfTime),
+        offshelfTime: moment(schedule.offshelfTime),
         scheduleType: schedule.scheduleType,
         lockStatus: schedule.lockStatus,
       });
@@ -128,10 +132,10 @@ class EditSchedule extends Component {
       <div className={`${prefixCls}`} >
         <Form horizontal onSubmit={this.onSubmitCliick}>
           <Form.Item {...this.formItemLayout()} label="开始时间">
-            <DatePicker {...getFieldProps('upshelfTime')} value={getFieldValue('upshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('upshelfTime')} value={getFieldValue('upshelfTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="结束时间">
-            <DatePicker {...getFieldProps('offshelfTime')} value={getFieldValue('offshelfTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+            <DatePicker {...getFieldProps('offshelfTime')} value={getFieldValue('offshelfTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类型" >
             <Select style={{ width: 200 }} placeholder="请选择排期类型" {...getFieldProps('scheduleType')} value={getFieldValue('scheduleType')} required>

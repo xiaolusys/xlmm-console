@@ -26,4 +26,20 @@ export default [{
   name: '运营操作',
   link: '/operations',
   icon: 'solution',
+}, {
+  name: '数据统计',
+  link: '/statistics',
+  icon: 'line-chart',
+  sub: [
+    {
+      name: '销售金额',
+      link: '/statistics/sales',
+      icon: 'pay-circle-o',
+    },
+    {
+      name: '发货速度',
+      link: '/statistics/delivery',
+      icon: 'inbox',
+    },
+  ],
 }];

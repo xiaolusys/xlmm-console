@@ -112,12 +112,12 @@ class EditNinepic extends Component {
         redirectUrl: ninepic.redirectUrl,
         isPushed: ninepic.isPushed,
         historyDescriptions: ninepic.historyDescriptions,
-        startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
+        startTime: moment(ninepic.startTime),
       });
     } else {
       this.props.form.setFieldsInitialValue({
         fileList: [],
-        startTime: moment(ninepic.startTime).format('YYYY-MM-DD HH:mm:ss'),
+        startTime: moment(ninepic.startTime),
       });
     }
   }
@@ -223,7 +223,13 @@ class EditNinepic extends Component {
     if (promotionPro && promotionPro.historyDescriptions !== []) {
       return (
         <div>
-          {promotionPro.historyDescriptions.map((item) => (<p><a data-historydescription={item.description} onClick={self.chooseDescription}>ID:{item.id}=> 保存{item.saveTimes}次 ＆ 分享{item.shareTimes}次,{item.description}</a></p>))};
+          {promotionPro.historyDescriptions.map((item) => (
+            <p>
+              <a data-historydescription={item.description} onClick={self.chooseDescription}>
+              ID:{item.id}=>保存{item.saveTimes}次 ＆ 分享{item.shareTimes}次,{item.description}
+              </a>
+            </p>
+          ))};
         </div>
       );
     }
@@ -311,7 +317,7 @@ class EditNinepic extends Component {
                 <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} placeholder="标题" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="开始时间">
-                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true }] })} value={getFieldValue('startTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('startTime', { rules: [{ required: true }] })} value={getFieldValue('startTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="类别">
                 <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">

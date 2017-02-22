@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Button, Card, Checkbox, Col, Form, Input, Cascader, Popover, Radio, Row, TreeSelect, Select, Tag, Table, message } from 'antd';
 import { If } from 'jsx-control-statements';
@@ -27,6 +28,8 @@ const actionCreators = {
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
+@wrapReactLifecycleMethodsWithTryCatch
 class Basic extends Component {
 
   static propTypes = {
@@ -66,61 +69,57 @@ class Basic extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    try {
-      const { product, sku } = nextProps;
-      if (product.success && !product.update) {
-        this.props.form.setFieldsInitialValue({
-          fileList: [{
-            uid: product.picUrl,
-            url: product.picUrl,
-            status: 'done',
-          }],
-          productLink: product.productLink,
-          title: product.title,
-          supplierSku: product.supplierSku,
-          memo: product.memo,
+    const { product, sku } = nextProps;
+    if (product.success && !product.update) {
+      this.props.form.setFieldsInitialValue({
+        fileList: [{
+          uid: product.picUrl,
+          url: product.picUrl,
+          name: product.picUrl,
+          status: 'done',
+        }],
+        productLink: product.productLink,
+        title: product.title,
+        supplierSku: product.supplierSku,
+        memo: product.memo,
+      });
+    }
+    if (product.success && sku.success && (isEmpty(this.state.skus) || product.updated)) {
+      const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
+      const skuItems = this.findSkuItems(product.skuExtras, sku);
+      const categoryComb = [];
+      if (product.saleCategory) {
+        each(product.saleCategory.cid.split('-'), (c) => {
+          categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
         });
       }
-      if (product.success && product.extras && sku.success && (isEmpty(this.state.skus) || product.updated)) {
-        const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
-        const skuItems = this.findSkuItems(product.skuExtras, sku);
-        const categoryComb = [];
-        if (product.saleCategory) {
-          each(product.saleCategory.cid.split('-'), (c) => {
-            categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
-          });
-        }
-        this.props.form.setFieldsInitialValue({
-          saleCategory: categoryComb,
-          fileList: [{
-            uid: product.picUrl,
-            url: product.picUrl,
-            status: 'done',
-          }],
-          skuItems: skuItems,
-          ...selected,
-        });
-        if (product.extras) {
-          assign(this.state, {
-          skus: selected,
-          skuItems: product.skuExtras || [],
-          isBoutique: product.extras && product.extras.isBoutique || false,
-          productType: product.extras && product.extras.productType || 0,
-        });
-        }
-      }
-      if (product.updated) {
-        this.context.router.goBack();
-        return;
-      }
-      if (product.failure) {
-        message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
-      }
-      if (sku.failure) {
-        message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
-      }
-    } catch (exc) {
-      console.log(exc);
+      this.props.form.setFieldsInitialValue({
+        saleCategory: categoryComb,
+        fileList: [{
+          uid: product.picUrl,
+          url: product.picUrl,
+          name: product.picUrl,
+          status: 'done',
+        }],
+        skuItems: skuItems,
+        ...selected,
+      });
+      assign(this.state, {
+        skus: selected,
+        skuItems: product.skuExtras || [],
+        isBoutique: product.extras && product.extras.isBoutique || false,
+        productType: product.extras && product.extras.productType || 0,
+      });
+    }
+    if (product.updated) {
+      this.context.router.goBack();
+      return;
+    }
+    if (product.failure) {
+      message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
+    }
+    if (sku.failure) {
+      message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
     }
   }
 
@@ -217,6 +216,7 @@ class Basic extends Component {
         message.error(`上传失败: ${file.name}`);
       }
     });
+    console.log('fileList', fileList);
     this.props.form.setFieldsValue({ fileList: fileList });
   }
 
@@ -605,7 +605,8 @@ class Basic extends Component {
 
   render() {
     const { product, categories, supplier, sku, uptoken } = this.props;
-    const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
+    const { getFieldProps, getFieldValue, setFieldsValue, getFieldsValue } = this.props.form;
+    const selected = this.state.skus;
     let options = replaceAllKeys(categories.items, 'name', 'label');
     options = replaceAllKeys(options, 'cid', 'value');
     return (
@@ -637,6 +638,7 @@ class Basic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品主图" required>
             <Uploader
+              {...getFieldProps('fileList')}
               uptoken={uptoken.token}
               fileList={getFieldValue('fileList')}
               onRemove={this.onRemove}
@@ -675,6 +677,7 @@ class Basic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="类目" required>
             <Cascader
+              {...getFieldProps('saleCategory')}
               options={options}
               onChange={this.onCategoryChange}
               value={getFieldValue('saleCategory')}
@@ -683,6 +686,7 @@ class Basic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="规格" required>
             <Select
+              {...getFieldProps('skuItems')}
               onChange={this.onSkuItemsChange}
               value={getFieldValue('skuItems')}
               multiple>
@@ -692,6 +696,7 @@ class Basic extends Component {
             </Select>
           </Form.Item>
           {sku.items.toJS().map((skuItem) => {
+            getFieldProps(`skus-${skuItem.id}`);
             if (skuItem.id !== 0 && includes(getFieldValue('skuItems'), skuItem.id)) {
               return (
                 <Form.Item {...this.formItemLayout()} label={skuItem.name} required>
@@ -700,7 +705,7 @@ class Basic extends Component {
                     treeData={skuItem.values}
                     placeholder={`请选择${skuItem.name}`}
                     onChange={this.onSkusChange}
-                    value={getFieldValue(`skus-${skuItem.id}`)}
+                    value={getFieldValue(`skus-${skuItem.id}`) || selected[`skus-${skuItem.id}`]}
                     treeCheckable
                     multiple
                     allowClear

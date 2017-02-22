@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { If } from 'jsx-control-statements';
-import { Button, Col, Form, Input, Row, Select, Table } from 'antd';
+import { Alert, Button, Col, Form, Input, Row, Select, Table } from 'antd';
 import { assign, each, first, groupBy, isNull, isEmpty, includes, map, merge, parseInt, sortBy, union, uniqBy } from 'lodash';
 import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { saveMaterial, updateMaterial } from 'redux/modules/supplyChain/material';
@@ -20,6 +21,8 @@ const actionCreators = {
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
+@wrapReactLifecycleMethodsWithTryCatch
 class Material extends Component {
 
   static propTypes = {
@@ -49,6 +52,7 @@ class Material extends Component {
 
   componentWillMount() {
     this.props.fetchPreference();
+    this.props.form.getFieldProps('尺码对照参数');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -57,12 +61,13 @@ class Material extends Component {
     if (preference.success && product.success && product.model &&
       isEmpty(this.state.table) && (!isEmpty(product.model.extras) || product.updated)) {
       const { newProperties } = product.model.extras;
-      this.props.form.setFieldsInitialValue({
+      const kwargs = {
         materials: this.findSelectedMaterials(newProperties, preference),
         ...this.generateInitial(newProperties),
-      });
+      };
+      this.props.form.setFieldsInitialValue(kwargs);
     }
-    if (!isEmpty(getFieldValue('尺码对照参数')) && isEmpty(this.state.table) && product.success) {
+    if (this.isSkuSizeTableSelected() && isEmpty(this.state.table) && product.success) {
       this.dataSource(null, null);
     }
   }
@@ -89,6 +94,9 @@ class Material extends Component {
     const newProperties = [];
     delete values.materials;
     map(values, (value, key) => {
+      if (typeof(value) === 'undefined') {
+         return;
+      }
       if (key === '尺码对照参数') {
         newProperties.push({
           name: key,
@@ -142,6 +150,11 @@ class Material extends Component {
     this.setState({ table: table });
   }
 
+  isSkuSizeTableSelected = () => {
+    const materials = this.props.form.getFieldValue('materials');
+    return includes(materials, 6); // 尺码对照参数id:6
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 2 },
     wrapperCol: { span: 16 },
@@ -173,20 +186,27 @@ class Material extends Component {
   }
 
   formItem = (item) => {
+    const { newProperties } = this.props.product.model.extras;
     const { getFieldProps, getFieldValue } = this.props.form;
+    let itemValue = null;
+    each(newProperties, (props) => {
+      if (props.name === item.name) {
+        itemValue = props.value;
+      }
+    });
     return (
       <Form.Item {...this.formItemLayout()} label={item.name}>
         <If condition={isEmpty(item.values)} >
           <Input
             {...getFieldProps(item.name, { rules: [{ required: true, message: `请输入${item.name}!` }] })}
-            value={getFieldValue(item.name)}
+            value={getFieldValue(item.name) || itemValue}
             placehplder={`请输入${item.name}!`}
             />
         </If>
         <If condition={!isEmpty(item.values)} >
           <Select
             {...getFieldProps(item.name, { rules: [{ required: true, message: `请选择${item.name}!` }] })}
-            value={getFieldValue(item.name)}
+            value={getFieldValue(item.name) || itemValue}
             placehplder={`请输入${item.name}!`}
             multiple={item.id === 6}
             allowClear>
@@ -281,7 +301,8 @@ class Material extends Component {
 
   render() {
     const { preference, product, material } = this.props;
-    const { getFieldProps, getFieldValue, getFieldsValue } = this.props.form;
+    const { getFieldProps, getFieldValue, getFieldsValue, getFieldDecorator } = this.props.form;
+    const showSizeTable = this.isSkuSizeTableSelected();
     return (
       <Form>
         <Form.Item {...this.formItemLayout()} label="资料">
@@ -291,18 +312,26 @@ class Material extends Component {
             allowClear
             showSearch
             multiple>
-            {preference.items.map((item) => (<Select.Option value={item.id}>{item.name}</Select.Option>))}
+            {preference.items.map((item) => (
+              <Select.Option value={item.id}>{item.name}</Select.Option>)
+            )}
           </Select>
         </Form.Item>
         {preference.items.map((item) => {
-          if (includes(getFieldValue('materials'), item.id)) {
-            return this.formItem(item);
-          }
-          return null;
-        })}
-        <If condition={!isEmpty(getFieldValue('尺码对照参数'))}>
+            getFieldProps(item.name);
+            if (includes(getFieldValue('materials'), item.id)) {
+              return this.formItem(item);
+            }
+            return null;
+          })
+        };
+        <If condition={showSizeTable}>
           <Form.Item {...this.formItemLayout()} label="尺码表" required>
-            <Table columns={this.columns()} dataSource={this.state.table} pagination={false} />
+            <Table
+              columns={this.columns()}
+              dataSource={this.state.table}
+              pagination={false}
+              />
           </Form.Item>
         </If>
         <Row style={{ marginTop: 10 }}>

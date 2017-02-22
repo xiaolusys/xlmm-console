@@ -32,7 +32,7 @@ export class Sider extends Component {
             }
             return (
               <Menu.SubMenu key={item.link} title={<span><Icon type={item.icon} /><span>{item.name}</span></span>}>
-                {item.sub.map((sub) => (<Menu.Item key={sub.link}>{sub.name}</Menu.Item>))}
+                {item.sub.map((sub) => (<Menu.Item key={sub.link}><Icon type={sub.icon} />{sub.name}</Menu.Item>))}
               </Menu.SubMenu>
             );
           })}

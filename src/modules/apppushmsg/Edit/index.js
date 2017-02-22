@@ -88,7 +88,7 @@ class Editapppushmsg extends Component {
         regid: apppushmsg.regid,
         status: apppushmsg.status,
         statusDisplay: apppushmsg.statusDisplay,
-        pushTime: moment(apppushmsg.pushTime).format('YYYY-MM-DD HH:mm:ss'),
+        pushTime: moment(apppushmsg.pushTime),
       });
     }
   }
@@ -109,7 +109,7 @@ class Editapppushmsg extends Component {
         targetUrl: params.targetUrl,
         cat: params.cat,
         platform: params.platform,
-        pushTime: moment(params.pushTime).format('YYYY-MM-DD HH:mm:ss'),
+        pushTime: params.pushTime.format('YYYY-MM-DD HH:mm:ss'),
         paramsModelId: this.state.paramsModelId,
         paramsIsNative: this.state.paramsIsNative,
         paramsUrl: this.state.paramsUrl,
@@ -220,6 +220,7 @@ class Editapppushmsg extends Component {
     const { prefixCls, apppushmsg, form, filters } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { apppushmsgs } = this.state;
+    console.log('filters', filters);
     return (
       <div>
         <Row>
@@ -229,7 +230,7 @@ class Editapppushmsg extends Component {
                 <Input {...getFieldProps('desc', { rules: [{ required: true, title: '推送内容' }] })} value={getFieldValue('desc')} type="textarea" rows={7} laceholder="推送内容" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="推送时间">
-                <DatePicker {...getFieldProps('pushTime', { rules: [{ required: true }] })} value={getFieldValue('pushTime')} format="yyyy-MM-dd HH:mm:ss" showTime required />
+                <DatePicker {...getFieldProps('pushTime', { rules: [{ required: true }] })} value={getFieldValue('pushTime')} format="YYYY-MM-DD HH:mm:ss" showTime required />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="推送对象">
                 <Select {...getFieldProps('platform')} value={getFieldValue('platform')} placeholder="Platform Choose ...">
