@@ -67,7 +67,6 @@ class DeliveryWithForm extends Component {
   }
 
   onSubmitClick = (e) => {
-    const filters = this.props.form.getFieldsValue();
     this.getDeliveryStatsData();
   }
 
@@ -211,7 +210,7 @@ class DeliveryWithForm extends Component {
               </Form.Item>
             </Col>
             <Col span={2} offset={0}>
-              <Button type="primary" >搜索</Button>
+              <Button type="primary" onClick={this.onSubmitClick} >搜索</Button>
             </Col>
           </Row>
         </Form>

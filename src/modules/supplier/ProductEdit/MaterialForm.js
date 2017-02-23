@@ -186,7 +186,7 @@ class Material extends Component {
   }
 
   formItem = (item) => {
-    const { newProperties } = this.props.product.model.extras;
+    const { newProperties } = this.props.product.model ? this.props.product.model.extras : [];
     const { getFieldProps, getFieldValue } = this.props.form;
     let itemValue = null;
     each(newProperties, (props) => {
