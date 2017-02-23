@@ -133,7 +133,20 @@ class HomeWithForm extends Component {
     this.setState(assign(this.state.filters, filters));
   }
 
-  getFilters = () => (this.state.filters)
+  getFilters = () => {
+    const filters = this.state.filters;
+    return {
+      pageSize: filters.pageSize,
+      page: filters.page,
+      ordering: filters.ordering,
+      category: filters.category ? filters.category.key : '',
+      supplierType: filters.supplierType ? filters.supplierType.key : '',
+      supplierZone: filters.supplierZone ? filters.supplierZone.key : '',
+      supplierName: filters.supplierName || '',
+      createdStart: filters.createdStart || '',
+      createdEnd: filters.createdEnd || '',
+    };
+  }
 
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
