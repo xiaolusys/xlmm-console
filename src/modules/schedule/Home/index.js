@@ -89,7 +89,8 @@ class List extends Component {
       filters.saleTimeEnd = moment(filters.dateRange[1]).format('YYYY-MM-DD');
     }
     this.setFilters(filters);
-    this.props.fetchSchedules(this.getFilters());
+    const stateFilters = this.getFilters();
+    this.props.fetchSchedules(stateFilters);
   }
 
   onCreateScheduleClick = (e) => {
@@ -100,7 +101,17 @@ class List extends Component {
     this.setState(assign(this.state.filters, filters));
   }
 
-  getFilters = () => (this.state.filters)
+  getFilters = () => {
+    const filters = this.state.filters;
+    return {
+      pageSize: filters.pageSize,
+      page: filters.page,
+      ordering: filters.ordering,
+      scheduleType: filters.scheduleType ? filters.scheduleType.key : '',
+      saleTimeStart: filters.saleTimeStart || '',
+      saleTimeEnd: filters.saleTimeEnd || '',
+    };
+  }
 
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
