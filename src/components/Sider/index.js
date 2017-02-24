@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Menu, Icon } from 'antd';
+import { If } from 'jsx-control-statements';
 import _ from 'lodash';
 
 import './index.less';
@@ -32,7 +33,16 @@ export class Sider extends Component {
             }
             return (
               <Menu.SubMenu key={item.link} title={<span><Icon type={item.icon} /><span>{item.name}</span></span>}>
-                {item.sub.map((sub) => (<Menu.Item key={sub.link}><Icon type={sub.icon} />{sub.name}</Menu.Item>))}
+                {item.sub.map((sub) => (
+                  <Menu.Item key={sub.link}>
+                    <If condition={sub.external || null}>
+                      <a target="_blank" href={sub.link}><Icon type={sub.icon} />{sub.name}</a>
+                    </If>
+                    <If condition={!sub.external}>
+                      <Icon type={sub.icon} />{sub.name}
+                    </If>
+                  </Menu.Item>
+                  ))}
               </Menu.SubMenu>
             );
           })}

@@ -62,14 +62,14 @@ class EditSchedule extends Component {
       this.context.router.goBack();
     }
     if (!schedule.isLoading && schedule.success) {
-      console.log('schedule', schedule, moment(schedule.offshelfTime).format('YYYY-MM-DD HH:mm:ss'));
       this.props.form.setFieldsInitialValue({
         upshelfTime: moment(schedule.upshelfTime),
         offshelfTime: moment(schedule.offshelfTime),
         scheduleType: schedule.scheduleType,
         lockStatus: schedule.lockStatus,
       });
-      this.setState({ suppliers: _.map(schedule.saleSuppliers, (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
+      this.setState({ suppliers: _.map(schedule.saleSuppliers,
+        (supplier) => ({ id: supplier.id, name: supplier.supplierName })) });
     }
 
     if (schedule.failure) {
