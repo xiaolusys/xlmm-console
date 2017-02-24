@@ -108,7 +108,7 @@ class DeliveryWithForm extends Component {
       key: 'name',
       width: 200,
     }, {
-      title: '发货速度(按天)',
+      title: '发货速度(件数／按天)',
       className: 'cyan-3',
       children: [{
           title: '1d',
@@ -149,7 +149,7 @@ class DeliveryWithForm extends Component {
       ],
     },
     {
-      title: '待发延迟(按天)',
+      title: '待发延迟(起始日期件数／按天)',
       className: 'purple-3',
       children: [{
           title: '1d',
