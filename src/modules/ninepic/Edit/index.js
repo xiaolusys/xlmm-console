@@ -338,6 +338,7 @@ class EditNinepic extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} style={{ height: 270 }} label="推广图片" required>
                 <Uploader
+                  {...getFieldProps('fileList')}
                   uptoken={uptoken.token}
                   fileList={getFieldValue('fileList')}
                   multiple={multiple}
