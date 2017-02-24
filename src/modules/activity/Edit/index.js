@@ -154,7 +154,7 @@ class Editactivity extends Component {
         shareIcon: shareIcon,
         actLink: this.state.actLink,
         scheduleId: params.scheduleId,
-        actType: this.props.form.getFieldProps('actType').value,
+        actType: this.props.form.getFieldValue('actType'),
         startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
         endTime: moment(params.endTime).format('YYYY-MM-DD HH:mm:ss'),
         loginRequired: params.loginRequired,
@@ -236,7 +236,6 @@ class Editactivity extends Component {
 
   onActTypeSelect = (value) => {
     const self = this;
-    console.log('ac type: ', value);
     this.props.form.setFieldsValue({ actType: value });
     if (value === 'topic') {
       this.setState({ actLinkInputVisible: false });
@@ -253,8 +252,8 @@ class Editactivity extends Component {
     for (let i = 0; i < filters.schedules.length; i++) {
       if (filters.schedules[i].id === value) {
         this.props.form.setFieldsValue({
-        startTime: moment(filters.schedules[i].upshelfTime).format('YYYY-MM-DD HH:mm:ss'),
-        endTime: moment(filters.schedules[i].offshelfTime).format('YYYY-MM-DD HH:mm:ss'),
+        startTime: moment(filters.schedules[i].upshelfTime),
+        endTime: moment(filters.schedules[i].offshelfTime),
       });
       }
     }
@@ -314,7 +313,7 @@ class Editactivity extends Component {
                 <Input {...getFieldProps('title', { rules: [{ required: true, title: '标题' }] })} value={getFieldValue('title')} />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="活动类型">
-                <Select {...getFieldProps('actTypeDisplay', { rules: [{ required: true }] })} onSelect={this.onActTypeSelect} value={getFieldValue('actTypeDisplay')}>
+                <Select {...getFieldProps('actType', { rules: [{ required: true }] })} onSelect={this.onActTypeSelect} value={getFieldValue('actType')}>
                   {filters.actType.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
                 </Select>
               </Form.Item>
@@ -331,9 +330,8 @@ class Editactivity extends Component {
               {this.inputSchedule()}
               <Form.Item {...this.formItemLayout()} label="入口图片" help="只能上传一张，如果要替换请先删除。" >
                 <Uploader
-                  {...getFieldProps('actImg', {
-                    valuePropName: 'fileList',
-                  })}
+                  {...getFieldProps('actImg')}
+                  fileList={getFieldValue('actImg')}
                   onRemove={this.onActImgRemove}
                   onChange={this.onActImgChange}
                   uptoken={uptoken.token}
@@ -341,9 +339,8 @@ class Editactivity extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="弹窗图片" help="只能上传一张，如果要替换请先删除。" >
                 <Uploader
-                  {...getFieldProps('maskLink', {
-                    valuePropName: 'fileList',
-                  })}
+                  {...getFieldProps('maskLink')}
+                  fileList={getFieldValue('maskLink')}
                   onRemove={this.onMaskLinkRemove}
                   onChange={this.onMaskLinkChange}
                   uptoken={uptoken.token}
@@ -351,9 +348,8 @@ class Editactivity extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="品牌LOGO" help="只能上传一张，如果要替换请先删除。" >
                 <Uploader
-                  {...getFieldProps('actLogo', {
-                    valuePropName: 'fileList',
-                  })}
+                  {...getFieldProps('actLogo')}
+                  fileList={getFieldValue('actLogo')}
                   onRemove={this.onActLogoRemove}
                   onChange={this.onActLogoChange}
                   uptoken={uptoken.token}
@@ -361,9 +357,8 @@ class Editactivity extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="分享图标" help="只能上传一张，如果要替换请先删除。" >
                 <Uploader
-                  {...getFieldProps('shareIcon', {
-                    valuePropName: 'fileList',
-                  })}
+                  {...getFieldProps('shareIcon')}
+                  fileList={getFieldValue('shareIcon')}
                   onRemove={this.onShareIconRemove}
                   onChange={this.onShareIconChange}
                   uptoken={uptoken.token}
