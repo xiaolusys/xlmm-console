@@ -53,7 +53,7 @@ export const fetchDeliveryStats = (startDate, endDate) => ({
 });
 
 export const fetchSaleStats = (startDate, endDate) => ({
-  url: `${apiBase}sales_stats`,
+  url: `${apiBase}skusale_stats`,
   method: 'get',
   type: `FETCH_${names.sales}`,
   params: {

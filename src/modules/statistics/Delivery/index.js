@@ -76,7 +76,6 @@ class DeliveryWithForm extends Component {
 
   getDeliveryStatsData = () => {
     const { dateRange } = this.state.filters;
-    console.log('dateRange', dateRange);
     if (dateRange) {
       this.props.fetchDeliveryStats(
         moment(dateRange[0]).format('YYYY-MM-DD'),
@@ -87,7 +86,6 @@ class DeliveryWithForm extends Component {
 
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
-    console.log('dateRange', fieldValue);
     return fieldValue ? { value: fieldValue } : {};
   }
 
@@ -106,7 +104,7 @@ class DeliveryWithForm extends Component {
       title: '类目名称',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
+      width: 150,
     }, {
       title: '发货速度(件数／按天)',
       className: 'cyan-3',
@@ -115,40 +113,46 @@ class DeliveryWithForm extends Component {
           dataIndex: 'serialData.1.postNum',
           key: 'serialData.1.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['1'].postNum - b.serialData['1'].postNum),
         }, {
           title: '2d',
           dataIndex: 'serialData.2.postNum',
           key: 'serialData.2.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['2'].postNum - b.serialData['2'].postNum),
         }, {
           title: '3d',
           dataIndex: 'serialData.3.postNum',
           key: 'serialData.3.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['3'].postNum - b.serialData['3'].postNum),
         }, {
           title: '4d',
           dataIndex: 'serialData.4.postNum',
           key: 'serialData.4.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['4'].postNum - b.serialData['4'].postNum),
         }, {
           title: '5d',
           dataIndex: 'serialData.5.postNum',
           key: 'serialData.5.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['5'].postNum - b.serialData['5'].postNum),
         }, {
           title: '6d',
           dataIndex: 'serialData.6.postNum',
           key: 'serialData.6.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['6'].postNum - b.serialData['6'].postNum),
         }, {
           title: '7d+',
           dataIndex: 'serialData.inf.postNum',
           key: 'serialData.inf.postNum',
           width: 50,
+          sorter: (a, b) => (a.serialData.inf.postNum - b.serialData.inf.postNum),
         },
       ],
-    },
-    {
+    }, {
       title: '待发延迟(起始日期件数／按天)',
       className: 'purple-3',
       children: [{
@@ -156,36 +160,43 @@ class DeliveryWithForm extends Component {
           dataIndex: 'serialData.1.waitNum',
           key: 'serialData.1.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['1'].waitNum - b.serialData['1'].waitNum),
         }, {
           title: '2d',
           dataIndex: 'serialData.2.waitNum',
           key: 'serialData.2.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['2'].waitNum - b.serialData['2'].waitNum),
         }, {
           title: '3d',
           dataIndex: 'serialData.3.waitNum',
           key: 'serialData.3.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['3'].waitNum - b.serialData['3'].waitNum),
         }, {
           title: '4d',
           dataIndex: 'serialData.4.waitNum',
           key: 'serialData.4.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['4'].waitNum - b.serialData['4'].waitNum),
         }, {
           title: '5d',
           dataIndex: 'serialData.5.waitNum',
           key: 'serialData.5.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['5'].waitNum - b.serialData['5'].waitNum),
         }, {
           title: '6d',
           dataIndex: 'serialData.6.waitNum',
           key: 'serialData.6.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData['6'].waitNum - b.serialData['6'].waitNum),
         }, {
           title: '7d+',
           dataIndex: 'serialData.inf.waitNum',
           key: 'serialData.inf.waitNum',
           width: 50,
+          sorter: (a, b) => (a.serialData.inf.waitNum - b.serialData.inf.waitNum),
         },
       ],
     },
