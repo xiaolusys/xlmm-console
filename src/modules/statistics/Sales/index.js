@@ -52,9 +52,9 @@ class SaleWithForm extends Component {
   }
 
   componentWillMount() {
-    const today = new Date();
+    const yesterday = new Date().setDate(new Date().getDate() - 1);
     this.setFilters({
-        dateRange: [moment(new Date().setDate(today.getDate() - 1)), moment(today)],
+        dateRange: [moment(yesterday), moment(yesterday)],
       });
     this.getSaleStatsData(); // 使用默认日期(昨日)
   }

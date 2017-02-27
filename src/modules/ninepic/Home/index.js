@@ -7,6 +7,7 @@ import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form,
 import * as constants from 'constants';
 import { fetchNinepics, deleteNinepic } from 'redux/modules/ninePic/ninepics';
 import { assign, map } from 'lodash';
+import Modals from 'modules/Modals';
 import stringcase from 'stringcase';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
@@ -62,6 +63,7 @@ class List extends Component {
   }
 
   state = {
+    previewModalVisible: false,
     filters: {
       pageSize: 10,
       page: 1,
@@ -104,14 +106,26 @@ class List extends Component {
     this.props.deleteNinepic(ninepicid);
   }
 
+  onPreviewClick = (e) => {
+    const { id } = e.currentTarget.dataset;
+    const { protocol, host } = window.location;
+    this.setState({
+      previewModalVisible: true,
+      previewLink: `${protocol}//${host}/mall/mama/everydaypush?id=${id}`,
+    });
+  }
+
   setFilters = function(filters) {
     assign(this.state.filters, filters);
-    console.log('save', this.state.filters);
     this.props.setStateFilters(propsFiltersName, this.state.filters);
     return this.setState(this.state.filters);
   }
 
   getFilters = () => (this.state.filters)
+
+  togglePreviewModalVisible = (e) => {
+    this.setState({ previewModalVisible: !this.state.previewModalVisible });
+  }
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
@@ -171,7 +185,7 @@ class List extends Component {
           <span className="ant-divider"></span>
           <a data-ninepicid={id} onClick={self.onDeleteNinepicClick}>删除</a>
           <span className="ant-divider"></span>
-          <a href={`/${record.redirectUrl}`} target="_blank" disabled={record.redirectUrl === ''}>预览</a>
+          <a data-id={id} target="_blank" onClick={self.onPreviewClick}>预览</a>
         </span>
       ),
     }];
@@ -237,6 +251,12 @@ class List extends Component {
           </Row>
         </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
+        <Modals.Preview
+          visible={this.state.previewModalVisible}
+          url={this.state.previewLink}
+          onCancel={this.togglePreviewModalVisible}
+          title="图片推广预览"
+          />
       </div>
     );
   }
