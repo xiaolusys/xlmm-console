@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, message, Table, Popover, Popconfirm } from 'antd';
@@ -30,6 +31,8 @@ const actionCreators = {
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
+
+@wrapReactLifecycleMethodsWithTryCatch
 class ProductsWithForm extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,

@@ -272,7 +272,6 @@ class EditNinepic extends Component {
 
   promotionProducts = (promotionPros) => {
     const self = this;
-    console.log('debug promotionPros:', promotionPros);
     return (
       <div>
         <Row>

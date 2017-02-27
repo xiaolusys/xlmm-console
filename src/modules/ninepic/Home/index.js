@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, Input } from 'antd';
@@ -9,24 +10,29 @@ import { assign, map } from 'lodash';
 import stringcase from 'stringcase';
 import moment from 'moment';
 import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
 
-
+const propsFiltersName = 'ninePicList';
 const InputGroup = Input.Group;
 
 const actionCreators = {
   fetchNinepics: fetchNinepics,
   fetchFilters: fetchFilters,
   deleteNinepic: deleteNinepic,
+  getStateFilters,
+  setStateFilters,
 };
 
 @connect(
   state => ({
     ninepics: state.ninepics,
     filters: state.ninepicFilters,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
 
+@wrapReactLifecycleMethodsWithTryCatch
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
@@ -37,6 +43,9 @@ class List extends Component {
     fetchNinepics: React.PropTypes.func,
     deleteNinepic: React.PropTypes.func,
     ninepics: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -61,8 +70,12 @@ class List extends Component {
   }
 
   componentWillMount() {
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    const filters = stateFilters[propsFiltersName];
+    this.setFilters(filters);
     this.props.fetchFilters();
-    this.props.fetchNinepics();
+    this.props.fetchNinepics(filters);
   }
 
   onTableChange = (pagination, filters, sorter) => {
@@ -92,14 +105,17 @@ class List extends Component {
   }
 
   setFilters = function(filters) {
-    return this.setState(assign(this.state.filters, filters));
+    assign(this.state.filters, filters);
+    console.log('save', this.state.filters);
+    this.props.setStateFilters(propsFiltersName, this.state.filters);
+    return this.setState(this.state.filters);
   }
 
   getFilters = () => (this.state.filters)
 
   formItemLayout = () => ({
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
+    labelCol: { span: 2 },
+    wrapperCol: { span: 6 },
   })
 
   columns = () => {
@@ -164,7 +180,7 @@ class List extends Component {
   tableProps = () => {
     const self = this;
     const { ninepics } = this.props;
-
+    const { page, pageNum } = this.state.filters;
     return {
       className: 'margin-top-sm',
       rowKey: (record) => (record.id),
@@ -178,6 +194,8 @@ class List extends Component {
         total: ninepics.items.count || 0,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
+        defaultCurrent: page,
+        defaultPageSize: pageNum,
         onShowSizeChange(current, pageSize) {
           self.setFilters({ pageSize: pageSize, page: current });
           self.props.fetchNinepics(self.getFilters());
@@ -205,13 +223,19 @@ class List extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <InputGroup className="filter-modelid">
-          <Input placeholder="款式ID" value={this.state.filters.detailModelids} onChange={this.handleInputChange} onFocus={this.handleFocusBlur} onPressEnter={this.handleSearch} />
-          <div className="ant-input-group-wrap">
-            <Button icon="search" className={777} size={6} onClick={this.handleSearch} />
-          </div>
-        </InputGroup>
-        <Button type="primary" onClick={this.onCreateNinepicClick}>新建每日推送</Button>
+        <Form horizontal >
+          <Form.Item {...this.formItemLayout()} label="查询条件">
+            <InputGroup className="filter-modelid">
+              <Input placeholder="款式ID" value={this.state.filters.detailModelids} onChange={this.handleInputChange} onFocus={this.handleFocusBlur} onPressEnter={this.handleSearch} />
+              <div className="ant-input-group-wrap">
+                <Button icon="search" className={777} size={6} onClick={this.handleSearch} />
+              </div>
+            </InputGroup>
+          </Form.Item>
+          <Row>
+            <Button type="primary" onClick={this.onCreateNinepicClick}>新建每日推送</Button>
+          </Row>
+        </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
       </div>
     );

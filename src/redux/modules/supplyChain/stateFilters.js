@@ -22,6 +22,11 @@ const initialState = {
       ordering: '-created',
       saleSupplier: '',
     },
+  ninePicList: {
+      pageSize: 10,
+      page: 1,
+      ordering: '-start_time',
+    },
 };
 
 const name = 'STATE_FILTERS';
