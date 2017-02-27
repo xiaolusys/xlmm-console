@@ -27,6 +27,11 @@ const initialState = {
       page: 1,
       ordering: '-start_time',
     },
+  activityList: {
+      pageSize: 10,
+      page: 1,
+      ordering: '-start_time',
+    },
 };
 
 const name = 'STATE_FILTERS';

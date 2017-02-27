@@ -2,27 +2,32 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message, InputNumber } from 'antd';
+import { Row, Col, Icon, Input, Select, Menu, Button, DatePicker, Table, Popover, Form, message } from 'antd';
 import * as constants from 'constants';
 import { fetchActivities } from 'redux/modules/activity/activities';
 import { saveActivity, correlateSchedule } from 'redux/modules/activity/activity';
 import { fetchFilters } from 'redux/modules/activity/activityFilters';
-import { assign, isEmpty, map } from 'lodash';
+import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
+import { assign, isNaN, isEmpty, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
 
+const propsFiltersName = 'activityList';
 
 const actionCreators = {
   fetchActivities,
   fetchFilters,
   saveActivity,
   correlateSchedule,
+  getStateFilters,
+  setStateFilters,
 };
 
 @connect(
   state => ({
     activities: state.activities,
     filters: state.activityFilters,
+    stateFilters: state.stateFilters,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -38,6 +43,9 @@ class List extends Component {
     correlateSchedule: React.PropTypes.func,
     activities: React.PropTypes.object,
     filters: React.PropTypes.object,
+    stateFilters: React.PropTypes.object,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -62,7 +70,11 @@ class List extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchActivities();
+    this.props.getStateFilters();
+    const { stateFilters } = this.props;
+    const filters = stateFilters[propsFiltersName];
+    this.setFilters(filters);
+    this.props.fetchActivities(filters);
     this.props.fetchFilters();
   }
 
@@ -100,7 +112,6 @@ class List extends Component {
     this.props.fetchActivities(this.getFilters());
   }
   onCorrelateActivitySchedule = () => {
-    console.log(this.state);
     if (this.state.acids) {
       this.state.acids.map((acid) => (this.props.correlateSchedule(acid)));
     }
@@ -113,37 +124,41 @@ class List extends Component {
   getFilters = () => (this.state.filters)
 
   setFilters = function(filters) {
-    return this.setState(assign(this.state.filters, filters));
+    assign(this.state.filters, filters);
+    this.props.setStateFilters(propsFiltersName, this.state.filters);
+    return this.setState(this.state.filters);
   }
 
   setOrderValId = (e) => {
-    if (e.keyCode === 13) {
-      const { activityid } = e.currentTarget.dataset;
-      const { target } = e;
-      const { activities } = this.props;
-      const activityidInt = parseInt(activityid, 10);
-      if (activities && activities.items) {
-        map(activities.items.results, (item) => {
-          if (item && item.id === activityidInt) {
-            this.props.saveActivity(activityid, {
-              orderVal: target.value,
-              title: item.title,
-              actDesc: item.actDesc,
-              actImg: item.actImg,
-              maskLink: item.maskLink,
-              actLogo: item.actLogo,
-              shareIcon: item.shareIcon,
-              actLink: item.actLink,
-              scheduleId: item.scheduleId,
-              actType: item.actType,
-              startTime: moment(item.startTime).format('YYYY-MM-DD HH:mm:ss'),
-              endTime: moment(item.endTime).format('YYYY-MM-DD HH:mm:ss'),
-              loginRequired: item.loginRequired,
-              isActive: item.isActive,
-            });
-          }
-        });
-      }
+    const { activityid } = e.currentTarget.dataset;
+    const { value } = e.target;
+    const { activities } = this.props;
+    if (isNaN(value)) {
+      message.error('请输入正确的数字');
+      return;
+    }
+    const activityidInt = parseInt(activityid, 10);
+    if (activities && activities.items) {
+      map(activities.items.results, (item) => {
+        if (item && item.id === activityidInt) {
+          this.props.saveActivity(activityid, {
+            orderVal: value,
+            title: item.title,
+            actDesc: item.actDesc,
+            actImg: item.actImg,
+            maskLink: item.maskLink,
+            actLogo: item.actLogo,
+            shareIcon: item.shareIcon,
+            actLink: item.actLink,
+            scheduleId: item.scheduleId,
+            actType: item.actType,
+            startTime: moment(item.startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: moment(item.endTime).format('YYYY-MM-DD HH:mm:ss'),
+            loginRequired: item.loginRequired,
+            isActive: item.isActive,
+          });
+        }
+      });
     }
   }
 
@@ -170,7 +185,12 @@ class List extends Component {
       dataIndex: 'orderVal',
       key: 'orderVal',
       render: (orderVal, record) => (
-        <InputNumber min={0} max={10000} data-activityid={record.id} onKeyDown={this.setOrderValId} defaultValue={orderVal} />
+        <Input
+          style={{ width: 60 }}
+          data-activityid={record.id}
+          defaultValue={orderVal}
+          onChange={this.setOrderValId}
+          />
         ),
     }, {
       title: '上线',
@@ -197,7 +217,7 @@ class List extends Component {
   tableProps = () => {
     const self = this;
     const { activities } = this.props;
-
+    const { page, pageNum } = this.state.filters;
     return {
       className: 'margin-top-sm',
       rowKey: (record) => (record.id),
@@ -211,6 +231,8 @@ class List extends Component {
         total: activities.items.count || 0,
         showTotal: total => `共 ${total} 条`,
         showSizeChanger: true,
+        defaultCurrent: page,
+        defaultPageSize: pageNum,
         onShowSizeChange(current, pageSize) {
           self.setFilters({ pageSize: pageSize, page: current });
           self.props.fetchActivities(self.getFilters());
