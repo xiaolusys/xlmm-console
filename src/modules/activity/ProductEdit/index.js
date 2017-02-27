@@ -164,15 +164,18 @@ class acpEdit extends Component {
                 <Input {...getFieldProps('productName')} value={getFieldValue('productName')} />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="图片类型">
-                <Select {...getFieldProps('getPicTypeDisplay', { rules: [{ required: true }] })} onSelect={this.onPicTypeSelect} value={getFieldValue('picType')}>
-                  {filters.picType.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                <Select
+                  {...getFieldProps('picType', { rules: [{ required: true }] })}
+                  onSelect={this.onPicTypeSelect}
+                  value={getFieldValue('picType')}>
+                    {filters.picType.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>)
+                  )}
                 </Select>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="图片" help="只能上传一张，如果要替换请先删除。" >
                 <Uploader
-                  {...getFieldProps('productImg', {
-                    valuePropName: 'fileList',
-                  })}
+                  {...getFieldProps('productImg')}
+                  fileList={getFieldValue('productImg')}
                   onRemove={this.onProductImgRemove}
                   onChange={this.onProductImgChange}
                   uptoken={uptoken.token}
