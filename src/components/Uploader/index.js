@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Upload, Icon, message } from 'antd';
+import { Upload, Icon, message, Modal } from 'antd';
 import { uploadUrl } from 'constants';
 
 import './index.less';
@@ -27,6 +27,11 @@ export class Uploader extends Component {
     text: '上传图片',
     accept: 'image/*',
     multiple: false,
+  }
+
+  state = {
+    previewVisible: false,
+    previewImage: '',
   }
 
   data = (file) => {
@@ -58,8 +63,11 @@ export class Uploader extends Component {
     });
   }
 
+  handleCancel = () => this.setState({ previewVisible: false })
+
   render() {
     const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange, onPreview } = this.props;
+    const { previewVisible, previewImage } = this.state;
     const headers = {
       Accept: 'application/json',
     };
@@ -71,7 +79,7 @@ export class Uploader extends Component {
           listType="picture-card"
           multiple={multiple}
           accept={accept}
-          onPreview={this.handlePreview}
+          onPreview={onPreview || this.handlePreview}
           onRemove={onRemove}
           onChange={onChange}
           headers={headers}
@@ -80,6 +88,9 @@ export class Uploader extends Component {
           <Icon type="plus" />
           <div className="ant-upload-text">{text}</div>
         </Upload>
+        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        </Modal>
       </div>
     );
   }

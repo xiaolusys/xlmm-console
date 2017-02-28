@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Select, Tag, Button, DatePicker, Form, Switch, Icon, Input, message, Popover, Card, Alert, Tabs } from 'antd';
 import Modals from 'modules/Modals';
+import { If } from 'jsx-control-statements';
 import { imageUrlPrefixs } from 'constants';
 import { fetchNinepic, saveNinepic, resetNinepic } from 'redux/modules/ninePic/ninepic';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
@@ -12,8 +14,9 @@ import { fetchFilters } from 'redux/modules/ninePic/ninepicFilters';
 import { fetchPromotionPros } from 'redux/modules/ninePic/ninepicPromotionPros';
 import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
-const TabPane = Tabs.TabPane;
 
+
+const TabPane = Tabs.TabPane;
 
 const actionCreators = {
   fetchFilters,
@@ -34,12 +37,14 @@ const actionCreators = {
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
 
+@wrapReactLifecycleMethodsWithTryCatch
 class EditNinepic extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     children: React.PropTypes.any,
     filters: React.PropTypes.object,
     location: React.PropTypes.any,
+    fetchFilters: React.PropTypes.func,
     fetchNinepic: React.PropTypes.func,
     saveNinepic: React.PropTypes.func,
     resetNinepic: React.PropTypes.func,
@@ -77,6 +82,9 @@ class EditNinepic extends Component {
     const todayDate = todayDateArry.join('-');
     this.props.fetchUptoken();
     this.props.fetchPromotionPros(todayDate);
+    if (!filters.categorys) {
+      this.props.fetchFilters();
+    }
     if (id) {
       this.props.fetchNinepic(id);
     }
@@ -168,7 +176,6 @@ class EditNinepic extends Component {
   onPicChange = ({ fileList }) => {
     each(fileList, (file) => {
       if (file.status === 'done' && file.response) {
-        console.log('debug file : ', file);
         file.url = `${imageUrlPrefixs}${file.response.key}`;
         message.success(`上传成功: ${file.name}`);
       } else if (file.status === 'error') {
@@ -320,12 +327,12 @@ class EditNinepic extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="类别">
                 <Select {...getFieldProps('saleCategory')} value={getFieldValue('saleCategory')} placeholder="推送的产品类别!">
-                  {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
+                  {(filters.categorys || []).map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
                 </Select>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="执行推送">
                 <Select {...getFieldProps('isPushed')} value={getFieldValue('isPushed')} placeholder="执行推送!">
-                  {filters.isPushed.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                  {(filters.isPushed || []).map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
                 </Select>
                 <Alert message="选择稍后推送后系统将自动检查推送app消息给用户，推送内容为标题填写的内容" type="info" showIcon />
               </Form.Item>
@@ -341,6 +348,7 @@ class EditNinepic extends Component {
                   uptoken={uptoken.token}
                   fileList={getFieldValue('fileList')}
                   multiple={multiple}
+                  onPreview={this.handlePreview}
                   onRemove={this.onPicRemove}
                   onChange={this.onPicChange}
                   />
@@ -361,7 +369,9 @@ class EditNinepic extends Component {
           </Col>
           <Col span={14}>
             <DatePicker onChange={this.onPromotionDateChange} />
-            {this.promotionProducts(promotionPros.items)}
+            <If condition={promotionPros.items}>
+              {this.promotionProducts(promotionPros.items)}
+            </If>
           </Col>
         </Row>
       </div>
