@@ -3,11 +3,12 @@ import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Button, Col, DatePicker, Input, Form, Row, Select, Table, Popconfirm, message } from 'antd';
+import { Button, Col, DatePicker, Input, Form, Row, Radio, Select, Table, Popconfirm, message } from 'antd';
 import { assign, noop, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
-import { toErrorMsg } from 'utils/object';
+import { toErrorMsg, getDateRangeItems } from 'utils/object';
+import { productTypes } from 'constants';
 import { fetchSaleStats } from 'redux/modules/statistics/categorys';
 
 const actionCreators = {
@@ -46,12 +47,16 @@ class SaleWithForm extends Component {
   }
 
   state = {
+    dateRangeList: [],
     filters: {
       dateRange: [],
+      productType: '0',
     },
   }
 
   componentWillMount() {
+    this.state.dateRangeList = getDateRangeItems();
+    console.log('dateRangeList', this.state.dateRangeList);
     const yesterday = new Date().setDate(new Date().getDate() - 1);
     this.setFilters({
         dateRange: [moment(yesterday), moment(yesterday)],
@@ -74,14 +79,22 @@ class SaleWithForm extends Component {
     this.setFilters({ dateRange: dates });
   }
 
+  onClickProductType = (e) => {
+    const productType = e.target.value;
+    this.setFilters({
+      productType: productType,
+    });
+  }
+
   getSaleStatsData = () => {
-    const { dateRange } = this.state.filters;
-    console.log('dateRange', dateRange);
+    const { dateRange, productType } = this.state.filters;
+    console.log('fetch:', productType);
     if (dateRange) {
-      this.props.fetchSaleStats(
-        moment(dateRange[0]).format('YYYY-MM-DD'),
-        moment(dateRange[1]).format('YYYY-MM-DD')
-      );
+      this.props.fetchSaleStats({
+        startDate: moment(dateRange[0]).format('YYYY-MM-DD'),
+        endDate: moment(dateRange[1]).format('YYYY-MM-DD'),
+        productType: productType,
+      });
     }
   }
 
@@ -204,20 +217,29 @@ class SaleWithForm extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <Form horizontal className="ant-advanced-search-form">
+        <Form inline horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
-            <Col sm={8}>
-              <Form.Item label="日期" {...this.formItemLayout()} >
+            <Col >
+              <Form.Item label="日期" >
                 <DatePicker.RangePicker
                   {...getFieldProps('dateRange')}
                   {...this.getFilterSelectValue('dateRange')}
                   onChange={this.onDateRangeChange}
+                  ranges={this.state.dateRangeList}
                   labelInValue
                   />
               </Form.Item>
-            </Col>
-            <Col span={2} offset={0}>
-              <Button type="primary" onClick={this.onSubmitClick} >搜索</Button>
+              <Form.Item>
+                <Radio.Group
+                  {...getFieldProps('productType')}
+                  value={this.state.productType}
+                  onChange={this.onClickProductType}>
+                  {map(productTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" onClick={this.onSubmitClick} >搜索</Button>
+              </Form.Item>
             </Col>
           </Row>
         </Form>

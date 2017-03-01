@@ -18,7 +18,6 @@ export default class Preview extends Component {
 
   render() {
     const { title, url, visible, onCancel } = this.props;
-    console.log('preview:', title, url, visible);
     return (
       <Modal title={title} footer={null} visible={visible} onCancel={onCancel} closable maskClosable>
         <div className="device-iphone6 clearfix">

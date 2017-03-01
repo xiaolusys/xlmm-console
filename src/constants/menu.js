@@ -46,7 +46,7 @@ export default [{
       external: true,
     },
     {
-      name: '销售金额',
+      name: '类目销售',
       link: '/statistics/sales',
       icon: 'pay-circle-o',
       external: false,

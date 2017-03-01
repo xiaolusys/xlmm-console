@@ -7,7 +7,7 @@ import { Button, Col, DatePicker, Input, Form, Row, Select, Table, Popconfirm, m
 import { assign, noop, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
-import { toErrorMsg } from 'utils/object';
+import { toErrorMsg, getDateRangeItems } from 'utils/object';
 import { fetchDeliveryStats } from 'redux/modules/statistics/categorys';
 
 const actionCreators = {
@@ -46,12 +46,15 @@ class DeliveryWithForm extends Component {
   }
 
   state = {
+    dateRangeList: [],
     filters: {
       dateRange: [],
+      productType: 0,
     },
   }
 
   componentWillMount() {
+    this.state.dateRangeList = getDateRangeItems();
     const yesterday = new Date().setDate(new Date().getDate() - 1);
     this.setFilters({
         dateRange: [moment(yesterday), moment(yesterday)],
@@ -72,6 +75,13 @@ class DeliveryWithForm extends Component {
 
   onDateRangeChange = (dates, dateStrings) => {
     this.setFilters({ dateRange: dates });
+  }
+
+  onClickProductType = (e) => {
+    const productType = e.target.value;
+    this.setState({
+      productType: productType,
+    });
   }
 
   getDeliveryStatsData = () => {
@@ -208,20 +218,21 @@ class DeliveryWithForm extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <Form horizontal className="ant-advanced-search-form">
+        <Form inline horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
             <Col sm={8}>
-              <Form.Item label="日期" {...this.formItemLayout()} >
+              <Form.Item label="日期" >
                 <DatePicker.RangePicker
                   {...getFieldProps('dateRange')}
                   {...this.getFilterSelectValue('dateRange')}
                   onChange={this.onDateRangeChange}
+                  ranges={this.state.dateRangeList}
                   labelInValue
                   />
               </Form.Item>
-            </Col>
-            <Col span={2} offset={0}>
-              <Button type="primary" onClick={this.onSubmitClick} >搜索</Button>
+              <Form.Item>
+                <Button type="primary" onClick={this.onSubmitClick} >搜索</Button>
+              </Form.Item>
             </Col>
           </Row>
         </Form>

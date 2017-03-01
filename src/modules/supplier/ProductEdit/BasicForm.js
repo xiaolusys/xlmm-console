@@ -62,7 +62,7 @@ class Basic extends Component {
     skus: {},
     skuItems: [],
     isBoutique: false,
-    productType: 0,
+    productType: '0',
     firstLoadUpdate: false,
   }
 
@@ -105,7 +105,7 @@ class Basic extends Component {
         skuItems: product.skuExtras || [],
         firstLoadUpdate: true,
         isBoutique: product.extras && product.extras.isBoutique || false,
-        productType: product.extras && product.extras.productType || 0,
+        productType: product.extras && product.extras.productType || '0',
       });
     }
     if (product.failure) {
@@ -653,8 +653,7 @@ class Basic extends Component {
                 <Radio.Group
                   {...getFieldProps('productType')}
                   value={this.state.productType}
-                  onChange={this.onClickProductType}
-                  defaultValue="0">
+                  onChange={this.onClickProductType}>
                   {map(productTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
                 </Radio.Group>
               </Col>

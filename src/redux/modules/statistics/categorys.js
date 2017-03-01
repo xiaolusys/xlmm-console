@@ -52,13 +52,10 @@ export const fetchDeliveryStats = (startDate, endDate) => ({
   },
 });
 
-export const fetchSaleStats = (startDate, endDate) => ({
+export const fetchSaleStats = (params) => ({
   url: `${apiBase}skusale_stats`,
   method: 'get',
   type: `FETCH_${names.sales}`,
-  params: {
-    startDate: startDate,
-    endDate: endDate,
-  },
+  params: params,
 });
 
