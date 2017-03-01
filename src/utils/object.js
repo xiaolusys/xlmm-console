@@ -22,8 +22,8 @@ export const getDateRangeItems = () => {
   return {
     昨日: [moment(yesterday), moment(yesterday)],
     前日: [moment(new Date().setDate(today.getDate() - 2)), moment(new Date().setDate(today.getDate() - 2))],
-    三天前: [moment(new Date().setDate(today.getDate() - 3)), moment(yesterday)],
-    七天前: [moment(new Date().setDate(today.getDate() - 7)), moment(yesterday)],
-    一个月前: [moment(new Date().setDate(today.getDate() - 30)), moment(yesterday)],
+    过去三天: [moment(new Date().setDate(today.getDate() - 3)), moment(yesterday)],
+    过去一周: [moment(new Date().setDate(today.getDate() - 7)), moment(yesterday)],
+    过去一个月: [moment(new Date().setDate(today.getDate() - 30)), moment(yesterday)],
   };
 };
