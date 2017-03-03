@@ -75,8 +75,7 @@ class Basic extends Component {
       this.context.router.goBack();
       return;
     }
-
-    if (product.success && sku.success && !this.state.firstLoadUpdate) {
+    if (product.success && (sku.success || !product.id) && !this.state.firstLoadUpdate) {
       const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
       const skuItems = this.findSkuItems(product.skuExtras, sku);
       const categoryComb = [];
