@@ -10,7 +10,7 @@ import { fetchPreference } from 'redux/modules/supplyChain/preference';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, last, map, assign, merge, sortBy, toInteger, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
-import { imageUrlPrefixs, productTypes, boutiqueSkuTpl } from 'constants';
+import { imageUrlPrefixs, productTypes, sourceTypes, boutiqueSkuTpl } from 'constants';
 import changeCaseKeys from 'change-case-keys';
 
 const actionCreators = {
@@ -63,6 +63,7 @@ class Basic extends Component {
     skuItems: [],
     isBoutique: false,
     productType: '0',
+    sourceType: '0',
     firstLoadUpdate: false,
   }
 
@@ -105,6 +106,7 @@ class Basic extends Component {
         firstLoadUpdate: true,
         isBoutique: product.extras && product.extras.isBoutique || false,
         productType: product.extras && product.extras.productType || '0',
+        sourceType: product.sourceType && product.sourceType.toString() || '0',
       });
     }
     if (product.failure) {
@@ -208,7 +210,6 @@ class Basic extends Component {
         message.error(`上传失败: ${file.name}`);
       }
     });
-    console.log('fileList', fileList);
     this.props.form.setFieldsValue({ fileList: fileList });
   }
 
@@ -231,6 +232,7 @@ class Basic extends Component {
       picUrl: getFieldValue('fileList')[0].url,
       saleCategory: this.getCategory(categories),
       saleSupplier: supplierId,
+      sourceType: this.state.sourceType,
       supplierSku: getFieldValue('supplierSku'),
       memo: getFieldValue('memo'),
       skuExtras: skuItems,
@@ -270,6 +272,13 @@ class Basic extends Component {
       productType: productType,
     });
     this.updateBoutiqueSkus(productType, isBoutique);
+  }
+
+  onClickSourceType = (e) => {
+    const sourceType = e.target.value;
+    this.setState({
+      sourceType: sourceType,
+    });
   }
 
   onSkuValueInput = (e) => {
@@ -645,6 +654,18 @@ class Basic extends Component {
               type="textarea"
               rows={2}
               />
+          </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="货物来源">
+            <Row style={{ marginTop: 16 }}>
+              <Col span="10">
+                <Radio.Group
+                  {...getFieldProps('sourceType')}
+                  value={this.state.sourceType}
+                  onChange={this.onClickSourceType}>
+                  {map(sourceTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
+                </Radio.Group>
+              </Col>
+            </Row>
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="商品类型">
             <Row style={{ marginTop: 16 }}>

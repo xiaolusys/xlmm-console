@@ -9,6 +9,25 @@ export const productTypes = {
 	},
 };
 
+export const sourceTypes = {
+	0: {
+		id: '0',
+		lable: '自储商品',
+	},
+	1: {
+		id: '1',
+		lable: '第三方仓',
+	},
+	2: {
+		id: '2',
+		lable: '保税仓',
+	},
+	3: {
+		id: '3',
+		lable: '关外直邮',
+	},
+};
+
 export const boutiqueSkuTpl = [
 	{
 		cost: 0,
