@@ -161,6 +161,7 @@ class Pictures extends Component {
           uid: model.headImgs,
           url: model.headImgs,
           name: model.headImgs,
+          thumbUrl: model.headImgs,
           status: 'done',
         }],
       });
@@ -172,6 +173,7 @@ class Pictures extends Component {
           uid: img,
           url: img,
           name: img,
+          thumbUrl: img,
           status: 'done',
         });
       });
@@ -190,6 +192,7 @@ class Pictures extends Component {
             uid: item.picPath,
             url: item.picPath,
             name: item.picPath,
+            thumbUrl: item.picPath,
             status: 'done',
           }],
         });
@@ -252,6 +255,8 @@ class Pictures extends Component {
             onRemove={this.onRemove}
             onChange={this.onDetailFieldChange('detailPics')}
             uptoken={uptoken.token}
+            listType={'picture'}
+            showDownloadBtn={1}
             multiple
             />
         </Form.Item>

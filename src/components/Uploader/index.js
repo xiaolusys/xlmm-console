@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { If } from 'jsx-control-statements';
 import { Upload, Icon, message, Modal } from 'antd';
 import { uploadUrl } from 'constants';
+import { each } from 'lodash';
 
 import './index.less';
 
@@ -19,6 +21,7 @@ export class Uploader extends Component {
     onPreview: React.PropTypes.func,
     onRemove: React.PropTypes.func,
     onChange: React.PropTypes.func,
+    showDownloadBtn: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -27,11 +30,25 @@ export class Uploader extends Component {
     text: '上传图片',
     accept: 'image/*',
     multiple: false,
+    showDownloadBtn: false,
   }
 
   state = {
     previewVisible: false,
     previewImage: '',
+  }
+
+  onClickDownloadBtn = (e) => {
+    const { fileList } = this.props;
+    each(fileList, (file) => {
+      const tempLink = document.createElement('a');
+      tempLink.href = file.url;
+      tempLink.setAttribute('download', file.url);
+      tempLink.setAttribute('target', '_blank');
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+    });
   }
 
   data = (file) => {
@@ -66,7 +83,7 @@ export class Uploader extends Component {
   handleCancel = () => this.setState({ previewVisible: false })
 
   render() {
-    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange, onPreview } = this.props;
+    const { uptoken, size, text, multiple, accept, fileList, onRemove, onChange, onPreview, showDownloadBtn } = this.props;
     const { previewVisible, previewImage } = this.state;
     const headers = {
       Accept: 'application/json',
@@ -91,6 +108,9 @@ export class Uploader extends Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
+        <If condition={showDownloadBtn}>
+          <div style={{ height: size }}><a className="btn" onClick={this.onClickDownloadBtn}>下载全部图片</a></div>
+        </If>
       </div>
     );
   }
