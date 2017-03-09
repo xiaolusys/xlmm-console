@@ -42,7 +42,6 @@ class Pictures extends Component {
   }
 
   state = {
-
   }
 
   componentWillMount() {

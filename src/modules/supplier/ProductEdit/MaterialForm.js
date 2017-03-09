@@ -48,6 +48,7 @@ class Material extends Component {
   state = {
     incrIndexs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     table: [],
+    firstLoadSuccessUpdate: true,
   }
 
   componentWillMount() {
@@ -58,8 +59,8 @@ class Material extends Component {
   componentWillReceiveProps(nextProps) {
     const { getFieldValue } = this.props.form;
     const { product, preference } = nextProps;
-    if (preference.success && product.success && product.model &&
-      isEmpty(this.state.table) && (!isEmpty(product.model.extras) || product.updated)) {
+    if (preference.success && product.success && product.model && !this.state.firstLoadSuccessUpdate) {
+      this.statefirstLoadSuccessUpdate = true;
       const { newProperties } = product.model.extras;
       const kwargs = {
         materials: this.findSelectedMaterials(newProperties, preference),
