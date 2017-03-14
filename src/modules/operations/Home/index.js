@@ -24,6 +24,11 @@ class Panes extends TabPane {
             <Link to="operations/changemmupper" >更改上级妈妈</Link>
           </h2>
         </div>
+        <div>
+          <h2>
+            <Link to="operations/giftxiaolucoin" >赠送小鹿币</Link>
+          </h2>
+        </div>
       </TabPane>
       <TabPane tab="精品券" key="2">
         <div>

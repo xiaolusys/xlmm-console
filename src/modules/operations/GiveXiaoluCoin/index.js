@@ -7,13 +7,13 @@ import Modals from 'modules/Modals';
 import { imageUrlPrefixs } from 'constants';
 import { difference, each, groupBy, includes, isEmpty, isArray, isMatch, map, merge, sortBy, toArray, union, unionBy, uniqBy } from 'lodash';
 import moment from 'moment';
-import { fetchUserBudget, sendEnvelopUserBudget } from 'redux/modules/operations/sendEnvelopUserBudget';
+import { fetchXiaoluCoin, giveXiaoluCoin } from 'redux/modules/operations/giveXiaoluCoin';
 const Panel = Collapse.Panel;
 const FormItem = Form.Item;
 const Search = Input.Search;
 const actionCreators = {
-  fetchUserBudget,
-  sendEnvelopUserBudget,
+  fetchXiaoluCoin,
+  giveXiaoluCoin,
 };
 
 function callback(key) {
@@ -21,26 +21,26 @@ function callback(key) {
 }
 
 const texts = [
-  '应用场景： 发红包到用户小鹿钱包',
-  '1. 给操作人指定的用户发送红包',
-  '2. 红包金额以人民币元为单位',
+  '应用场景： 发币到用户小鹿币帐户',
+  '1. 给操作人指定的妈妈发送币',
+  '2. 币金额以人民币元为单位',
   '3. 请点击查看用户后发送红包',
   '4. 提示发送成功后请核对余额是否有添加',
-  '5. 备注是以django-admin loga_ction 形式添加',
+  '5. 备注是添加操作记录到后台',
   ];
 
 @connect(
   state => ({
-    sendResult: state.sendEnvelopUserBudget,
+    xiaoluCoin: state.giveXiaoluCoin,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
-class SendUserBudget extends Component {
+class GiftXiaoluCoin extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
-    fetchUserBudget: React.PropTypes.func,
-    sendEnvelopUserBudget: React.PropTypes.func,
-    sendResult: React.PropTypes.object,
+    fetchXiaoluCoin: React.PropTypes.func,
+    giveXiaoluCoin: React.PropTypes.func,
+    xiaoluCoin: React.PropTypes.object,
     form: React.PropTypes.object,
   };
 
@@ -60,20 +60,19 @@ class SendUserBudget extends Component {
   state = {
       loading: false,
       iconLoading: false,
-      currentCustomerId: 1,
-      data: {},
+      currentMamaId: 1,
   }
 
   componentWillReceiveProps(nextProps) {
-    const { sendResult } = nextProps;
-    const results = sendResult.results;
+    const { xiaoluCoin } = nextProps;
+    const results = xiaoluCoin.results;
 
     if (!isEmpty(results)) {
       if (results.code === 0) {
           message.success(results.info);
           this.setState({
-                         loading: !sendResult.success,
-                         iconLoading: !sendResult.success,
+                         loading: !xiaoluCoin.success,
+                         iconLoading: !xiaoluCoin.success,
                          data: results.data,
          });
         this.props.form.setFieldsInitialValue({
@@ -81,18 +80,17 @@ class SendUserBudget extends Component {
           memo: '',
         });
       } else {
-          this.setState({ currentCustomerId: 1 });
+          this.setState({ currentMamaId: 1 });
           message.error(results.info);
       }
-      sendResult.results = {};
     }
   }
 
   onInputCurrentCustomerChange = (e) => {
     const self = this;
-    const currentCustomerId = e.target.value;
+    const currentMamaId = e.target.value;
     this.setState({
-      currentCustomerId: currentCustomerId,
+      currentMamaId: currentMamaId,
     });
   }
 
@@ -105,16 +103,18 @@ class SendUserBudget extends Component {
     });
     this.setState({ loading: true });
     const params = this.props.form.getFieldsValue();
-    this.props.sendEnvelopUserBudget({
-      amount: params.amount,
-      customerId: this.state.currentCustomerId,
-      memo: params.memo,
+
+    this.props.giveXiaoluCoin({
+      amount: (Number(params.amount) * 100).toString(),
+      mama_id: this.state.currentMamaId,
+      subject: 'gift',
+      referal_id: '',
     });
   }
 
   fetchUserBudget = () => {
     const self = this;
-    this.props.fetchUserBudget(this.state.currentCustomerId);
+    this.props.fetchXiaoluCoin(this.state.currentMamaId);
   }
 
   enterIconLoading = () => {
@@ -124,12 +124,12 @@ class SendUserBudget extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 3 },
-    wrapperCol: { span: 6 },
+    wrapperCol: { span: 6},
   })
   render() {
     const { prefixCls, form } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-    const { data } = this.state;
+    const { results } = this.props.xiaoluCoin;
 
     return (<div>
       <Collapse defaultActiveKey={['123']} onChange={callback}>
@@ -140,29 +140,26 @@ class SendUserBudget extends Component {
       <div className="gutter-example" style={{ marginBottom: 16, marginTop: 32 }}>
         <Row gutter={16}>
           <Col span={6}>
-            <Card style={{ background: '#ECECEC', padding: '30px' }} title="用户钱包基础信息" >
-              <Badge status="success" text={data.customerId} />
-              <p>用户id: {data.customerId}</p>
-              <p>昵称  : {data.nick}</p>
-              <p>手机号: {data.mobile}</p>
-              <p>钱包id: {data.id}</p>
-              <p>余额  : {data.cash}元</p>
+            <Card style={{ background: '#ECECEC', padding: '30px' }} title="妈妈小鹿币信息" >
+              <Badge status="success" text={results ? results.mama_id : ''} />
+              <p>mamaid: {results ? results.mama_id : ''}</p>
+              <p>余额  : {results ? results.balance / 100 : 0}元</p>
             </Card>
           </Col>
           <Col span={6}>
-            <Tag color="#f50">用户id:</Tag>
-            <Input style={{ width: 100 }} value={this.state.currentCustomerId} onChange={this.onInputCurrentCustomerChange} onPressEnter={this.fetchUserBudget} />
-            <Button icon="search" onClick={this.fetchUserBudget} >查看钱包</Button>
+            <Tag color="#f50">妈妈id:</Tag>
+            <Input style={{ width: 100 }} value={this.state.currentMamaId} onChange={this.onInputCurrentCustomerChange} onPressEnter={this.fetchUserBudget} />
+            <Button icon="search" onClick={this.fetchUserBudget} >查看币账户</Button>
           </Col>
-          <Col span={10} style={{ background: '#ECECEC', padding: '30px' }}>
+          <Col span={10} style={{ background: '#ECECEC', padding: '30px', }}>
             <Form className={`${prefixCls}`} >
-              <Form.Item {...this.formItemLayout()} label="金额:">
-                <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的红包金额" />
+              <Form.Item {...this.formItemLayout()} label="金额(元):">
+                <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的币金额" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="备注:">
                 <Input {...getFieldProps('memo')} value={getFieldValue('memo')} />
               </Form.Item>
-              <Button type="primary" loading={this.state.loading} onClick={this.enterLoading}>发送红包</Button>
+              <Button type="primary" loading={this.state.loading} onClick={this.enterLoading}>发送币</Button>
             </Form>
           </Col>
         </Row>
@@ -171,4 +168,4 @@ class SendUserBudget extends Component {
     }
 }
 
-export const SendEnvelopUserBudget = Form.create()(SendUserBudget);
+export const GiveXiaoluCoin = Form.create()(GiftXiaoluCoin);
