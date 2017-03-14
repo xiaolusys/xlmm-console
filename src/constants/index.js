@@ -5,6 +5,7 @@ export { productTypes, sourceTypes, boutiqueSkuTpl } from './product';
 export const apisBase = {
   supply: '/apis/chain/v1/',
   auth: '/apis/auth/v1/',
+  xiaolummbase: '/apis/xiaolumm/',
   xiaolumm: '/apis/xiaolumm/v1/',
   apppushmsg: '/apis/protocol/v1/',
   promotion: '/sale/promotion/promotion/',
