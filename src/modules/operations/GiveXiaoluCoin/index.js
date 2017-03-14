@@ -66,14 +66,13 @@ class GiftXiaoluCoin extends Component {
   componentWillReceiveProps(nextProps) {
     const { xiaoluCoin } = nextProps;
     const results = xiaoluCoin.results;
-
+    console.log(xiaoluCoin);
     if (!isEmpty(results)) {
       if (results.code === 0) {
           message.success(results.info);
           this.setState({
-                         loading: !xiaoluCoin.success,
-                         iconLoading: !xiaoluCoin.success,
-                         data: results.data,
+                         loading: xiaoluCoin.isLoading,
+                         iconLoading: xiaoluCoin.isLoading,
          });
         this.props.form.setFieldsInitialValue({
           amount: '',
@@ -84,6 +83,14 @@ class GiftXiaoluCoin extends Component {
           message.error(results.info);
       }
     }
+
+    if (!xiaoluCoin.isLoading) {
+      this.setState({
+                     loading: xiaoluCoin.isLoading,
+                     iconLoading: xiaoluCoin.isLoading,
+         });
+    }
+
   }
 
   onInputCurrentCustomerChange = (e) => {

@@ -72,8 +72,8 @@ class SendUserBudget extends Component {
       if (results.code === 0) {
           message.success(results.info);
           this.setState({
-                         loading: !sendResult.success,
-                         iconLoading: !sendResult.success,
+                         loading: sendResult.isLoading,
+                         iconLoading: sendResult.isLoading,
                          data: results.data,
          });
         this.props.form.setFieldsInitialValue({
@@ -85,6 +85,13 @@ class SendUserBudget extends Component {
           message.error(results.info);
       }
       sendResult.results = {};
+    }
+
+    if (!sendResult.isLoading) {
+      this.setState({
+                    loading: sendResult.isLoading,
+                    iconLoading: sendResult.isLoading,
+         });
     }
   }
 
