@@ -124,7 +124,7 @@ class GiftXiaoluCoin extends Component {
 
   formItemLayout = () => ({
     labelCol: { span: 3 },
-    wrapperCol: { span: 6},
+    wrapperCol: { span: 6 },
   })
   render() {
     const { prefixCls, form } = this.props;
@@ -151,7 +151,7 @@ class GiftXiaoluCoin extends Component {
             <Input style={{ width: 100 }} value={this.state.currentMamaId} onChange={this.onInputCurrentCustomerChange} onPressEnter={this.fetchUserBudget} />
             <Button icon="search" onClick={this.fetchUserBudget} >查看币账户</Button>
           </Col>
-          <Col span={10} style={{ background: '#ECECEC', padding: '30px', }}>
+          <Col span={10} style={{ background: '#ECECEC', padding: '30px' }}>
             <Form className={`${prefixCls}`} >
               <Form.Item {...this.formItemLayout()} label="金额(元):">
                 <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的币金额" />

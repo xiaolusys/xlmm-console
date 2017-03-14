@@ -156,7 +156,7 @@ class SendUserBudget extends Component {
           </Col>
           <Col span={10} style={{ background: '#ECECEC', padding: '30px' }}>
             <Form className={`${prefixCls}`} >
-              <Form.Item {...this.formItemLayout()} label="金额:">
+              <Form.Item {...this.formItemLayout()} label="金额(元):">
                 <Input {...getFieldProps('amount', { rules: [{ required: true, title: '金额' }] })} value={getFieldValue('amount')} placeholder="输入您要发送的红包金额" />
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="备注:">
