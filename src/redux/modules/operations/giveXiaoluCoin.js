@@ -3,7 +3,12 @@ import { apisBase } from 'constants';
 import _ from 'lodash';
 
 const initialState = {
+  getCoin: {
 
+  },
+  chgCoin: {
+
+  },
 };
 
 const name = 'GIVE_XIAOLUMAMA_XIAOLUCOIN';

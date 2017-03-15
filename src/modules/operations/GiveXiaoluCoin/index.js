@@ -66,10 +66,10 @@ class GiftXiaoluCoin extends Component {
   componentWillReceiveProps(nextProps) {
     const { xiaoluCoin } = nextProps;
     const results = xiaoluCoin.results;
-    console.log(xiaoluCoin);
-    if (!isEmpty(results)) {
-      if (results.code === 0) {
-          message.success(results.info);
+
+    if (this.props.xiaoluCoin.isLoading && !xiaoluCoin.isLoading) {
+      if (xiaoluCoin.success) {
+          message.success('获取妈妈信息成功');
           this.setState({
                          loading: xiaoluCoin.isLoading,
                          iconLoading: xiaoluCoin.isLoading,
@@ -80,7 +80,7 @@ class GiftXiaoluCoin extends Component {
         });
       } else {
           this.setState({ currentMamaId: 1 });
-          message.error(results.info);
+          message.error('获取妈妈信息失败');
       }
     }
 
@@ -148,8 +148,8 @@ class GiftXiaoluCoin extends Component {
         <Row gutter={16}>
           <Col span={6}>
             <Card style={{ background: '#ECECEC', padding: '30px' }} title="妈妈小鹿币信息" >
-              <Badge status="success" text={results ? results.mama_id : ''} />
-              <p>mamaid: {results ? results.mama_id : ''}</p>
+              <Badge status="success" text={results ? results.mamaId : ''} />
+              <p>mamaid: {results ? results.mamaId : ''}</p>
               <p>余额  : {results ? results.balance / 100 : 0}元</p>
             </Card>
           </Col>
