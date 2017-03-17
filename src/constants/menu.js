@@ -14,6 +14,11 @@ export default [{
   icon: 'tags-o',
   external: false,
 }, {
+  name: '商品列表',
+  link: '/stockproducts',
+  icon: 'tags-o',
+  external: false,
+}, {
   name: 'App推送',
   link: '/apppushmsgs',
   icon: 'tags-o',

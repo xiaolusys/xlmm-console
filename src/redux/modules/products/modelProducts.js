@@ -2,22 +2,21 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
-  items: [],
+  results: [],
   count: 0,
 };
 
-const name = 'SUPPLIERS';
+const name = 'MODEL_PRODUCTS';
 
 export default createReducer({
-  // [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
-  //   ...state,
-  //   ...status,
-  // }),
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    count: payload.data.count,
-    items: payload.data.results,
+    results: payload.data.results,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -25,20 +24,16 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchSuppliers = (filters) => ({
-  url: `${apisBase.supply}supplier`,
+export const fetchModelProducts = () => ({
+  url: `${apisBase.item}model_product`,
   method: 'get',
   type: `FETCH_${name}`,
-  params: {
-    ...filters,
-  },
 });
-
-export const deleteSupplier = (id, filters) => ({
-  url: `${apisBase.supply}supplier/${id}`,
+export const deleteModelProducts = (id) => ({
+  url: `${apisBase.item}model_product/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {
-    dispatch(fetchSuppliers(filters));
+    dispatch(fetchModelProducts());
   },
 });

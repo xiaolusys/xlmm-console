@@ -2,7 +2,6 @@ import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
 
 const initialState = {
-
 };
 
 const name = 'SUPPLIER';
@@ -48,7 +47,6 @@ export default createReducer({
     ...status,
   }),
   [`RESET_${name}`]: (state, { payload, status }) => ({
-
   }),
 }, initialState);
 

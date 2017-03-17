@@ -25,7 +25,7 @@ _______________________
 
 ## Sublime Text Setup
 # for mac
-### 1. Install package controll [https://packagecontrol.io/installation](https://packagecontrol.io/installation)
+### 1. Install package controll [https://packagecontrol.io/inistallaton](https://packagecontrol.io/installation)
 ### 2. Install Below Plugins
 # for ubuntu
 ### sudo add-apt-repository ppa:webupd8team/sublime-text-3

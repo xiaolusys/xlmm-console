@@ -19,9 +19,9 @@ module.exports = {
     apiPort: 9000,
     port: 7070,
   },
-  linjie: {
-    apiHost: '192.168.1.31',
-    apiPort: 9000,
+  yanhuang: {
+    apiHost: '192.168.1.56',
+    apiPort: 8001,
     port: 7070,
   },
 };

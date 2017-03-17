@@ -236,9 +236,9 @@ class ProductsWithForm extends Component {
     width: 150,
     render: (figures) => (
       <div>
-        <p><span>销售额：</span><span>{figures.totalPayment ? `￥${figures.totalPayment.toFixed(2)}` : '-'}</span></p>
+        <p><span>销售额：</span><span>{0}</span></p>
         <p><span>退货率：</span><span>{figures ? figures.totalRgRate : '-'}</span></p>
-        <p><span>销售件数：</span><span>{figures.totalPayNum ? figures.totalPayNum : '-'}</span></p>
+        <p><span>销售件数：</span><span>0</span></p>
       </div>
     ),
   }, {

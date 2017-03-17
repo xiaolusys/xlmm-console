@@ -4,6 +4,8 @@ import { App } from 'modules/App';
 import scheduleRoutes from 'modules/schedule/routes';
 import supplierRoutes from 'modules/supplier/routes';
 import categoriesRoutes from 'modules/categories/routes';
+import modelproductRoutes from 'modules/modelProducts/routes';
+import productRoutes from 'modules/products/routes';
 import ninepicRoutes from 'modules/ninepic/routes';
 import apppushmsgRoutes from 'modules/apppushmsg/routes';
 import activitiesRoutes from 'modules/activity/routes';
@@ -18,6 +20,8 @@ export default (
     {ninepicRoutes}
     {apppushmsgRoutes}
     {activitiesRoutes}
+    {modelproductRoutes}
+    {productRoutes}
     {operationsRoutes}
     {statisticsRoutes}
   </Route>

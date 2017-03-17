@@ -68,6 +68,10 @@ const addSkuItem = (originSkuItems, skuItem) => {
 };
 
 export default createReducer({
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,

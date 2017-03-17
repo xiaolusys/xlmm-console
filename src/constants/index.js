@@ -3,12 +3,14 @@ export scheduleTypes from './scheduleTypes';
 export priceRanges from './priceRanges';
 export { productTypes, sourceTypes, boutiqueSkuTpl } from './product';
 export const apisBase = {
+  pay: '/apis/pay/',
   supply: '/apis/chain/v1/',
   auth: '/apis/auth/v1/',
   xiaolummbase: '/apis/xiaolumm/',
   xiaolumm: '/apis/xiaolumm/v1/',
   apppushmsg: '/apis/protocol/v1/',
   promotion: '/sale/promotion/promotion/',
+  item: '/apis/items/v2/',
   coupon: '/coupon/',
   mm: '/mm/',
 };

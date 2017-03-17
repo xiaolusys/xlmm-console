@@ -1,0 +1,51 @@
+import createReducer from 'redux/createReducer';
+import { apisBase, scheduleTypes } from 'constants';
+
+const initialState = {
+  items: [],
+  count: 0,
+};
+
+
+const name = 'SALEPRODUCTS';
+
+export default createReducer({
+  [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
+      ...state,
+      ...status,
+      items: payload.data.results,
+  }),
+  [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`SAVE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+}, initialState);
+
+export const fetchSaleProducts = (filters) => ({
+  url: `${apisBase.supply}saleproduct`,
+  method: 'get',
+  type: `FETCH_${name}`,
+  params: {
+    ...filters,
+  },
+});
+export const saveSaleProducts = (params) => ({
+  url: `${apisBase.supply}saleproduct/new_create`,
+  method: 'post',
+  type: `SAVE_${name}`,
+  data: {
+    ...params,
+  },
+});
+export const updateSaleProducts = (id, params) => ({
+  url: `${apisBase.supply}saleproduct/${id}/new_update  `,
+  method: 'post',
+  type: `UPDATE_${name}`,
+  data: {
+    ...params,
+  },
+});

@@ -6,6 +6,7 @@ import appPushMsg from './modules/appPushMsg';
 import activity from './modules/activity';
 import operations from './modules/operations';
 import statistics from './modules/statistics';
+import mproducts from './modules/products';
 
 const reducer = combineReducers({
   ...supplyChain,
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   ...activity,
   ...operations,
   ...statistics,
+  ...mproducts,
 });
 
 export default reducer;

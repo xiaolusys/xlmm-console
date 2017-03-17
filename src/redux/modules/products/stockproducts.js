@@ -6,18 +6,17 @@ const initialState = {
   count: 0,
 };
 
-const name = 'SUPPLIERS';
+const name = 'PRODUCTS';
 
 export default createReducer({
-  // [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
-  //   ...state,
-  //   ...status,
-  // }),
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    count: payload.data.count,
-    items: payload.data.results,
+    items: payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -25,20 +24,19 @@ export default createReducer({
   }),
 }, initialState);
 
-export const fetchSuppliers = (filters) => ({
-  url: `${apisBase.supply}supplier`,
+export const fetchProducts = (filters) => ({
+  url: `${apisBase.item}stock_product`,
   method: 'get',
   type: `FETCH_${name}`,
   params: {
     ...filters,
   },
 });
-
-export const deleteSupplier = (id, filters) => ({
-  url: `${apisBase.supply}supplier/${id}`,
+export const deleteProduct = (id) => ({
+  url: `${apisBase.item}stock_product/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {
-    dispatch(fetchSuppliers(filters));
+    dispatch(fetchProducts());
   },
 });

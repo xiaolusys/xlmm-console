@@ -610,7 +610,6 @@ class Basic extends Component {
     const selected = this.state.skus;
     let options = replaceAllKeys(categories.items, 'name', 'label');
     options = replaceAllKeys(options, 'cid', 'value');
-    console.log(...getFieldProps('extras'));
     return (
       <div>
         <Form horizontal>
