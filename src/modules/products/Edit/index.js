@@ -8,7 +8,7 @@ import { Uploader } from 'components/Uploader';
 import { If } from 'jsx-control-statements';
 import { crawlProduct } from 'redux/modules/supplyChain/product';
 import { createProduct, updateProduct, fetchProduct, resetProduct } from 'redux/modules/products/stockProduct';
-import { saveSaleProducts, updateSaleProducts, fetchSaleProducts } from 'redux/modules/products/saleProducts.js';
+import { saveSaleProducts, updateSaleProducts, fetchSaleProducts } from 'redux/modules/products/saleProducts';
 import { createModelProduct, updateModelProduct, fetchModelProduct } from 'redux/modules/products/modelProduct';
 import { resetSku } from 'redux/modules/products/sku.js';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
