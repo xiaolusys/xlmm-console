@@ -1,42 +1,58 @@
 import createReducer from 'redux/createReducer';
 import { apisBase, scheduleTypes } from 'constants';
+import { fetchSku } from 'redux/modules/products/sku';
 
 const initialState = {
-  items: [],
-  count: 0,
 };
 
-const name = 'PRODUCTS';
+const name = 'PRODUCT';
 
 export default createReducer({
-  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    items: payload.data,
+    ...payload.data,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
   }),
+  [`CREATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: true,
+  }),
+  [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: true,
+  }),
 }, initialState);
 
-export const fetchProducts = (filters) => ({
+export const createProduct = (params) => ({
   url: `${apisBase.item}stock_product`,
-  method: 'get',
-  type: `FETCH_${name}`,
-  params: {
-    ...filters,
+  method: 'post',
+  type: `CREATE_${name}`,
+  data: {
+    ...params,
   },
 });
-export const deleteProduct = (id) => ({
-  url: `${apisBase.item}stock_product/${id}`,
-  method: 'delete',
-  type: `DELETE_${name}`,
-  success: (resp, dispatch) => {
-    dispatch(fetchProducts());
+
+export const updateProduct = (productId, params) => ({
+  url: `${apisBase.item}stock_product/${productId}`,
+  method: 'put',
+  type: `UPDATE_${name}`,
+  data: {
+    ...params,
   },
+});
+
+export const fetchProduct = (id) => ({
+  url: `${apisBase.item}stock_product/${id}`,
+  method: 'get',
+  type: `FETCH_${name}`,
+});
+
+export const resetProduct = () => ({
+  type: `RESET_${name}`,
 });
