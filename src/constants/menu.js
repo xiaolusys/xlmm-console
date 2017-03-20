@@ -79,6 +79,12 @@ export default [{
       external: false,
     },
     {
+      name: '供应商列表',
+      link: '/supplier',
+      icon: 'solution',
+      external: false,
+    },
+    {
       name: '类目列表',
       link: '/categories',
       icon: 'star',
