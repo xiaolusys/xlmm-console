@@ -118,7 +118,7 @@ class SaleWithForm extends Component {
         title: '类目名称',
         dataIndex: 'name',
         key: 'name',
-        width: 150,
+        width: 120,
       }, {
         title: '销售数据(按天)',
         className: 'cyan-3',
@@ -150,6 +150,13 @@ class SaleWithForm extends Component {
             key: 'serialData.couponPayment',
             width: 50,
             sorter: (a, b) => (a.serialData.couponPayment - b.serialData.couponPayment),
+            render: (data) => ((data * 0.01).toFixed(2)),
+          }, {
+            title: '币支付',
+            dataIndex: 'serialData.coinPayment',
+            key: 'serialData.coinPayment',
+            width: 50,
+            sorter: (a, b) => (a.serialData.coinPayment - b.serialData.coinPayment),
             render: (data) => ((data * 0.01).toFixed(2)),
           }, {
             title: '兑券价差',
@@ -200,6 +207,13 @@ class SaleWithForm extends Component {
             key: 'serialData.modelSaleNum',
             width: 50,
             sorter: (a, b) => (a.serialData.modelSaleNum - b.serialData.modelSaleNum),
+          }, {
+            title: '销售成本',
+            dataIndex: 'serialData.totalCost',
+            key: 'serialData.totalCost',
+            width: 50,
+            sorter: (a, b) => (a.serialData.totalCost - b.serialData.totalCost),
+            render: (data) => ((data * 0.01).toFixed(2)),
           }, {
             title: '退款(货)数',
             dataIndex: 'serialData.modelRefundNum',

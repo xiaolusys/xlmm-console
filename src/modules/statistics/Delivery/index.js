@@ -114,7 +114,7 @@ class DeliveryWithForm extends Component {
       title: '类目名称',
       dataIndex: 'name',
       key: 'name',
-      width: 150,
+      width: 120,
     }, {
       title: '发货速度(件数／按天)',
       className: 'cyan-3',
