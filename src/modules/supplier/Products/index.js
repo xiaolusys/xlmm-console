@@ -83,6 +83,7 @@ class ProductsWithForm extends Component {
     }
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
+    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -90,6 +91,7 @@ class ProductsWithForm extends Component {
     if (products.failure) {
       message.error(`请求错误: ${products.error.detail || ''}`);
     }
+
   }
 
   componentWillUnmount() {

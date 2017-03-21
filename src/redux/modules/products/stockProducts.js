@@ -32,6 +32,7 @@ export const fetchProducts = (filters) => ({
     ...filters,
   },
 });
+
 export const deleteProduct = (id) => ({
   url: `${apisBase.item}stock_product/${id}`,
   method: 'delete',

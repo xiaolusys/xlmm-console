@@ -7,6 +7,7 @@ import activity from './modules/activity';
 import operations from './modules/operations';
 import statistics from './modules/statistics';
 import mproducts from './modules/products';
+import packageOrder from './modules/packageOrder';
 
 const reducer = combineReducers({
   ...supplyChain,
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   ...operations,
   ...statistics,
   ...mproducts,
+  ...packageOrder,
 });
 
 export default reducer;
