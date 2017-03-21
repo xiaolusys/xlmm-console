@@ -7,16 +7,15 @@ const initialState = {
 
 };
 
-const name = "PACKETORDER"
+const name = 'PACKAGEORDER';
 
 export default createReducer({
-	['FETCH_${name}_SUCCESS']:(state, {payload, status}) =>({
-	             ...state,
-	             ...status,
-	    items: payload.data.results,
-	    count: payload.data.count,
+	[`FETCH_${name}_SUCCESS`]:(state, {payload, status}) =>({
+		...state,
+		...status,
+		...payload.data,
 	}),
-	['FETCH_${name}_FAILURE']:(state,{payload,status}) =>({
+	[`FETCH_${name}_FAILURE`]:(state,{payload,status}) =>({
 		...state,
 		...status,
 	}),
@@ -24,8 +23,9 @@ export default createReducer({
 
 
 export const fetchPacakgeOrder = () =>({
-	url: `${apisBase.supply}supplier`,
+	//url: `${apisBase.trades}package_order.json`,
+	url: `${apisBase.item}stock_product`,
 	method:"get",
-	type:"FETCH_PACKETORDER",
+	type: `FETCH_${name}`
 });
 

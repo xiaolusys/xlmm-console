@@ -9,24 +9,23 @@ import stringcase from 'stringcase';
 import {fetchPacakgeOrder} from 'redux/modules/packageOrder/packageOrder';
 
 const actionCreators = {
-fetchPacakgeOrder,
+  fetchPacakgeOrder,
 };
 
-@connect(state => ({
-	packageorder:state.packageorder,
-       packageOrders:state.packageOrders,
+@connect(
+  state => ({
+   packageOrders: state.packageOrders,
 }),
-dispatch => bindActionCreators(actionCreators, dispatch),
+  dispatch => bindActionCreators(actionCreators, dispatch),
 )
 
-class Packageorder extends Component{
+class PackageOrders extends Component{
   static propTypes = {
     packageOrders: React.PropTypes.object,
-    packageorder: React.PropTypes.object,
     fetchPacakgeOrder: React.PropTypes.func,
   };
 
-    static contextTypes = {
+  static contextTypes = {
     router: React.PropTypes.object,
   };
 
@@ -35,24 +34,22 @@ class Packageorder extends Component{
     context.router;
   }
 
-	  componentWillMount() {
-	  	console.log(this.props.packageorder);
-	  	console.log("start get http data");
-	  	this.props.fetchPacakgeOrder();
-	  	
-	  	
-	  }
-
-  	  componentWillReceiveProps(nextProps) {
-  	  	console.log("nextProps",nextProps);
-  		console.log(nextProps.packageorder);
+  componentWillMount() {
+  	console.log(this.props.packageorder);
+  	console.log("start get http data");
+  	this.props.fetchPacakgeOrder();
   }
 
-	  render() {
+  componentWillReceiveProps(nextProps) {
+    console.log("nextProps",nextProps);
+    console.log(nextProps.packageorder);
+  }
+
+  render() {
 	  	console.log(this.props.packageorder)
-	      return (<div>12313</div>)
+	   return (<div>12313</div>)
 	  }
 }
 
-export const Home = Form.create()(Packageorder);
+export const Home = Form.create()(PackageOrders);
 
