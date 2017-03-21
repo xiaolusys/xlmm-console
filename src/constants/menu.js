@@ -34,6 +34,12 @@ export default [{
       icon: 'calendar',
       external: false,
     },
+    {
+      name: '微信推广',
+      link: '/admin/weixin/',
+      icon: 'star',
+      external: true,
+    },
   ],
 }, {
   name: '用户管理',
@@ -41,12 +47,6 @@ export default [{
   icon: 'user',
   external: false,
   sub: [
-    {
-      name: '小鹿妈妈',
-      link: '/admin/xiaolumm/',
-      icon: 'star',
-      external: true,
-    },
     {
       name: '用户列表',
       link: '/admin/pay/customer/',
@@ -60,8 +60,8 @@ export default [{
       external: true,
     },
     {
-      name: '微信推广',
-      link: '/admin/weixin/',
+      name: '小鹿妈妈',
+      link: '/admin/xiaolumm/',
       icon: 'star',
       external: true,
     },
@@ -79,16 +79,16 @@ export default [{
       external: false,
     },
     {
-      name: '供应商列表',
-      link: '/supplier',
-      icon: 'solution',
-      external: false,
-    },
-    {
       name: '类目列表',
       link: '/categories',
       icon: 'star',
       external: false,
+    },
+    {
+      name: '商品库存',
+      link: '/admin/items/skustock/',
+      icon: 'star',
+      external: true,
     },
   ],
 }, {
@@ -104,9 +104,46 @@ export default [{
       external: true,
     },
     {
+      name: '退换货',
+      link: '/admin/pay/salerefund/',
+      icon: 'star',
+      external: true,
+    },
+    {
       name: '快递列表',
       link: '/admin/logistics/logisticscompany/',
       icon: 'star',
+      external: true,
+    },
+  ],
+}, {
+  name: '采购管理',
+  link: '/#4',
+  icon: 'folder',
+  external: false,
+  sub: [
+    {
+      name: '供应商',
+      link: '/supplier',
+      icon: 'solution',
+      external: false,
+    },
+    {
+      name: '订货单',
+      link: '/admin/dinghuo/orderlist/',
+      icon: 'solution',
+      external: true,
+    },
+    {
+      name: '预测到货单',
+      link: '/admin/forecast/forecastinbound/',
+      icon: 'solution',
+      external: true,
+    },
+    {
+      name: '入仓单',
+      link: '/admin/dinghuo/inbound/',
+      icon: 'solution',
       external: true,
     },
   ],
@@ -137,12 +174,18 @@ export default [{
   ],
 }, {
   name: '供应链对接',
-  link: '/#4',
+  link: '/#5',
   icon: 'folder',
   external: false,
   sub: [
     {
-      name: '蜂巢',
+      name: '仓库列表',
+      link: '/admin/warehouse/warehouse/',
+      icon: 'star',
+      external: true,
+    },
+    {
+      name: '蜂巢供应链',
       link: '/admin/outware/',
       icon: 'star',
       external: true,

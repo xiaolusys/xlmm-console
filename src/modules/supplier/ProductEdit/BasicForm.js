@@ -247,9 +247,9 @@ class Basic extends Component {
       this.props.saveProduct(params);
       // this.context.router.goBack();
     }
-    this.setState({
-      skuItems: changeCaseKeys(skuItems, 'camelize', 10),
-    });
+    // this.setState({
+    //   skuItems: changeCaseKeys(skuItems, 'camelize', 10),
+    // });
   }
 
   onCancelClick = (e) => {

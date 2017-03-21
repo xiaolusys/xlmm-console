@@ -420,61 +420,61 @@ export class Basic extends Component {
     }),
   })
 
-    generateSkuTable = (skus) => {
-        if (isEmpty(skus)) {
-          return [{
-            color: '统一规格',
+  generateSkuTable = (skus) => {
+      if (isEmpty(skus)) {
+        return [{
+          color: '统一规格',
+          remainNum: 0,
+          cost: 0,
+          stdSalePrice: 0,
+          agentPrice: 0,
+          propertiesName: '',
+          propertiesAlias: '',
+        }];
+      }
+      skus = toArray(skus);
+      const skuItems = [];
+      if (skus.length === 1) {
+        each(skus[0], sku => {
+          const color = this.getSkuByName(sku, '颜色') || '';
+          const size = this.getSkuByName(sku, '尺码') || '';
+          skuItems.push({
+            color: color,
+            size: size,
             remainNum: 0,
             cost: 0,
             stdSalePrice: 0,
             agentPrice: 0,
-            propertiesName: '',
-            propertiesAlias: '',
-          }];
-        }
-        skus = toArray(skus);
-        const skuItems = [];
-        if (skus.length === 1) {
-          each(skus[0], sku => {
-            const color = this.getSkuByName(sku, '颜色') || '';
-            const size = this.getSkuByName(sku, '尺码') || '';
+            propertiesName: size,
+            propertiesAlias: size,
+          });
+        });
+      }
+      if (skus.length === 2) {
+        each(skus[0], skuA => {
+          each(skus[1], skuB => {
+            const color = this.getSkuByName(skuA, '颜色') || this.getSkuByName(skuB, '颜色') || '';
+            const size = this.getSkuByName(skuA, '尺码') || this.getSkuByName(skuB, '尺码') || '';
             skuItems.push({
               color: color,
-              size: size,
               remainNum: 0,
               cost: 0,
               stdSalePrice: 0,
               agentPrice: 0,
+              size: size,
               propertiesName: size,
               propertiesAlias: size,
             });
           });
-        }
-        if (skus.length === 2) {
-          each(skus[0], skuA => {
-            each(skus[1], skuB => {
-              const color = this.getSkuByName(skuA, '颜色') || this.getSkuByName(skuB, '颜色') || '';
-              const size = this.getSkuByName(skuA, '尺码') || this.getSkuByName(skuB, '尺码') || '';
-              skuItems.push({
-                color: color,
-                remainNum: 0,
-                cost: 0,
-                stdSalePrice: 0,
-                agentPrice: 0,
-                size: size,
-                propertiesName: size,
-                propertiesAlias: size,
-              });
-            });
-          });
-        }
-        return sortBy(skuItems, 'color');
+        });
       }
+      return sortBy(skuItems, 'color');
+    }
 
-    isVirtualCoupon = (productType, isBoutique) => (
-      isBoutique && productType.toString() === '1'
-    )
-    columnTitle = (text, type) => {
+  isVirtualCoupon = (productType, isBoutique) => (
+    isBoutique && productType.toString() === '1'
+  )
+  columnTitle = (text, type) => {
     const content = (
       <div className="clearfix">
         <Input type="text" data-type={type} onInput={this.onbatchValueInput} />
