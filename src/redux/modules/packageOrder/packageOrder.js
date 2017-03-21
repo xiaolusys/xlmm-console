@@ -13,7 +13,9 @@ export default createReducer({
 	[`FETCH_${name}_SUCCESS`]:(state, {payload, status}) =>({
 		...state,
 		...status,
-		...payload.data,
+		// count : 777,
+		items:payload.data.results,
+		count:payload.data.count,
 	}),
 	[`FETCH_${name}_FAILURE`]:(state,{payload,status}) =>({
 		...state,
@@ -23,8 +25,8 @@ export default createReducer({
 
 
 export const fetchPacakgeOrder = () =>({
-	//url: `${apisBase.trades}package_order.json`,
-	url: `${apisBase.item}stock_product`,
+	url: `${apisBase.trades}package_order.json`,
+	// url: `${apisBase.item}stock_product`,
 	method:"get",
 	type: `FETCH_${name}`
 });

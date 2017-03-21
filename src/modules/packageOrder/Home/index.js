@@ -46,7 +46,7 @@ class PackageOrders extends Component{
   }
 
   render() {
-	  	console.log(this.props.packageorder)
+	  	console.log(this.props.packageOrders)
 	   return (<div>12313</div>)
 	  }
 }
