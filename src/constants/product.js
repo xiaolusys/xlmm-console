@@ -7,6 +7,10 @@ export const productTypes = {
 		id: '1',
 		lable: '虚拟商品',
 	},
+	2: {
+		id: '2',
+		lable: '包材辅料',
+	},
 };
 
 export const sourceTypes = {
