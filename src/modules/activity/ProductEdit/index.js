@@ -10,7 +10,7 @@ import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { imageUrlPrefixs } from 'constants';
 import { fetchActivityProduct, saveActivityProduct, resetActivityProduct } from 'redux/modules/activity/activityProduct';
-import { fetchModelProductHeadImg } from 'redux/modules/products/modelproduct';
+import { fetchModelProductHeadImg, resetModelProductHeadImg } from 'redux/modules/products/modelProduct';
 
 
 const actionCreators = {
@@ -18,6 +18,7 @@ const actionCreators = {
   saveActivityProduct,
   resetActivityProduct,
   fetchModelProductHeadImg,
+  resetModelProductHeadImg,
   fetchUptoken,
 };
 
@@ -43,6 +44,7 @@ class acpEdit extends Component {
     uptoken: React.PropTypes.object,
     resetActivityProduct: React.PropTypes.func,
     fetchModelProductHeadImg: React.PropTypes.func,
+    resetModelProductHeadImg: React.PropTypes.func,
     activityProduct: React.PropTypes.object,
     modelProduct: React.PropTypes.object,
     form: React.PropTypes.object,
@@ -173,6 +175,7 @@ class acpEdit extends Component {
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const modelid = getFieldValue('modelId');
     if (modelid !== 0) {
+      this.props.resetModelProductHeadImg();
       this.props.fetchModelProductHeadImg(modelid);
     }
   }
