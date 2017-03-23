@@ -7,6 +7,10 @@ const initialState = {
 const name = 'MODEL_PRODUCT';
 
 export default createReducer({
+  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -15,6 +19,22 @@ export default createReducer({
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
+  }),
+  [`FETCH_${name}_HEADIMG_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`FETCH_${name}_HEADIMG_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    ...payload.data[0],
+  }),
+  [`FETCH_${name}_HEADIMG_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
+  [`RESET_${name}_HEADIMG`]: (state, { payload, status }) => ({
+
   }),
   [`CREATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
       ...state,
@@ -38,6 +58,14 @@ export const fetchModelProduct = (id) => ({
   method: 'get',
   type: `FETCH_${name}`,
 });
+
+export const fetchModelProductHeadImg = (id) => ({
+  url: `${apisBase.pay}v1/modelproduct/get_headimg?modelId=${id}`,
+  method: 'get',
+  type: `FETCH_${name}_HEADIMG`,
+});
+
+export const resetModelProductHeadImg = () => ((dispatch) => (dispatch({ type: `RESET_${name}_HEADIMG` })));
 
 export const createModelProduct = (params) => ({
   url: `${apisBase.pay}v1/modelproduct`,
