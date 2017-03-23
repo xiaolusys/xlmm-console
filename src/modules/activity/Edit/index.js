@@ -65,12 +65,19 @@ class Editactivity extends Component {
     oldParamsVisible: true,
     actLinkInputVisible: false,
     scheduleIdInputVisible: false,
-    actLink: null,
+    activityLink: null,
   }
 
   componentWillMount() {
     const { filters } = this.props;
     const { id } = this.props.location.query;
+    this.props.form.setFieldsInitialValue({
+        actImg: [],
+        actLogo: [],
+        maskLink: [],
+        shareIcon: [],
+      });
+
     if (id) {
       this.props.fetchActivity(id);
     }
@@ -85,7 +92,7 @@ class Editactivity extends Component {
       this.context.router.goBack();
     }
 
-    if (activity && activity.success) {
+    if (activity && activity.success && !activity.isLoading && this.props.activity.isLoading) {
       const actImg = [];
       const actLogo = [];
       const maskLink = [];
@@ -94,7 +101,7 @@ class Editactivity extends Component {
       if (activity.actLogo) { actLogo.push({ uid: activity.actLogo, url: activity.actLogo, status: 'done' }); }
       if (activity.maskLink) { maskLink.push({ uid: activity.maskLink, url: activity.maskLink, status: 'done' }); }
       if (activity.shareIcon) { shareIcon.push({ uid: activity.shareIcon, url: activity.shareIcon, status: 'done' }); }
-      this.props.form.setFieldsInitialValue({
+      this.props.form.setFieldsValue({
         id: activity.id,
         title: activity.title,
         actDesc: activity.actDesc,
@@ -116,13 +123,14 @@ class Editactivity extends Component {
         isActive: activity.isActive,
         isActiveDisplay: activity.isActiveDisplay,
       });
-    } else {
-      this.props.form.setFieldsInitialValue({
-        actImg: [],
-        actLogo: [],
-        maskLink: [],
-        shareIcon: [],
-      });
+      if (activity.actType === 'topic') {
+        this.setState({ actLinkInputVisible: false });
+        this.setState({ scheduleIdInputVisible: true });
+      } else {
+        this.setState({ actLinkInputVisible: true });
+        this.setState({ scheduleIdInputVisible: false });
+      }
+      this.setState({ activityLink: activity.actLink });
     }
   }
 
@@ -152,7 +160,7 @@ class Editactivity extends Component {
         maskLink: maskLink,
         actLogo: actLogo,
         shareIcon: shareIcon,
-        actLink: this.state.actLink,
+        actLink: this.state.activityLink,
         scheduleId: params.scheduleId,
         actType: this.props.form.getFieldValue('actType'),
         startTime: moment(params.startTime).format('YYYY-MM-DD HH:mm:ss'),
@@ -258,16 +266,19 @@ class Editactivity extends Component {
       }
     }
   }
+
   setAcLinState = (e) => {
     const self = this;
-    this.setState({ actLink: e.target.value });
+    this.setState({ activityLink: e.target.value });
   }
+
   inputActLink = () => {
     const { actLinkInputVisible } = this.state;
+    const { getFieldProps, getFieldValue } = this.props.form;
     if (actLinkInputVisible) {
       return (
         <Form.Item {...this.formItemLayout()} label="活动链接" >
-          <Input onChange={this.setAcLinState} />
+          <Input {...getFieldProps('actLink')} onChange={this.setAcLinState} value={this.state.activityLink} />
         </Form.Item>
         );
     }
@@ -285,7 +296,9 @@ class Editactivity extends Component {
       return (
         <Form.Item {...this.formItemLayout()} label="专题排期">
           <Select {...getFieldProps('scheduleId')} onSelect={this.onScheduleSelect} value={getFieldValue('scheduleId')}>
+            <If condition={filters.schedules && filters.schedules.length > 0}>
             {filters.schedules.map((item) => (<Select.Option value={item.id}>ID: {item.id} | {item.upshelfTime} - {item.offshelfTime}</Select.Option>))}
+            </If>
           </Select>
         </Form.Item>
         );
@@ -304,6 +317,7 @@ class Editactivity extends Component {
     const { prefixCls, activity, form, filters, uptoken } = this.props;
     const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
     const { activitys } = this.state;
+
     return (
       <div>
         <Row>
@@ -314,7 +328,9 @@ class Editactivity extends Component {
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="活动类型">
                 <Select {...getFieldProps('actType', { rules: [{ required: true }] })} onSelect={this.onActTypeSelect} value={getFieldValue('actType')}>
+                  <If condition={filters.actType && filters.actType.length > 0}>
                   {filters.actType.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                  </If>
                 </Select>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="开始时间">
