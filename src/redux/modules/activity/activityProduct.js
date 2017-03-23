@@ -63,3 +63,4 @@ export const saveActivityProduct = (id, activityID, params) => {
   });
 };
 export const resetActivityProduct = () => ((dispatch) => (dispatch({ type: `RESET_${name}` })));
+

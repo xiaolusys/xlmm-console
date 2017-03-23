@@ -10,12 +10,14 @@ import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { imageUrlPrefixs } from 'constants';
 import { fetchActivityProduct, saveActivityProduct, resetActivityProduct } from 'redux/modules/activity/activityProduct';
+import { fetchModelProductHeadImg } from 'redux/modules/products/modelproduct';
 
 
 const actionCreators = {
   fetchActivityProduct,
   saveActivityProduct,
   resetActivityProduct,
+  fetchModelProductHeadImg,
   fetchUptoken,
 };
 
@@ -24,6 +26,7 @@ const actionCreators = {
     activityProduct: state.activityProduct,
     uptoken: state.uptoken,
     filters: state.activityProductFilters,
+    modelProduct: state.modelProduct,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -39,7 +42,9 @@ class acpEdit extends Component {
     fetchUptoken: React.PropTypes.func,
     uptoken: React.PropTypes.object,
     resetActivityProduct: React.PropTypes.func,
+    fetchModelProductHeadImg: React.PropTypes.func,
     activityProduct: React.PropTypes.object,
+    modelProduct: React.PropTypes.object,
     form: React.PropTypes.object,
   };
 
@@ -69,13 +74,16 @@ class acpEdit extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { activityProduct, filters } = nextProps;
+    const { activityProduct, filters, modelProduct } = nextProps;
     if (activityProduct && !activityProduct.isLoading && activityProduct.success && activityProduct.updated) {
       this.context.router.goBack();
     }
-    if (activityProduct && activityProduct.success) {
+
+    if (activityProduct && activityProduct.success && !activityProduct.isLoading && this.props.activityProduct.isLoading) {
       const productImg = [];
-      if (activityProduct.productImg) { productImg.push({ uid: activityProduct.productImg, url: activityProduct.productImg, status: 'done' }); }
+      if (activityProduct.productImg) {
+        productImg.push({ uid: activityProduct.productImg, url: activityProduct.productImg, status: 'done' });
+      }
       this.props.form.setFieldsInitialValue({
         id: activityProduct.id,
         activity: activityProduct.activity,
@@ -91,6 +99,18 @@ class acpEdit extends Component {
     } else {
       this.props.form.setFieldsInitialValue({
         productImg: [],
+      });
+    }
+
+    if (modelProduct && modelProduct.success && !modelProduct.isLoading && this.props.modelProduct.isLoading) {
+      const productImg = [];
+      if (modelProduct.headImg) {
+        productImg.push({ uid: modelProduct.headImg, url: modelProduct.headImg, status: 'done' });
+      }
+      this.props.form.setFieldsValue({
+        modelId: modelProduct.id,
+        productImg: productImg,
+        productName: modelProduct.name,
       });
     }
   }
@@ -143,6 +163,20 @@ class acpEdit extends Component {
     });
   }
 
+  changeModelid = (e) => {
+    this.props.form.setFieldsValue({
+        modelId: Number(e.target.value),
+      });
+  }
+
+  queryModelid = (e) => {
+    const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
+    const modelid = getFieldValue('modelId');
+    if (modelid !== 0) {
+      this.props.fetchModelProductHeadImg(modelid);
+    }
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 4 },
     wrapperCol: { span: 16 },
@@ -158,7 +192,10 @@ class acpEdit extends Component {
           <Col span={18}>
             <Form horizontal className={`${prefixCls}`}>
               <Form.Item {...this.formItemLayout()} label="款式id">
-                <Input {...getFieldProps('modelId')} value={getFieldValue('modelId')} />
+                <div>
+                  <Input {...getFieldProps('modelId')} onChange={this.changeModelid} value={getFieldValue('modelId')} />
+                  <Button onClick={this.queryModelid} >查询</Button>
+                </div>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="名称">
                 <Input {...getFieldProps('productName')} value={getFieldValue('productName')} />
@@ -168,8 +205,10 @@ class acpEdit extends Component {
                   {...getFieldProps('picType', { rules: [{ required: true }] })}
                   onSelect={this.onPicTypeSelect}
                   value={getFieldValue('picType')}>
+                  <If condition={filters && filters.picType && filters.picType.length > 0}>
                     {filters.picType.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>)
                   )}
+                  </If>
                 </Select>
               </Form.Item>
               <Form.Item {...this.formItemLayout()} label="图片" help="只能上传一张，如果要替换请先删除。" >
