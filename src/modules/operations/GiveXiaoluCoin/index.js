@@ -21,9 +21,9 @@ function callback(key) {
 }
 
 const texts = [
-  '应用场景： 发币到用户小鹿币帐户',
-  '1. 给操作人指定的妈妈发送币',
-  '2. 币金额以人民币元为单位',
+  '应用场景： 发币或扣币到用户小鹿币帐户',
+  '1. 给操作人指定的妈妈发送币或扣币',
+  '2. 币金额以人民币元为单位,如果是扣除账户金额，金额请填写为负数',
   '3. 请点击查看用户后发送红包',
   '4. 提示发送成功后请核对余额是否有添加',
   '5. 备注是添加操作记录到后台',
@@ -69,7 +69,11 @@ class GiftXiaoluCoin extends Component {
 
     if (this.props.xiaoluCoin.isLoading && !xiaoluCoin.isLoading) {
       if (xiaoluCoin.success) {
-          message.success('获取妈妈信息成功');
+          if (results.msg) {
+            message.success(results.msg);
+          } else {
+            message.success('获取妈妈小鹿币信息成功');
+          }
           this.setState({
                          loading: xiaoluCoin.isLoading,
                          iconLoading: xiaoluCoin.isLoading,
@@ -80,7 +84,7 @@ class GiftXiaoluCoin extends Component {
         });
       } else {
           this.setState({ currentMamaId: 1 });
-          message.error('获取妈妈信息失败');
+          message.error('获取妈妈小鹿币信息失败或发送说失败');
       }
     }
 
