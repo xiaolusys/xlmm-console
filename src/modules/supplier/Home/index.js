@@ -74,6 +74,9 @@ class HomeWithForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { suppliers } = nextProps;
+    if (this.state.filters) {
+      this.props.form.setFieldsInitialValue(this.state.filters);
+    }
     if (suppliers.failure) {
       suppliers.error(`请求错误: ${suppliers.error.detail || ''}`);
     }
@@ -130,7 +133,8 @@ class HomeWithForm extends Component {
   }
 
   setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
+    const assignFilters = assign(this.state.filters, filters);
+    this.setState(assignFilters);
   }
 
   getFilters = () => {
@@ -149,7 +153,7 @@ class HomeWithForm extends Component {
   }
 
   getFilterSelectValue = (field) => {
-    const fieldValue = this.state.filters[field];
+    const fieldValue = this.props.form.getFieldValue(field);
     return fieldValue ? { value: fieldValue } : {};
   }
 
