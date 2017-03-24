@@ -269,9 +269,9 @@ class Pictures extends Component {
               required>
               <Uploader
                 {...getFieldProps(key)}
-                fileList={getFieldValue({key})}
+                fileList={getFieldValue({ key })}
                 onRemove={this.onRemove}
-                onChange={this.onDetailFieldChange({key})}
+                onChange={this.onDetailFieldChange({ key })}
                 uptoken={uptoken.token}
                 />
             </Form.Item>
