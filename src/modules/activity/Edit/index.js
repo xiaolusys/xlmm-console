@@ -149,10 +149,10 @@ class Editactivity extends Component {
     let maskLink = '';
     let actLogo = '';
     let shareIcon = '';
-    if (params.actImg.length > 0) { actImg = params.actImg[0].url; }
-    if (params.maskLink.length > 0) { maskLink = params.maskLink[0].url; }
-    if (params.actLogo.length > 0) { actLogo = params.actLogo[0].url; }
-    if (params.shareIcon.length > 0) { shareIcon = params.shareIcon[0].url; }
+    if (params.actImg && params.actImg.length > 0) { actImg = params.actImg[0].url; }
+    if (params.maskLink && params.maskLink.length > 0) { maskLink = params.maskLink[0].url; }
+    if (params.actLogo && params.actLogo.length > 0) { actLogo = params.actLogo[0].url; }
+    if (params.shareIcon && params.shareIcon.length > 0) { shareIcon = params.shareIcon[0].url; }
     this.props.saveActivity(this.props.activity.id, {
         title: params.title,
         actDesc: params.actDesc,
