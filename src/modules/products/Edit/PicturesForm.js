@@ -204,6 +204,7 @@ class Pictures extends Component {
     }
     if (modelProduct.success && !isEmpty(modelProduct.respectiveImgs)) {
       map(modelProduct.respectiveImgs, (value, key) => {
+        console.log("respectiveImgs", value, "key", key);
         if (this.state.respectiveKeys.indexOf(key) < 0) {
           getFieldProps(key);
           setFieldsInitialValue({
@@ -269,9 +270,9 @@ class Pictures extends Component {
               required>
               <Uploader
                 {...getFieldProps(key)}
-                fileList={getFieldValue({ key })}
+                fileList={getFieldValue(key)}
                 onRemove={this.onRemove}
-                onChange={this.onDetailFieldChange({ key })}
+                onChange={this.onDetailFieldChange(key)}
                 uptoken={uptoken.token}
                 />
             </Form.Item>

@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { If } from 'jsx-control-statements';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import moment from 'moment';
-import { Alert, Button, Col, Form, Input, Row, Select, Table, message } from 'antd';
+import { Alert, Button, Col, Form, Input, Row, Select, Table, message, Checkbox } from 'antd';
 import { assign, each, first, groupBy, isNull, isEmpty, includes, map, merge, parseInt, sortBy, union, uniqBy } from 'lodash';
-import { fetchSaleProducts } from 'redux/modules/products/saleProducts.js';
+import { fetchSaleProducts, getSaleProducts } from 'redux/modules/products/saleProducts.js';
 import { saveSaleProduct, updateSaleProduct, fetchSaleProduct, deleteSaleProduct } from 'redux/modules/products/saleProduct.js';
 import { fetchSuppliers } from 'redux/modules/supplyChain/suppliers.js';
 
@@ -18,6 +18,7 @@ const actionCreators = {
   fetchSuppliers,
   fetchSaleProduct,
   deleteSaleProduct,
+  getSaleProducts,
 };
 
 @connect(
@@ -46,6 +47,7 @@ class Supply extends Component {
     fetchSuppliers: React.PropTypes.func,
     fetchSaleProduct: React.PropTypes.func,
     deleteSaleProduct: React.PropTypes.func,
+    getSaleProducts: React.PropTypes.func,
     searchKey: React.PropTypes,
   };
 
@@ -70,16 +72,18 @@ class Supply extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchSaleProducts({ productId: this.props.product.id });
+    // this.props.fetchSaleProducts({ productId: this.props.product.id });
+    this.props.getSaleProducts(this.props.product.id);
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log("nextProps", nextProps);
     const { saleProduct } = nextProps;
     if (saleProduct.updated) {
         message.success('保存成功！');
         saleProduct.updated = false;
         this.setState({ saleProduct: saleProduct });
-        this.props.fetchSaleProducts({ productId: this.props.product.id });
+        this.props.getSaleProducts(this.props.product.id);
         return;
     }
     if (saleProduct.failure) {
@@ -108,6 +112,10 @@ class Supply extends Component {
       title: getFieldValue('title'),
       productLink: getFieldValue('productLink'),
       memo: getFieldValue('memo'),
+      isBatchMgt: getFieldValue('isBatchMgtOn'),
+      isExpireMgt: getFieldValue('isExpireMgtOn'),
+      isVendorMgt: getFieldValue('isVendorMgtOn'),
+      shelfLifeDays: getFieldValue('shelfLifeDays'),
     };
     if (!this.state.saleProductId) {
       params.supplierId = this.state.supplierId;
@@ -118,16 +126,22 @@ class Supply extends Component {
   }
 
   onClickEdit = (e) => {
-    const { spid, supplierid, suppliersku, productlink, producttitle, suppliername } = e.target.dataset;
+    const { spid, supplierid, suppliersku, productlink, producttitle, suppliername, memo, isbatchmgt, isexpiremgt, isvendormgt, shelflifedays} = e.target.dataset;
     const kwargs = {
       supplierId: suppliername,
       supplierSku: suppliersku,
       productLink: productlink,
       title: producttitle,
+      memo: memo,
+      isBatchMgtOn: isbatchmgt=='true',
+      isExpireMgtOn: isexpiremgt=='true',
+      isVendorMgtOn: isvendormgt=='true',
+      shelfLifeDays: shelflifedays,
     };
     this.setState({
       saleProductId: spid,
     });
+    this.props.form.getFieldProps("shelfLifeDays");
     this.props.form.setFieldsValue(kwargs);
   }
 
@@ -199,6 +213,11 @@ class Supply extends Component {
             data-supplierName={record.saleSupplier.supplierName}
             data-supplierSku={record.supplierSku}
             data-productLink={record.productLink}
+            data-memo={record.memo}
+            data-isBatchMgt={record.isBatchMgtOn}
+            data-isExpireMgt={record.isExpireMgtOn}
+            data-isVendorMgt={record.isVendorMgtOn}
+            data-shelfLifeDays={record.shelfLifeDays}
             onClick={this.onClickEdit}>
             编辑
           </a>
@@ -255,6 +274,16 @@ class Supply extends Component {
             <Form.Item {...this.formItemLayout()} label="相关URL">
               <Input type="text" {...getFieldProps('productLink')} value={getFieldValue('productLink')} placeholder="输入厂家订货页面" />
             </Form.Item>
+            <Form.Item {...this.formItemLayout()} label="其他">
+              <Checkbox type="checkbox" {...getFieldProps('isBatchMgtOn')} checked={getFieldValue('isBatchMgtOn')} /><span class="checkbox">启动批次管理</span>
+              <Checkbox type="checkbox" {...getFieldProps('isExpireMgtOn')} checked={getFieldValue('isExpireMgtOn')} /><span class="checkbox">启动保质期管理</span>
+              <Checkbox type="checkbox" {...getFieldProps('isVendorMgtOn')} checked={getFieldValue('isVendorMgtOn')} /><span class="checkbox">启动多供应商管理</span>
+            </Form.Item>
+            <If condition={getFieldValue('isExpireMgtOn')}>
+              <Form.Item {...this.formItemLayout()} label="保质期（天数）">
+                <Input type="text" {...getFieldProps('shelfLifeDays')} value={getFieldValue('shelfLifeDays')} placeholder="填数字" />
+              </Form.Item>
+            </If>
           </Form>
           <Row style={{ marginTop: 10 }}>
             <Col offset="4" span="2">

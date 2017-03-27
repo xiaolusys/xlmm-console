@@ -75,8 +75,15 @@ class Material extends Component {
     ));
     if (modelProduct && isEmpty(this.state.table) && (!isEmpty(modelProduct.extras))) {
       const { extras } = modelProduct;
-      const { newProperties, sources } = extras;
-      const { sourceType } = sources;
+      const { sources } = extras;
+      let newProperties = [];
+      if (extras && extras.newProperties) {
+        newProperties = extras.newProperties;
+      }
+      let sourceType = 1;
+      if (sources && sources.sourceType) {
+        sourceType = sources.sourceType;
+      }
       const kwargs = {
         materials: this.findSelectedMaterials(newProperties, preference),
         isBoutique: modelProduct.isBoutique,

@@ -6,8 +6,7 @@ import { Button, Card, Checkbox, Col, Form, Input, Cascader, Popover, Radio, Tab
 import { assign, map, difference, each, groupBy, includes, isEmpty, isArray, isMatch, last, merge, sortBy, toInteger, toArray, union, unionBy, uniqBy } from 'lodash';
 import { Uploader } from 'components/Uploader';
 import { If } from 'jsx-control-statements';
-import { crawlProduct } from 'redux/modules/supplyChain/product';
-import { createProduct, updateProduct, fetchProduct, resetProduct } from 'redux/modules/products/stockProduct';
+import { createProduct, updateProduct, fetchProduct, resetProduct, crawlProduct } from 'redux/modules/products/stockProduct';
 import { saveSaleProducts, updateSaleProducts, fetchSaleProducts } from 'redux/modules/products/saleProducts';
 import { createModelProduct, updateModelProduct, fetchModelProduct } from 'redux/modules/products/modelProduct';
 import { resetSku } from 'redux/modules/products/sku.js';
@@ -34,6 +33,7 @@ const actionCreators = {
 
 @connect(
   state => ({
+    stockProduct: state.stockProduct,
     product: state.product,
     supplier: state.supplier,
     categories: state.categories,
@@ -56,6 +56,7 @@ export class ProductEdit extends Component {
       material: React.PropTypes.object,
       uptoken: React.PropTypes.object,
       prefixCls: React.PropTypes.object,
+      fetchLink: React.PropTypes.object,
       fetchProduct: React.PropTypes.func,
       crawlProduct: React.PropTypes.func,
       createProduct: React.PropTypes.func,
@@ -85,6 +86,7 @@ export class ProductEdit extends Component {
       activeTabKey: 'basic',
       productId: '',
       productLink: '',
+      fetchLink: '',
       crawlProductModalVisible: true,
       filters: {},
     }
@@ -100,9 +102,14 @@ export class ProductEdit extends Component {
   componentWillReceiveProps(nextProps) {
     const { productId } = this.props.location.query;
     this.setState({ productId: productId });
-    const { product, material } = nextProps;
+    const { product, material, stockProduct } = nextProps;
     if (product.updated || material.updated) {
       message.success('保存成功！');
+    }
+    if (stockProduct.crawl) {
+      this.setState({
+        crawlProductModalVisible: false,
+      });
     }
     if (product.failure) {
       message.error(`请求错误: ${product.error.detail || ''}`);
@@ -118,13 +125,12 @@ export class ProductEdit extends Component {
   }
 
   onCrawlProductClick = (e) => {
-    const { supplierId } = this.props.location.query;
-    const { productLink } = this.state;
-    this.props.crawlProduct(supplierId, productLink);
+    const { fetchLink } = this.state;
+    this.props.crawlProduct(fetchLink);
   }
 
   onProductLinkChange = (e) => {
-    this.setState({ productLink: e.target.value });
+    this.setState({ fetchLink: e.target.value });
   }
 
   toggleCrawlProductModalVisible = (e) => {

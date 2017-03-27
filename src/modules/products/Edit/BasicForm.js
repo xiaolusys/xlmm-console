@@ -9,7 +9,6 @@ import { Uploader } from 'components/Uploader';
 import { If } from 'jsx-control-statements';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
 import { fetchSku, addSku, batchAddSku } from 'redux/modules/products/sku';
-import { crawlProduct } from 'redux/modules/supplyChain/product';
 import { createProduct, updateProduct, fetchProduct } from 'redux/modules/products/stockProduct';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
@@ -36,6 +35,7 @@ const actionCreators = {
     uptoken: state.uptoken,
     categories: state.categories,
     productType: state.productType,
+    stockProduct: state.stockProduct,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -76,7 +76,7 @@ export class Basic extends Component {
 
     state = {
         skus: {},
-        productType: 0,
+        productType: '0',
         skuPropsUpdated: false,
     }
 
@@ -86,23 +86,39 @@ export class Basic extends Component {
     }
 
   componentWillReceiveProps(nextProps) {
-      const { product, sku } = nextProps;
+      const { product, sku, stockProduct } = nextProps;
       const { getFieldProps } = this.props.form;
       getFieldProps('skus-0');
       getFieldProps('skus-1');
       getFieldProps('skus-2');
-      if (product.success && !product.update) {
+      if (stockProduct && stockProduct.crawl) {
         this.props.form.setFieldsInitialValue({
           fileList: [{
-            uid: product.picPath,
-            url: product.picPath,
-            name: product.name,
+            uid: stockProduct.picUrl,
+            url: stockProduct.picUrl,
+            name: stockProduct.picUrl,
             status: 'done',
           }],
-          picPath: product.picPath,
+          refLink: stockProduct.productLink,
+          name: stockProduct.title,
+        });
+        return;
+      }
+      if (product.id && product.success && !product.update && !stockProduct.crawl) {
+        if (product.picPath) {
+          this.props.form.setFieldsInitialValue({
+            fileList: [{
+              uid: product.picPath,
+              url: product.picPath,
+              name: product.picPath,
+              thumbUrl: product.picPath,
+              status: 'done',
+            }],
+          });
+        }
+        this.props.form.setFieldsInitialValue({
           refLink: product.refLink,
           name: product.name,
-          supplierSku: product.name,
           memo: product.memo,
           productType: product.type,
         });
@@ -112,21 +128,26 @@ export class Basic extends Component {
         this.props.fetchSku(saleCategory.id);
         this.state.skuPropsUpdated = true;
       }
-      if (product.success && (sku.success || !product.id) && !this.state.firstLoadUpdate) {
+      if (product.id && product.success && (sku.success || !product.id) && !stockProduct.crawl && !this.state.firstLoadUpdate) {
         const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
         const skuItems = this.findSkuItems(product.skuExtras, sku);
         const categoryComb = [];
         each(product.saleCategory.cid.split('-'), (c) => {
           categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
         });
+        if (product.picPath) {
+          this.props.form.setFieldsInitialValue({
+            fileList: [{
+              uid: product.picPath,
+              url: product.picPath,
+              name: product.name,
+              status: 'done',
+              thumbUrl: product.picPath,
+            }],
+          });
+        }
         this.props.form.setFieldsInitialValue({
           saleCategory: categoryComb,
-          fileList: [{
-            uid: product.picPath,
-            url: product.picPath,
-            name: product.name,
-            status: 'done',
-          }],
           skuItems: skuItems,
           ...selected,
         });
@@ -136,6 +157,7 @@ export class Basic extends Component {
           productType: product.type,
         });
       }
+
       if (product.updated) {
         message.success('保存成功！');
         product.updated = false;
@@ -561,7 +583,6 @@ export class Basic extends Component {
     };
   }
 
-
     render() {
       const { product, categories, supplier, sku, uptoken } = this.props;
       // const { prefixCls, product, supplier, categories, location, uptoken, material } = this.props;
@@ -570,15 +591,6 @@ export class Basic extends Component {
       options = replaceAllKeys(options, 'cid', 'value');
       // const { product, categories, supplier, sku, uptoken } = this.props;
       const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-      const crawlProductModalProps = {
-        title: '抓取商品',
-        okText: '抓取商品',
-        cancelText: '手动录入',
-        width: 600,
-        visible: this.state.crawlProductModalVisible,
-        onOk: this.onCrawlProductClick,
-        onCancel: this.toggleCrawlProductModalVisible,
-      };
 
       return (
         <div>

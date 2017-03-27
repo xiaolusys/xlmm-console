@@ -23,15 +23,25 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`GET_${name}_SUCCESS`]: (state, { payload, status }) => ({
+      ...state,
+      ...status,
+      items: payload.data.results,
+  }),
 }, initialState);
 
-export const fetchSaleProducts = (filters) => ({
-  url: `${apisBase.supply}saleproduct`,
+// export const fetchSaleProducts = (filters) => ({
+//   url: `${apisBase.supply}saleproduct`,
+//   method: 'get',
+//   type: `FETCH_${name}`,
+//   params: {
+//     ...filters,
+//   },
+// });
+export const getSaleProducts = (id) => ({
+  url: `${apisBase.item}stock_product/${id}/get_sale_products`,
   method: 'get',
-  type: `FETCH_${name}`,
-  params: {
-    ...filters,
-  },
+  type: `GET_${name}`,
 });
 export const saveSaleProducts = (params) => ({
   url: `${apisBase.supply}saleproduct/new_create`,
@@ -49,3 +59,4 @@ export const updateSaleProducts = (id, params) => ({
     ...params,
   },
 });
+

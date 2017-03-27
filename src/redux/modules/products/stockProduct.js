@@ -27,6 +27,14 @@ export default createReducer({
     ...status,
     updated: true,
   }),
+  [`CRAWL_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    crawl: true,
+    title: payload.data.title,
+    picUrl: payload.data.picUrl,
+    productLink: payload.data.fetchUrl,
+  }),
 }, initialState);
 
 export const createProduct = (params) => ({
@@ -56,3 +64,13 @@ export const fetchProduct = (id) => ({
 export const resetProduct = () => ({
   type: `RESET_${name}`,
 });
+
+export const crawlProduct = (productLink) => ({
+  url: `${apisBase.supply}saleproduct/fetch_taobao_product`,
+  method: 'get',
+  type: `CRAWL_${name}`,
+  params: {
+    fetchUrl: productLink,
+  },
+});
+

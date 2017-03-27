@@ -25,6 +25,7 @@ const actionCreators = {
 @connect(
   state => ({
     sku: state.sku,
+    stockProduct: state.stockProduct,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -71,6 +72,7 @@ class Basic extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log("nextProps", nextProps);
     const { product, sku } = nextProps;
     if (product.updated) {
       this.context.router.goBack();
