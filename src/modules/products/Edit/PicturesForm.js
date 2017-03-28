@@ -204,7 +204,6 @@ class Pictures extends Component {
     }
     if (modelProduct.success && !isEmpty(modelProduct.respectiveImgs)) {
       map(modelProduct.respectiveImgs, (value, key) => {
-        console.log("respectiveImgs", value, "key", key);
         if (this.state.respectiveKeys.indexOf(key) < 0) {
           getFieldProps(key);
           setFieldsInitialValue({

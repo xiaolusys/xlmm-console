@@ -77,7 +77,6 @@ class Supply extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("nextProps", nextProps);
     const { saleProduct } = nextProps;
     if (saleProduct.updated) {
         message.success('保存成功！');
@@ -126,22 +125,22 @@ class Supply extends Component {
   }
 
   onClickEdit = (e) => {
-    const { spid, supplierid, suppliersku, productlink, producttitle, suppliername, memo, isbatchmgt, isexpiremgt, isvendormgt, shelflifedays} = e.target.dataset;
+    const { spid, supplierid, suppliersku, productlink, producttitle, suppliername, memo, isbatchmgt, isexpiremgt, isvendormgt, shelflifedays } = e.target.dataset;
     const kwargs = {
       supplierId: suppliername,
       supplierSku: suppliersku,
       productLink: productlink,
       title: producttitle,
       memo: memo,
-      isBatchMgtOn: isbatchmgt=='true',
-      isExpireMgtOn: isexpiremgt=='true',
-      isVendorMgtOn: isvendormgt=='true',
+      isBatchMgtOn: isbatchmgt === 'true',
+      isExpireMgtOn: isexpiremgt === 'true',
+      isVendorMgtOn: isvendormgt === 'true',
       shelfLifeDays: shelflifedays,
     };
     this.setState({
       saleProductId: spid,
     });
-    this.props.form.getFieldProps("shelfLifeDays");
+    this.props.form.getFieldProps('shelfLifeDays');
     this.props.form.setFieldsValue(kwargs);
   }
 
@@ -275,9 +274,9 @@ class Supply extends Component {
               <Input type="text" {...getFieldProps('productLink')} value={getFieldValue('productLink')} placeholder="输入厂家订货页面" />
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="其他">
-              <Checkbox type="checkbox" {...getFieldProps('isBatchMgtOn')} checked={getFieldValue('isBatchMgtOn')} /><span class="checkbox">启动批次管理</span>
-              <Checkbox type="checkbox" {...getFieldProps('isExpireMgtOn')} checked={getFieldValue('isExpireMgtOn')} /><span class="checkbox">启动保质期管理</span>
-              <Checkbox type="checkbox" {...getFieldProps('isVendorMgtOn')} checked={getFieldValue('isVendorMgtOn')} /><span class="checkbox">启动多供应商管理</span>
+              <Checkbox type="checkbox" {...getFieldProps('isBatchMgtOn')} checked={getFieldValue('isBatchMgtOn')} /><span className="checkbox">启动批次管理</span>
+              <Checkbox type="checkbox" {...getFieldProps('isExpireMgtOn')} checked={getFieldValue('isExpireMgtOn')} /><span className="checkbox">启动保质期管理</span>
+              <Checkbox type="checkbox" {...getFieldProps('isVendorMgtOn')} checked={getFieldValue('isVendorMgtOn')} /><span className="checkbox">启动多供应商管理</span>
             </Form.Item>
             <If condition={getFieldValue('isExpireMgtOn')}>
               <Form.Item {...this.formItemLayout()} label="保质期（天数）">

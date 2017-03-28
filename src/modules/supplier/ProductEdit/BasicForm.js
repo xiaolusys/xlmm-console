@@ -72,7 +72,6 @@ class Basic extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("nextProps", nextProps);
     const { product, sku } = nextProps;
     if (product.updated) {
       this.context.router.goBack();
