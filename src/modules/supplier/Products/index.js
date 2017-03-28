@@ -259,9 +259,9 @@ class ProductsWithForm extends Component {
     width: 150,
     render: (saleSupplier) => (
       <div>
-        <p><span>名称：</span><span>{saleSupplier.supplierName}</span></p>
-        <p><span>状态：</span><span>{saleSupplier.status}</span></p>
-        <p><span>进度：</span><span>{saleSupplier.progress}</span></p>
+        <p><span>名称：</span><span>{saleSupplier ? saleSupplier.supplierName : ''}</span></p>
+        <p><span>状态：</span><span>{saleSupplier ? saleSupplier.status : ''}</span></p>
+        <p><span>进度：</span><span>{saleSupplier ? saleSupplier.progress : ''}</span></p>
       </div>
     ),
   }, {

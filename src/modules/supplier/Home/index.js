@@ -170,9 +170,9 @@ class HomeWithForm extends Component {
       dataIndex: 'supplierName',
       width: 200,
     }, {
-      title: '状态',
-      key: 'status',
-      dataIndex: 'status',
+      title: '供应商编码',
+      key: 'vendorCode',
+      dataIndex: 'vendorCode',
       width: 160,
     }, {
       title: '销售额',

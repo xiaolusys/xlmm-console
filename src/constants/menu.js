@@ -23,20 +23,26 @@ export default [{
       external: false,
     },
     {
-      name: '推广设置',
-      link: '/operations',
-      icon: 'inbox',
-      external: false,
-    },
-    {
-      name: '排期',
+      name: '排期管理',
       link: '/schedule',
       icon: 'calendar',
       external: false,
     },
     {
+      name: '推广操作',
+      link: '/operations',
+      icon: 'inbox',
+      external: false,
+    },
+    {
       name: '微信推广',
       link: '/admin/weixin/',
+      icon: 'star',
+      external: true,
+    },
+    {
+      name: '优惠券',
+      link: '/admin/coupon/',
       icon: 'star',
       external: true,
     },

@@ -175,7 +175,7 @@ class EditWithForm extends Component {
               {filters.categorys.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="平台">
+          <Form.Item {...this.formItemLayout()} label="来源">
             <Select {...getFieldProps('platform', { rules: [{ required: true, message: '请选择供应商所在平台！' }] })} value={getFieldValue('platform')} placeholder="请选择供应商所在平台">
               {filters.platform.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
