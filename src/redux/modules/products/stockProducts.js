@@ -40,3 +40,19 @@ export const deleteProduct = (id) => ({
     dispatch(fetchProducts());
   },
 });
+
+export const getStateFilters = (filterName) => ({
+    type: `GET_${name}`,
+    payload: {
+      filterName: filterName,
+    },
+});
+
+export const setStateFilters = (filterName, filterParams) => ({
+  type: `SET_${name}`,
+  payload: {
+      filterName: filterName,
+      filterParams: filterParams,
+    },
+});
+

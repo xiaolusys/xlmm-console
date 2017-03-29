@@ -4,9 +4,18 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Row, Col, Icon, Input, Select, Menu, Button, DatePicker, Table, Popover, Popconfirm, Form } from 'antd';
 import * as constants from 'constants';
-import * as actionCreators from 'redux/modules/products/stockProducts';
+import { fetchProducts, deleteProduct, getStateFilters, setStateFilters } from 'redux/modules/products/stockProducts';
 import { assign, map } from 'lodash';
 import moment from 'moment';
+
+const propsFiltersName = 'productList';
+
+const actionCreators = {
+  fetchProducts,
+  deleteProduct,
+  getStateFilters,
+  setStateFilters,
+};
 
 @connect(
   state => ({
@@ -19,6 +28,7 @@ import moment from 'moment';
 class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
+    deleteid: React.PropTypes.object,
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     filters: React.PropTypes.object,
@@ -26,6 +36,9 @@ class List extends Component {
     form: React.PropTypes.object,
     fetchProducts: React.PropTypes.func,
     deleteProduct: React.PropTypes.func,
+    getStateFilters: React.PropTypes.func,
+    setStateFilters: React.PropTypes.func,
+
   };
 
   static contextTypes = {
@@ -42,16 +55,26 @@ class List extends Component {
   }
 
   state = {
+    deleteid: '',
     filters: {
       type: 0,
       pageSize: 10,
       page: 1,
+      status: 'normal',
       ordering: '-created',
     },
   }
 
   componentWillMount() {
+    const { filters } = this.state;
+    this.props.setStateFilters(propsFiltersName, filters);
     this.props.fetchProducts(this.state.filters);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.filters) {
+      this.props.form.setFieldsInitialValue(this.state.filters);
+    }
   }
 
   onCreateProductClick = (e) => {
@@ -59,24 +82,42 @@ class List extends Component {
   }
 
   onSearchClick = (e) => {
-    const filters = this.getFilters();
-    filters.name = this.props.form.getFieldValue('name');
+    const filters = this.props.form.getFieldsValue();
     this.setFilters(filters);
-    this.props.fetchProducts(filters);
+    this.props.fetchProducts(this.getFilters());
   }
 
   onDeleteClick = (e) => {
-    const { productid } = e.currentTarget.dataset;
-    this.props.deleteProduct(productid);
+    this.props.deleteProduct(this.state.deleteid);
+  }
+
+  onDeleteIdSet = (e) => {
+    this.setState({ deleteid: e.target.dataset.deleteid });
   }
 
   setFilters = (filters) => {
-    this.setState(assign(this.state.filters, filters));
+    const assignFilters = assign(this.state.filters, filters);
+    this.setState(assignFilters);
   }
 
-  getFilters = () => (this.state.filters)
+  getFilters = () => {
+    const filters = this.state.filters;
+    return {
+      pageSize: filters.pageSize,
+      page: filters.page,
+      ordering: filters.ordering,
+      shelfStatus: filters.shelfStatus || '',
+      saleProduct: filters.saleProduct || '',
+      modelId: filters.modelId || '',
+      outerId: filters.outerId || '',
+      wareBy: filters.wareBy || '',
+      status: filters.status || '',
+      name__contains: filters.name || '',
+    };
+  }
+
   getFilterSelectValue = (field) => {
-    const fieldValue = this.state.filters[field];
+    const fieldValue = this.props.form.getFieldValue(field);
     return fieldValue ? { value: fieldValue } : {};
   }
 
@@ -84,6 +125,7 @@ class List extends Component {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   })
+
   tableProps = () => {
     const self = this;
     const { products } = this.props;
@@ -134,17 +176,40 @@ class List extends Component {
     width: 200,
     render: (title, record) => (<a target="_blank" href={`/admin/items/product/${record.id}/change/`}>{record.name}</a>),
   }, {
+    title: '商品编码',
+    key: 'outerId',
+    dataIndex: 'outerId',
+    width: 100,
+    render: (title, record) => (<a target="_blank" href={`/admin/items/product/${record.id}/change/`}>{record.outerId}</a>),
+  }, {
     title: '价格信息',
-    key: 'cost',
-    dataIndex: 'cost',
-    width: 150,
+    key: 'priceDict',
+    dataIndex: 'priceDict',
+    width: 100,
     render: (text, record) => (
       <div>
-        <p><span>售价：￥</span><span>{record.agentPrice}</span></p>
-        <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
-        <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
+        <p><span>售价：￥</span><span>{record.priceDict.agentPrice}</span></p>
+        <p><span>吊牌价：￥</span><span>{record.priceDict.stdSalePrice}</span></p>
+        <p><span>采购价：￥</span><span>{record.priceDict.stdPurchasePrice}</span></p>
       </div>
     ),
+  }, {
+    title: '库存',
+    key: 'stockDict',
+    dataIndex: 'stockDict',
+    width: 100,
+    render: (text, record) => {
+      let s = '';
+      map(record.stockDict, (v, k) => {
+        if (v > 0) {
+          s = `${s}${k}:${v}\n`;
+        }
+      });
+      return (
+        <div>
+          {s}
+        </div>);
+    },
   }, {
     title: '状态',
     key: 'status',
@@ -152,10 +217,10 @@ class List extends Component {
     width: 60,
   }, {
     title: '类目',
-    key: 'category',
-    dataIndex: 'category',
+    key: 'saleCategory',
+    dataIndex: 'saleCategory',
     width: 100,
-    render: (category) => (<p>{category ? category.name : '-'}</p>),
+    render: (saleCategory) => (<p>{saleCategory ? saleCategory.name : '-'}</p>),
   }, {
     title: '录入日期',
     key: 'created',
@@ -170,14 +235,11 @@ class List extends Component {
     render: (id, record) => (
       <ul style={{ display: 'block' }}>
         <li>
-          <Link to={`/stockproduct/edit?productId=${id}`} >复制</Link>
-        </li>
-        <li>
           <Link to={`/stockproduct/edit?productId=${id}`} >编辑</Link>
         </li>
         <li>
-          <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
-            <a data-id={id} onClick={this.onDeleteClick}>删除</a>
+          <Popconfirm placement="left" title={`确认删除(${record.name})吗？`} onConfirm={this.onDeleteClick} okText="删除" cancelText="取消">
+            <a data-deleteid={record.id} onClick={this.onDeleteIdSet}>删除</a>
           </Popconfirm>
         </li>
       </ul>
@@ -191,20 +253,82 @@ class List extends Component {
       <div>
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
-            <Col sm={6}>
+            <Col sm={3}>
               <Form.Item label="名称" {...this.formItemLayout()} >
-                <Input {...getFieldProps('name')} placeholder="请输入商品名称" {...getFieldValue('name')} labelInValue />
+                <Input {...getFieldProps('name')} placeholder="输入模糊商品名称" {...this.getFilterSelectValue('name')} labelInValue />
+              </Form.Item>
+            </Col>
+            <Col sm={3}>
+              <Form.Item label="编码" {...this.formItemLayout()} >
+                <Input {...getFieldProps('outerId')} placeholder="输入完整商品编码" {...this.getFilterSelectValue('outerId')} labelInValue />
+              </Form.Item>
+            </Col>
+            <Col sm={3}>
+              <Form.Item label="供应商" {...this.formItemLayout()} >
+                <Input {...getFieldProps('supplier')} placeholder="输入模糊供应商名" {...this.getFilterSelectValue('supplier')} labelInValue />
+              </Form.Item>
+            </Col>
+            <Col sm={2}>
+              <Form.Item label="上架" {...this.formItemLayout()} >
+                <Select
+                  {...getFieldProps('shelfStatus')}
+                  {...this.getFilterSelectValue('shelfStatus')}
+                  allowClear>
+                  <Select.Option value="1">已上架</Select.Option>
+                  <Select.Option value="0">未上架</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={2}>
+              <Form.Item label="类型" {...this.formItemLayout()} >
+                <Select
+                  {...getFieldProps('type')}
+                  {...this.getFilterSelectValue('type')}
+                  allowClear>
+                  <Select.Option value="0">普通商品</Select.Option>
+                  <Select.Option value="1">虚拟商品</Select.Option>
+                  <Select.Option value="2">包材辅料</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={2}>
+              <Form.Item label="仓库" {...this.formItemLayout()} >
+                <Select
+                  {...getFieldProps('wareBy')}
+                  {...this.getFilterSelectValue('wareBy')}
+                  allowClear>
+                  <Select.Option value="1">上海仓</Select.Option>
+                  <Select.Option value="2">广州仓</Select.Option>
+                  <Select.Option value="3">公司仓</Select.Option>
+                  <Select.Option value="4">蜂巢苏州仓</Select.Option>
+                  <Select.Option value="5">蜂巢广州仓</Select.Option>
+                  <Select.Option value="9">第三方仓</Select.Option>
+                  <Select.Option value="10">蜂巢十里洋场</Select.Option>
+                </Select>
+              </Form.Item>
+
+            </Col>
+            <Col sm={2}>
+              <Form.Item label="状态" {...this.formItemLayout()} >
+                <Select
+                  {...getFieldProps('status')}
+                  {...this.getFilterSelectValue('status')}
+                  allowClear>
+                  <Select.Option value="normal">使用</Select.Option>
+                  <Select.Option value="remain">待用</Select.Option>
+                  <Select.Option value="delete">作废</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={2}>
+              <Form.Item>
+                <Button {...this.formItemLayout()} type="primary" onClick={this.onSearchClick}>搜索</Button>
               </Form.Item>
             </Col>
             <Col sm={6}>
-              <div>
-                <Button type="primary" onClick={this.onSearchClick}>搜索</Button>
-              </div>
-            </Col>
-            <Col sm={6}>
-              <div className={`${prefixCls}`} >
+              <Form.Item>
                 <Button type="primary" onClick={this.onCreateProductClick}>新建商品</Button>
-              </div>
+              </Form.Item>
             </Col>
           </Row>
         </Form>
