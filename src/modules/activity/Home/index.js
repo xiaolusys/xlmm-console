@@ -89,6 +89,13 @@ class List extends Component {
     this.context.router.push('activity/edit');
   }
 
+  onSearchClick = (e) => {
+    const filters = this.props.form.getFieldsValue();
+    filters.page = 1;
+    this.setFilters(filters);
+    this.props.fetchActivities(this.getFilters());
+  }
+
   onTableChange = (pagination, filters, sorter) => {
     let ordering = this.state.filters.ordering;
     switch (sorter.order) {
@@ -121,12 +128,27 @@ class List extends Component {
     selected.map((item) => (acIds.push(item.id)));
     this.state.acids = acIds;
   }
-  getFilters = () => (this.state.filters)
+
+  getFilters = () => {
+    const filters = this.state.filters;
+    return {
+      pageSize: filters.pageSize,
+      page: filters.page,
+      ordering: filters.ordering,
+      isActive: filters.isActive ? filters.isActive.key : '',
+      actType: filters.actType ? filters.actType.key : '',
+    };
+  }
 
   setFilters = function(filters) {
     assign(this.state.filters, filters);
     this.props.setStateFilters(propsFiltersName, this.state.filters);
     return this.setState(this.state.filters);
+  }
+
+  getFilterSelectValue = (field) => {
+    const fieldValue = this.props.form.getFieldValue(field);
+    return fieldValue ? { value: fieldValue } : {};
   }
 
   setOrderValId = (e) => {
@@ -257,14 +279,32 @@ class List extends Component {
     const { getFieldProps } = this.props.form;
     return (
       <div className={`${prefixCls}`} >
-        <Select onSelect={this.onIsActiveSelect} style={{ width: 120 }} >
-          {filters.isActive.map((item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
-        </Select>
-        <Button type="primary" onClick={this.onCorrelateActivitySchedule}>同步排期</Button>
         <Form horizontal className="ant-advanced-search-form">
+          <Row type="flex" justify="start" align="middle">
+            <Col sm={6}>
+              <Form.Item label="上线类型" {...this.formItemLayout()} >
+                <Select {...getFieldProps('isActive')} {...this.getFilterSelectValue('isActive')} labelInValue allowClear placeholder="请选择上线" notFoundContent="无可选项">
+                  {map(filters.isActive, (item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col sm={6}>
+              <Form.Item label="活动类型" {...this.formItemLayout()} >
+                <Select {...getFieldProps('actType')} {...this.getFilterSelectValue('actType')} labelInValue allowClear placeholder="请选择活动类型" notFoundContent="无可选项">
+                  {map(filters.actType, (item) => (<Select.Option value={item.value}>{item.name}</Select.Option>))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
           <Row type="flex" justify="start" align="middle">
             <Col span={2}>
               <Button type="primary" onClick={this.onCreateActivityClick}>新建活动</Button>
+            </Col>
+            <Col span={2} offset={1}>
+              <Button type="primary" onClick={this.onCorrelateActivitySchedule}>同步排期</Button>
+            </Col>
+            <Col span={2} offset={1}>
+              <Button type="primary" onClick={this.onSearchClick}>搜索</Button>
             </Col>
           </Row>
         </Form>

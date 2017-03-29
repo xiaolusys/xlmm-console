@@ -132,6 +132,9 @@ class Editactivity extends Component {
       }
       this.setState({ activityLink: activity.actLink });
     }
+    if (activity.error) {
+      message.success('操作失败，请检查所有字段是否都填写完整了');
+    }
   }
 
   componentWillUnmount() {
