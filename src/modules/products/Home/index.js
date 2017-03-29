@@ -38,7 +38,6 @@ class List extends Component {
     deleteProduct: React.PropTypes.func,
     getStateFilters: React.PropTypes.func,
     setStateFilters: React.PropTypes.func,
-
   };
 
   static contextTypes = {
@@ -263,11 +262,6 @@ class List extends Component {
                 <Input {...getFieldProps('outerId')} placeholder="输入完整商品编码" {...this.getFilterSelectValue('outerId')} labelInValue />
               </Form.Item>
             </Col>
-            <Col sm={3}>
-              <Form.Item label="供应商" {...this.formItemLayout()} >
-                <Input {...getFieldProps('supplier')} placeholder="输入模糊供应商名" {...this.getFilterSelectValue('supplier')} labelInValue />
-              </Form.Item>
-            </Col>
             <Col sm={2}>
               <Form.Item label="上架" {...this.formItemLayout()} >
                 <Select
@@ -325,13 +319,16 @@ class List extends Component {
                 <Button {...this.formItemLayout()} type="primary" onClick={this.onSearchClick}>搜索</Button>
               </Form.Item>
             </Col>
-            <Col sm={6}>
-              <Form.Item>
-                <Button type="primary" onClick={this.onCreateProductClick}>新建商品</Button>
-              </Form.Item>
-            </Col>
           </Row>
         </Form>
+        <Row>
+          <Col sm={6}>
+            <Button onClick={this.onCreateProductClick}>新建商品</Button>
+          </Col>
+          <Col sm={6}>
+            <a href="/admin/items/skustock/">SKU库存列表</a>
+          </Col>
+        </Row>
         <Table className="margin-top-sm" {...this.tableProps()} columns={this.columns()} />
       </div>
     );
