@@ -56,7 +56,7 @@ class List extends Component {
   state = {
     deleteid: '',
     filters: {
-      type: 0,
+      type: '0',
       pageSize: 10,
       page: 1,
       status: 'normal',
@@ -110,7 +110,8 @@ class List extends Component {
       modelId: filters.modelId || '',
       outerId: filters.outerId || '',
       wareBy: filters.wareBy || '',
-      status: filters.status || '',
+      status: filters.status || 'normal',
+      type: filters.type || '0',
       name__contains: filters.name || '',
     };
   }
@@ -274,18 +275,6 @@ class List extends Component {
               </Form.Item>
             </Col>
             <Col sm={2}>
-              <Form.Item label="类型" {...this.formItemLayout()} >
-                <Select
-                  {...getFieldProps('type')}
-                  {...this.getFilterSelectValue('type')}
-                  allowClear>
-                  <Select.Option value="0">普通商品</Select.Option>
-                  <Select.Option value="1">虚拟商品</Select.Option>
-                  <Select.Option value="2">包材辅料</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col sm={2}>
               <Form.Item label="仓库" {...this.formItemLayout()} >
                 <Select
                   {...getFieldProps('wareBy')}
@@ -300,7 +289,18 @@ class List extends Component {
                   <Select.Option value="10">蜂巢十里洋场</Select.Option>
                 </Select>
               </Form.Item>
-
+            </Col>
+            <Col sm={2}>
+              <Form.Item label="类型" {...this.formItemLayout()} >
+                <Select
+                  {...getFieldProps('type')}
+                  {...this.getFilterSelectValue('type')}
+                  allowClear>
+                  <Select.Option value="0">普通商品</Select.Option>
+                  <Select.Option value="1">虚拟商品</Select.Option>
+                  <Select.Option value="2">包材辅料</Select.Option>
+                </Select>
+              </Form.Item>
             </Col>
             <Col sm={2}>
               <Form.Item label="状态" {...this.formItemLayout()} >
