@@ -24,10 +24,13 @@ export default createReducer({
 },initialState);
 
 
-export const fetchPacakgeOrder = () =>({
+export const fetchPacakgeOrder = (filters) =>({
 	url: `${apisBase.trades}package_order.json`,
 	// url: `${apisBase.item}stock_product`,
 	method:"get",
-	type: `FETCH_${name}`
+	type: `FETCH_${name}`,
+	  params: {
+    		...filters,
+  		},
 });
 

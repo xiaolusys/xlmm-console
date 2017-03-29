@@ -118,6 +118,15 @@ export const updateProduct = (id, params) => ({
   },
 });
 
+export const batchCreateProduct = (params) => ({
+  url: `${apisBase.supply}saleproduct/batch_create`,
+  method: 'post',
+  type: `UPDATE_${name}`,
+  data: {
+    ...params,
+  },
+});
+
 export const resetProduct = () => ({
   type: `RESET_${name}`,
 });

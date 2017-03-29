@@ -3,13 +3,15 @@ import { bindActionCreators } from 'redux';
 import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Select, Tag, Button, DatePicker, Form, Input, message, Table, Popover, Popconfirm } from 'antd';
+import { Icon, Upload, Row, Col, Select, Tag, Button, DatePicker, Form, Input, message, Table, Popover, Popconfirm } from 'antd';
 import Modals from 'modules/Modals';
 import moment from 'moment';
 import stringcase from 'stringcase';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
+import * as xlsx from "xlsx";
 import * as constants from 'constants';
 import { fetchProducts, deleteProduct } from 'redux/modules/supplyChain/products';
+import { saveProduct, updateProduct, batchCreateProduct } from 'redux/modules/supplyChain/product';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 import { getStateFilters, setStateFilters } from 'redux/modules/supplyChain/stateFilters';
 
@@ -21,6 +23,9 @@ const actionCreators = {
   fetchFilters,
   getStateFilters,
   setStateFilters,
+  saveProduct,
+  updateProduct,
+  batchCreateProduct,
 };
 
 @connect(
@@ -39,6 +44,7 @@ class ProductsWithForm extends Component {
     location: React.PropTypes.any,
     fetchFilters: React.PropTypes.func,
     fetchProducts: React.PropTypes.func,
+    batchCreateProduct: React.PropTypes.func,
     deleteProduct: React.PropTypes.func,
     filters: React.PropTypes.object,
     products: React.PropTypes.object,
@@ -126,6 +132,46 @@ class ProductsWithForm extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
+  onHandleExcel = (e)  =>{
+        var files = e.target.files;
+        console.log(e.target.files[0]);
+        var f = e.target.files[0];
+        var reader = new FileReader();
+        var name = f.name;
+        reader.readAsBinaryString(f); 
+        reader.onabort = function(e){
+          console.log("onbort");
+        }
+                reader.onloadstart = function(e){
+          console.log("onloadstart");
+        }
+                reader.onprogress = function(e){
+          console.log("onprogress");
+        }
+                reader.onload = function(e){
+          console.log("onload");
+                    console.log("zheli2");
+          var data = e.target.result;
+          var workbook = xlsx.read(data,{type:"binary"})
+          var sheet_list = workbook.SheetNames;
+          console.log(sheet_list[0]);
+          var sheet1 = workbook.Sheets[sheet_list[0]];
+          xlsx.utils.sheet_to_json(sheet1);
+          console.log(sheet2);
+          console.log(xlsx.utils.sheet_to_json(sheet1));
+          this.props.saveProduct();
+          console.log("finish saveProduct");
+
+        }
+                reader.onloadend = function(e){
+          console.log("onloadend");
+        }
+                  reader.onerror = function(e){
+          console.log("onerror");
+        }
+
+
+  }
   onTableChange = (pagination, filters, sorter) => {
     let ordering = this.state.filters.ordering;
     switch (sorter.order) {
@@ -143,6 +189,77 @@ class ProductsWithForm extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
+  beforeUpload = (file) => {
+       self = this;
+        var f = file;
+        var reader = new FileReader();
+        reader.readAsBinaryString(f); 
+        reader.onabort = function(e)
+        {
+          console.log("onbort");
+        }
+        reader.onloadstart = function(e)
+        {
+          console.log("onloadstart");
+        }
+        reader.onprogress = function(e)
+        {
+          console.log("onprogress");
+        }
+        reader.onload = function(e)
+        {
+          console.log("onload");
+          console.log("zheli");
+          var data = e.target.result;
+          var workbook = xlsx.read(data,{type:"binary"})
+          var sheet_list = workbook.SheetNames;
+          // console.log(sheet_list[0]);
+          var sheet1 = workbook.Sheets[sheet_list[0]];
+          xlsx.utils.sheet_to_json(sheet1);
+          // console.log(sheet1);
+          var data_list = [];
+          sheet1=xlsx.utils.sheet_to_json(sheet1);
+          for(var i=0;i<sheet1.length;i++){
+            // data[i]=i
+            data  = {};
+            data["supplier_name"] = sheet1[i]["供应商名称"];
+            console.log(data["supplier_name"]);
+            data["title"] = sheet1[i]["商品名称"];
+            data["sale_category_name"] = sheet1[i]["商品类型"];
+            data["product_link"] = sheet1[i]["商品链接"];
+            data["memo"] = sheet1[i]["备注"];
+            data["尺码"] = sheet1[i]["尺码"];
+            data["数量"] = sheet1[i]["数量"];
+            data["sale_category_1"] = sheet1[i]["类一"];
+            data["sale_category_2"] = sheet1[i]["类二"];
+            data["sale_category_3"]  = sheet1[i]["类三"];
+            data["规格"] = sheet1[i]["规格"];
+            data["supplier_sku"] = sheet1[i]["货号"];
+            data["source_type"] = sheet1[i]["货物来源"];
+            data["price"] = sheet1[i]["进价"];
+            data["color"] = sheet1[i]["颜色"];
+            data_list.push(data);
+          }
+            console.log(data_list);
+          
+          // console.log(xlsx.utils.sheet_to_json(sheet1));
+
+          self.props.batchCreateProduct({"products_list":data_list});
+
+          console.log("finish deleteProduct");
+        }
+        reader.onloadend = function(e)
+        {
+          console.log("onloadend");
+        }
+        reader.onerror = function(e)
+        {
+          console.log("onerror");
+        }
+         history.go(0) ;
+        return false
+
+  }
   onDeleteConfirm = (e) => {
     const delSaleProductId = this.state.delSaleProductId;
     if (delSaleProductId) {
@@ -321,7 +438,40 @@ class ProductsWithForm extends Component {
       onChange: this.onTableChange,
       loading: products.isLoading,
     };
-  }
+  };
+
+ uploadProps = () => {
+  return {
+  name: 'file',
+  action: '/trades/package_order/push_excel',
+  headers: {
+    authorization: 'authorization-text',
+  },
+}
+
+
+  // onChange(info) {
+  //   console.log(this.props);
+  //   var i;
+  //   console.log(info.file.originFileObj);
+    // var excelParser = require('excel-parser');
+    // const workSheetsFromBuffer = xlsx.parse(info.file);
+    // for(var i=0;i!=info.files.length;i++)
+    // {
+    //   var reader = new FileReader();
+    //   console.log(f);
+    // }
+    // if (info.file.status !== 'uploading') {
+    //   console.log(info.file, info.fileList);
+    // }
+    // if (info.file.status === 'done') {
+    //   message.success(`${info.file.name} file uploaded successfully`);
+    // } else if (info.file.status === 'error') {
+    //   message.error(`${info.file.name} file upload failed.`);
+    // }
+  // },
+};
+
 
   render() {
     const { prefixCls, filters, products } = this.props;
@@ -349,6 +499,11 @@ class ProductsWithForm extends Component {
             <Col span={2}>
               <Button type="primary" onClick={this.onCreateProductClick}>新增商品</Button>
             </Col>
+            <Upload {...this.uploadProps()} beforeUpload={this.beforeUpload}>
+              <Button>
+                <Icon type="upload" /> 货物excel上传
+              </Button>
+            </Upload>
             <Col span={2} offset={20}>
               <Button type="primary" onClick={this.onSubmitClick}>搜索</Button>
             </Col>
