@@ -1,4 +1,4 @@
-from registry.aliyuncs.com/xiaolu-img/busybox:latest
+from node
 run mkdir -p /var/www/console
-add dist /var/www/console
-workdir /var/www
+add . /var/www/deploy/xiaolu/console
+workdir /var/www/deploy/xiaolu/console
