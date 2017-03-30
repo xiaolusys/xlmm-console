@@ -139,46 +139,71 @@ class List extends Component {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
+      width: 50,
     },
     {
       title: '制作人',
       dataIndex: 'auther',
       key: 'auther',
-      width: 100,
+      width: 60,
     },
     {
       title: '标题',
       dataIndex: 'title',
       key: 'title',
+      width: 180,
+    },
+    {
+      title: '内容',
+      dataIndex: 'description',
+      key: 'description',
+      width: 300,
+    },
+    {
+      title: '图片',
+      dataIndex: 'picArry',
+      key: 'picArry',
+      width: 300,
+      render: (picArry, record) => (
+        <div>
+          {picArry.map((pic) => (
+            <Popover placement="right" content={<img src={pic} role="presentation"></img>} trigger="hover">
+              <img style={{ width: '50px', height: '60px' }} src={pic} role="presentation" />
+            </Popover>
+            ))
+          }
+        </div>
+      ),
     },
     {
       title: '类别',
       dataIndex: 'categoryName',
       key: 'categoryName',
+      width: 60,
     },
     {
       title: '开始时间',
       dataIndex: 'startTime',
       key: 'startTime',
+      width: 80,
+      render: (startTIime) => (map((startTIime || '').split('T'), (t) => (<p>{t}</p>))),
     }, {
       title: '轮数',
       dataIndex: 'turnsNum',
       key: 'turnsNum',
+      width: 60,
     },
     {
       title: '推送',
       dataIndex: 'pushStatus',
       key: 'pushStatus',
-    },
-    {
-      title: '款式ID',
-      dataIndex: 'detailModelids',
-      key: 'detailModelids',
+      width: 60,
     },
     {
       title: '操作',
       dataIndex: 'id',
       key: 'modifyID',
+      width: 90,
       render: (id, record) => (
         <span>
           <Link to={`ninepics/edit?id=${id}`} >编辑</Link>

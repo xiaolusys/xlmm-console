@@ -190,22 +190,56 @@ class List extends Component {
       title: '活动ID',
       dataIndex: 'id',
       key: 'id',
+      width: 60,
     }, {
       title: '标题',
       dataIndex: 'title',
       key: 'title',
+      width: 150,
     }, {
       title: '开始时间',
       dataIndex: 'startTime',
       key: 'startTIime',
+      width: 80,
+      render: (startTIime) => (map((startTIime || '').split('T'), (t) => (<p>{t}</p>))),
     }, {
       title: '结束时间',
       dataIndex: 'endTime',
       key: 'endTime',
+      width: 80,
+      render: (endTime) => (map((endTime || '').split('T'), (t) => (<p>{t}</p>))),
+    }, {
+      title: '内容',
+      dataIndex: 'actDesc',
+      key: 'actDesc',
+      width: 300,
+    }, {
+      title: '图片',
+      dataIndex: 'actImg',
+      key: 'actImg',
+      width: 200,
+      render: (actImg, record) => (
+        <div>
+          <Popover placement="right" content={`主页：${record.actLink}`} trigger="hover">
+            <a target="_blank" href={record.actLink}>
+              <img style={{ width: '80px' }} src={record.actImg} role="presentation" />
+            </a>
+          </Popover>
+          <Popover placement="right" content={`分享：${record.shareLink}`} trigger="hover">
+            <img style={{ width: '80px' }} src={record.shareIcon} role="presentation" />
+          </Popover>
+        </div>
+      ),
+    }, {
+      title: '上线',
+      dataIndex: 'isActiveDisplay',
+      key: 'isActiveDisplay',
+      width: 80,
     }, {
       title: '排序值',
       dataIndex: 'orderVal',
       key: 'orderVal',
+      width: 60,
       render: (orderVal, record) => (
         <Input
           style={{ width: 60 }}
@@ -215,22 +249,20 @@ class List extends Component {
           />
         ),
     }, {
-      title: '上线',
-      dataIndex: 'isActiveDisplay',
-      key: 'isActiveDisplay',
-    }, {
       title: '备注',
       dataIndex: 'memoDisplay',
       key: 'memoDisplay',
+      width: 200,
     }, {
       title: '操作',
       dataIndex: 'id',
       key: 'operation',
+      width: 100,
       render: (id) => (
         <span>
           <Link to={`activity/edit?id=${id}`}>编辑</Link>
           <span className="ant-divider"></span>
-          <Link to={`activity/products?id=${id}`}>活动商品</Link>
+          <Link to={`activity/products?id=${id}`}>商品</Link>
         </span>
       ),
     }];
