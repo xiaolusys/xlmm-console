@@ -61,6 +61,7 @@ class List extends Component {
       page: 1,
       status: 'normal',
       ordering: '-created',
+      modelIds: '',
     },
   }
 
@@ -113,6 +114,7 @@ class List extends Component {
       status: filters.status || 'normal',
       type: filters.type || '0',
       name__contains: filters.name || '',
+      model_id__in: filters.modelIds,
     };
   }
 
@@ -261,6 +263,11 @@ class List extends Component {
             <Col sm={3}>
               <Form.Item label="编码" {...this.formItemLayout()} >
                 <Input {...getFieldProps('outerId')} placeholder="输入完整商品编码" {...this.getFilterSelectValue('outerId')} labelInValue />
+              </Form.Item>
+            </Col>
+            <Col sm={3}>
+              <Form.Item label="编码" {...this.formItemLayout()} >
+                <Input {...getFieldProps('modelIds')} placeholder="输入售品ID(多个以,分隔)" {...this.getFilterSelectValue('modelIds')} labelInValue />
               </Form.Item>
             </Col>
             <Col sm={2}>

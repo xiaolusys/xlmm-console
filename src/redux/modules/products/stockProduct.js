@@ -21,6 +21,7 @@ export default createReducer({
     ...state,
     ...status,
     updated: true,
+    created: true,
   }),
   [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,

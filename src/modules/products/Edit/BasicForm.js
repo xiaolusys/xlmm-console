@@ -125,6 +125,9 @@ export class Basic extends Component {
           memo: product.memo,
           productType: product.type,
         });
+        if (product.created){
+          this.props.changeTabProduct('supply');
+        }
       }
       const { saleCategory } = product;
       if (saleCategory && !this.state.skuPropsUpdated) {
@@ -224,7 +227,6 @@ export class Basic extends Component {
           this.props.updateProduct(productId, params);
         } else {
           this.props.createProduct(params);
-          this.props.changeTabProduct('supply');
         }
         this.setState({
           skuItems: changeCaseKeys(skuItems, 'camelize', 10),
