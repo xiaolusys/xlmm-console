@@ -125,7 +125,7 @@ export class Basic extends Component {
           memo: product.memo,
           productType: product.type,
         });
-        if (product.created){
+        if (product.created) {
           this.props.changeTabProduct('supply');
         }
       }
