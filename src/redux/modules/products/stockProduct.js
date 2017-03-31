@@ -73,4 +73,3 @@ export const crawlProduct = (productLink) => ({
     fetchUrl: productLink,
   },
 });
-

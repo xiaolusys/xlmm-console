@@ -25,6 +25,11 @@ export default createReducer({
     ...status,
     updated: true,
   }),
+  [`SETMAIN_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    setMainSaleProduct: true,
+  }),
 }, initialState);
 
 export const fetchSaleProduct = (id) => ({
@@ -55,4 +60,10 @@ export const updateSaleProduct = (id, params) => ({
   data: {
     ...params,
   },
+});
+
+export const setMainSaleProduct = (id) => ({
+  url: `${apisBase.supply}saleproduct/${id}/set_main_sale_product  `,
+  method: 'post',
+  type: 'SETMAIN_${name}',
 });

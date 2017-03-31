@@ -5,10 +5,11 @@ import { connect } from 'react-redux';
 import { If } from 'jsx-control-statements';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import moment from 'moment';
-import { Alert, Button, Col, Form, Input, Row, Select, Table, message, Checkbox } from 'antd';
-import { assign, each, first, groupBy, isNull, isEmpty, includes, map, merge, parseInt, sortBy, union, uniqBy } from 'lodash';
+import { Alert, Button, Col, Form, Input, Row, Select, Table, message, Checkbox, Tag, Popconfirm, AutoComplete } from 'antd';
+import { assign, each, first, groupBy, isNull, isEmpty, includes, map, merge, parseInt, sortBy, union, uniqBy, trim } from 'lodash';
 import { fetchSaleProducts, getSaleProducts } from 'redux/modules/products/saleProducts.js';
-import { saveSaleProduct, updateSaleProduct, fetchSaleProduct, deleteSaleProduct } from 'redux/modules/products/saleProduct.js';
+import { saveSaleProduct, updateSaleProduct, fetchSaleProduct, deleteSaleProduct, setMainSaleProduct } from 'redux/modules/products/saleProduct.js';
+import { fetchProduct } from 'redux/modules/products/stockProduct';
 import { fetchSuppliers } from 'redux/modules/supplyChain/suppliers.js';
 
 const actionCreators = {
@@ -18,11 +19,14 @@ const actionCreators = {
   fetchSuppliers,
   fetchSaleProduct,
   deleteSaleProduct,
+  setMainSaleProduct,
   getSaleProducts,
+  fetchProduct,
 };
 
 @connect(
   state => ({
+    product: state.product,
     saleProducts: state.saleProducts,
     saleProduct: state.saleProduct,
     suppliers: state.suppliers,
@@ -36,6 +40,8 @@ class Supply extends Component {
   static propTypes = {
     form: React.PropTypes.object,
     saleProductId: React.PropTypes.object,
+    dateSource: React.PropTypes.object,
+    nowMainSupplierId: React.PropTypes.string,
     product: React.PropTypes.object,
     saleProduct: React.PropTypes.object,
     suppliers: React.PropTypes.object,
@@ -48,7 +54,8 @@ class Supply extends Component {
     fetchSaleProduct: React.PropTypes.func,
     deleteSaleProduct: React.PropTypes.func,
     getSaleProducts: React.PropTypes.func,
-    searchKey: React.PropTypes,
+    setMainSaleProduct: React.PropTypes.func,
+    fetchProduct: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -61,23 +68,29 @@ class Supply extends Component {
   }
 
   state = {
+    nowMainSpId: '',
     saleProductId: '',
     table: [],
-    searchKey: '',
     supplierId: '',
     suppliers: {
       items: [],
       count: 0,
     },
+    supplierNames: [],
   }
 
   componentWillMount() {
-    // this.props.fetchSaleProducts({ productId: this.props.product.id });
-    this.props.getSaleProducts(this.props.product.id);
+    if (this.props.product.id) {
+      this.props.getSaleProducts(this.props.product.id);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { saleProduct } = nextProps;
+    const { saleProduct, suppliers, product, saleProducts } = nextProps;
+    this.props.form.setFieldsInitialValue({
+      title: this.props.product.name,
+      productLink: this.props.product.refLink,
+    });
     if (saleProduct.updated) {
         message.success('保存成功！');
         saleProduct.updated = false;
@@ -88,17 +101,33 @@ class Supply extends Component {
     if (saleProduct.failure) {
       message.error(`请求错误: ${toErrorMsg(saleProduct.error) || ''}`);
     }
+    if (suppliers) {
+      const supplierNames = [];
+      map(suppliers.items, (v, k) => {
+        supplierNames.push(v.supplierName);
+      });
+      this.setState({ supplierNames: supplierNames });
+    }
+    if (product && saleProducts.initial) {
+      this.props.getSaleProducts(this.props.product.id);
+    }
+  }
+  onSelectSupplier = (value) => {
+    let supplierId;
+    map(this.props.suppliers.items, (v, k) => {
+      if (v.supplierName === value) {
+        supplierId = v.id;
+      }
+    });
+    this.setState({ supplierId: supplierId });
+  }
+  onClickSetSaleProduct = (e) => {
+    this.props.setMainSaleProduct(this.state.nowMainSpId);
   }
 
-  onInput = (e) => {
-    const { value } = e.target;
-    this.setState({ searchKey: value });
+  onClickSetSpId = (e) => {
+    this.setState({ nowMainSpId: e.target.dataset.spid });
   }
-
-  onChangeSupplier = (value) => {
-    this.setState({ supplierId: value });
-  }
-
   onSaveCancel = () => {
     message.success('待做功能');
   }
@@ -149,10 +178,11 @@ class Supply extends Component {
     this.props.deleteSaleProduct(spid);
   }
 
-  search = () => {
-    this.props.fetchSuppliers({ supplierName: this.state.searchKey });
+  handleChange = (e) => {
+    if (e && trim(e) !== '') {
+      this.props.fetchSuppliers({ supplierName: e });
+    }
   }
-
 
   formItemLayout = () => ({
     labelCol: { span: 2 },
@@ -164,7 +194,16 @@ class Supply extends Component {
       key: 'id',
       dataIndex: 'id',
       width: 80,
-      render: (text, record) => (<p>{record.id}</p>),
+      render: (text, record) => {
+        if (record.mainSupplier) {
+          return (
+            <Tag color="red">{record.id}</Tag>
+          );
+        }
+        return (
+          <p>{record.id}</p>
+        );
+      },
     }, {
       title: '商品名称',
       key: 'productTitle',
@@ -201,29 +240,59 @@ class Supply extends Component {
       key: 'operation',
       dataIndex: 'id',
       width: 200,
-      render: (text, record) => (
-        <span>
-          <a
-            key={record.id}
-            data-spid={record.id}
-            data-supplierId={record.saleSupplier.id}
-            data-supplierName={record.saleSupplier.supplierName}
-            data-productTitle={record.title}
-            data-supplierName={record.saleSupplier.supplierName}
-            data-supplierSku={record.supplierSku}
-            data-productLink={record.productLink}
-            data-memo={record.memo}
-            data-isBatchMgt={record.isBatchMgtOn}
-            data-isExpireMgt={record.isExpireMgtOn}
-            data-isVendorMgt={record.isVendorMgtOn}
-            data-shelfLifeDays={record.shelfLifeDays}
-            onClick={this.onClickEdit}>
-            编辑
-          </a>
-          <span className="ant-divider"></span>
-          <a data-spid={record.id} onClick={this.onClickDelete}>删除</a>
-        </span>
-      ),
+      render: (text, record) => {
+        if (record.mainSupplier) {
+          return (
+            <span>
+              <a
+                key={record.id}
+                data-spid={record.id}
+                data-supplierId={record.saleSupplier.id}
+                data-supplierName={record.saleSupplier.supplierName}
+                data-productTitle={record.title}
+                data-supplierName={record.saleSupplier.supplierName}
+                data-supplierSku={record.supplierSku}
+                data-productLink={record.productLink}
+                data-memo={record.memo}
+                data-isBatchMgt={record.isBatchMgtOn}
+                data-isExpireMgt={record.isExpireMgtOn}
+                data-isVendorMgt={record.isVendorMgtOn}
+                data-shelfLifeDays={record.shelfLifeDays}
+                onClick={this.onClickEdit}>
+                编辑
+              </a>
+              <span className="ant-divider"></span>
+              <a data-spid={record.id} onClick={this.onClickDelete}>删除</a>
+            </span>);
+          }
+        return (
+          <span>
+            <Popconfirm placement="left" title={`确认修改(${this.props.product.name})的主供应商吗？此操作会修改商品的草稿态订货单（已审核的不变）`} onConfirm={this.onClickSetSaleProduct} okText="修改" cancelText="取消">
+              <a data-spid={record.id} onClick={this.onClickSetSpId}>设为主供应商</a>
+            </Popconfirm>
+            <span className="ant-divider"></span>
+            <a
+              key={record.id}
+              data-spid={record.id}
+              data-supplierId={record.saleSupplier.id}
+              data-supplierName={record.saleSupplier.supplierName}
+              data-productTitle={record.title}
+              data-supplierName={record.saleSupplier.supplierName}
+              data-supplierSku={record.supplierSku}
+              data-productLink={record.productLink}
+              data-memo={record.memo}
+              data-isBatchMgt={record.isBatchMgtOn}
+              data-isExpireMgt={record.isExpireMgtOn}
+              data-isVendorMgt={record.isVendorMgtOn}
+              data-shelfLifeDays={record.shelfLifeDays}
+              onClick={this.onClickEdit}>
+              编辑
+            </a>
+            <span className="ant-divider"></span>
+            <a data-spid={record.id} onClick={this.onClickDelete}>删除</a>
+          </span>
+        );
+      },
     }])
 
   tableProps = () => {
@@ -246,13 +315,7 @@ class Supply extends Component {
       <div>
         <div>
           <Row style={{ marginTop: 10 }}>
-            <Col offset="2" span="6">
-              <Input type="text" value={getFieldValue('searchKey')} placeholder="请输入供货商名称" {...getFieldProps('searchKey')} onInput={this.onInput} />
-            </Col>
-            <Col span="2">
-              <Button onClick={this.search}>查找</Button>
-            </Col>
-            <Col span="2">
+            <Col offset="10" span="2">
               <a href="/#/supplier/edit">前往供应商新增页</a>
             </Col>
           </Row>
@@ -260,23 +323,21 @@ class Supply extends Component {
         <div>
           <Form>
             <Form.Item {...this.formItemLayout()} label="供应商" required>
-              <Select {...getFieldProps('suppliers')} {...getFieldProps('supplierId')} value={getFieldValue('supplierId')} onSelect={this.onChangeSupplier}>
-                 {map(suppliers.items, (supplier) => (<Select.Option value={supplier.id}>{supplier.supplierName}</Select.Option>))}
-              </Select>
+              <AutoComplete dataSource={this.state.supplierNames} style={{ width: 600, height: 25 }} onChange={this.handleChange} onSelect={this.onSelectSupplier} placeholder="输入供应商名称" />
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="商品名称">
               <Input type="text" {...getFieldProps('title')} value={getFieldValue('title')} placeholder="输供应商那边的叫法" />
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="供应商货号">
-              <Input type="text" {...getFieldProps('supplierSku')} value={getFieldValue('supplierSku')} placeholder="输入厂家SKU编码" />
+              <Input type="text" {...getFieldProps('supplierSku')} value={getFieldValue('supplierSku')} placeholder="输入厂家商品编码" />
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="相关URL">
               <Input type="text" {...getFieldProps('productLink')} value={getFieldValue('productLink')} placeholder="输入厂家订货页面" />
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="其他">
-              <Checkbox type="checkbox" {...getFieldProps('isBatchMgtOn')} checked={getFieldValue('isBatchMgtOn')} /><span className="checkbox">启动批次管理</span>
-              <Checkbox type="checkbox" {...getFieldProps('isExpireMgtOn')} checked={getFieldValue('isExpireMgtOn')} /><span className="checkbox">启动保质期管理</span>
-              <Checkbox type="checkbox" {...getFieldProps('isVendorMgtOn')} checked={getFieldValue('isVendorMgtOn')} /><span className="checkbox">启动多供应商管理</span>
+              <Checkbox {...getFieldProps('isBatchMgtOn')} checked={getFieldValue('isBatchMgtOn')}>启动批次管理</Checkbox>
+              <Checkbox {...getFieldProps('isExpireMgtOn')} checked={getFieldValue('isExpireMgtOn')}>启动保质期管理</Checkbox>
+              <Checkbox {...getFieldProps('isVendorMgtOn')} checked={getFieldValue('isVendorMgtOn')}>启动多供应商管理</Checkbox>
             </Form.Item>
             <If condition={getFieldValue('isExpireMgtOn')}>
               <Form.Item {...this.formItemLayout()} label="保质期（天数）">

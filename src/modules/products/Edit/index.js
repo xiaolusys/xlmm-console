@@ -9,6 +9,7 @@ import { If } from 'jsx-control-statements';
 import { createProduct, updateProduct, fetchProduct, resetProduct, crawlProduct } from 'redux/modules/products/stockProduct';
 import { saveSaleProducts, updateSaleProducts, fetchSaleProducts } from 'redux/modules/products/saleProducts';
 import { createModelProduct, updateModelProduct, fetchModelProduct } from 'redux/modules/products/modelProduct';
+import { changeTabProduct } from 'redux/modules/products/selectTab';
 import { resetSku } from 'redux/modules/products/sku.js';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import { imageUrlPrefixs, productTypes, boutiqueSkuTpl } from 'constants';
@@ -29,10 +30,12 @@ const actionCreators = {
   createModelProduct,
   updateModelProduct,
   resetSku,
+  changeTabProduct,
 };
 
 @connect(
   state => ({
+    selectTab: state.selectTab,
     stockProduct: state.stockProduct,
     product: state.product,
     supplier: state.supplier,
@@ -50,6 +53,7 @@ export class ProductEdit extends Component {
     static propTypes = {
       location: React.PropTypes.any,
       product: React.PropTypes.object,
+      selectTab: React.PropTypes.object,
       supply: React.PropTypes.object,
       supplier: React.PropTypes.object,
       categories: React.PropTypes.object,
@@ -67,6 +71,7 @@ export class ProductEdit extends Component {
       updateSaleProducts: React.PropTypes.func,
       createModelProduct: React.PropTypes.func,
       updateModelProduct: React.PropTypes.func,
+      changeTabProduct: React.PropTypes.func,
     };
 
     static contextTypes = {
@@ -83,6 +88,7 @@ export class ProductEdit extends Component {
     }
 
     state = {
+      selectTab: {},
       activeTabKey: 'basic',
       productId: '',
       productLink: '',
@@ -91,32 +97,29 @@ export class ProductEdit extends Component {
       filters: {},
     }
 
-    componentWillMount() {
-      const { productId, tabKey } = this.props.location.query;
-      if (productId) {
-        this.setState({ activeTabKey: tabKey || 'basic' });
-        this.props.fetchProduct(productId);
-      }
+  componentWillMount() {
+    const { productId, tabKey } = this.props.location.query;
+    if (productId) {
+      this.setState({ activeTabKey: tabKey || 'basic' });
+      this.props.fetchProduct(productId);
     }
+  }
 
   componentWillReceiveProps(nextProps) {
     const { productId } = this.props.location.query;
     this.setState({ productId: productId });
-    const { product, material, stockProduct } = nextProps;
-    if (product.updated || material.updated) {
-      message.success('保存成功！');
-    }
+    const { stockProduct, product, selectTab } = nextProps;
+    const state = {
+      product: product,
+      stockProduct: stockProduct,
+    };
     if (stockProduct.crawl) {
-      this.setState({
-        crawlProductModalVisible: false,
-      });
+      state.crawlProductModalVisible = false;
     }
-    if (product.failure) {
-      message.error(`请求错误: ${product.error.detail || ''}`);
+    if (selectTab.activeTabKey) {
+      state.activeTabKey = selectTab.activeTabKey;
     }
-    if (material.failure) {
-      message.error(`请求错误: ${material.error.detail || ''}`);
-    }
+    this.setState(state);
   }
 
   componentWillUnmount() {
@@ -133,10 +136,12 @@ export class ProductEdit extends Component {
     this.setState({ fetchLink: e.target.value });
   }
 
+  onTabChange = (e) => {
+    this.setState({ activeTabKey: e });
+  }
   toggleCrawlProductModalVisible = (e) => {
     this.setState({ crawlProductModalVisible: !this.state.crawlProductModalVisible });
   }
-
   render() {
       const { prefixCls, product, supplier, categories, location, uptoken, material, supply } = this.props;
       const { productId } = this.props.location.query;
@@ -151,7 +156,7 @@ export class ProductEdit extends Component {
       };
       return (
         <div className={`${prefixCls}`}>
-          <Tabs defaultActiveKey={this.state.activeTabKey} onChange={this.onTabChange}>
+          <Tabs activeKey={this.state.activeTabKey} onChange={this.onTabChange}>
             <Tabs.TabPane tab="基本信息" key="basic">
               <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
             </Tabs.TabPane>

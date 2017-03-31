@@ -4,6 +4,7 @@ import { apisBase, scheduleTypes } from 'constants';
 const initialState = {
   items: [],
   count: 0,
+  initial: true,
 };
 
 
@@ -27,6 +28,7 @@ export default createReducer({
       ...state,
       ...status,
       items: payload.data.results,
+      initial: false,
   }),
 }, initialState);
 

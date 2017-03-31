@@ -10,6 +10,7 @@ import { If } from 'jsx-control-statements';
 import { fetchCategories } from 'redux/modules/supplyChain/categories';
 import { fetchSku, addSku, batchAddSku } from 'redux/modules/products/sku';
 import { createProduct, updateProduct, fetchProduct } from 'redux/modules/products/stockProduct';
+import { changeTabProduct } from 'redux/modules/products/selectTab';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import { imageUrlPrefixs, productTypes, boutiqueSkuTpl } from 'constants';
@@ -24,6 +25,7 @@ const actionCreators = {
   fetchCategories,
   createProduct,
   updateProduct,
+  changeTabProduct,
 };
 
 
@@ -63,6 +65,7 @@ export class Basic extends Component {
         createProduct: React.PropTypes.func,
         updateProduct: React.PropTypes.func,
         fetchUptoken: React.PropTypes.func,
+        changeTabProduct: React.PropTypes.func,
     };
 
     static contextTypes = {
@@ -162,7 +165,6 @@ export class Basic extends Component {
         message.success('保存成功！');
         product.updated = false;
         this.setState({ product: product });
-        return;
       }
       if (product.failure) {
         message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
@@ -222,6 +224,7 @@ export class Basic extends Component {
           this.props.updateProduct(productId, params);
         } else {
           this.props.createProduct(params);
+          this.props.changeTabProduct('supply');
         }
         this.setState({
           skuItems: changeCaseKeys(skuItems, 'camelize', 10),
