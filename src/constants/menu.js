@@ -166,6 +166,12 @@ export default [{
       external: true,
     },
     {
+      name: '用户/销售',
+      link: '/admin/daystats/dailystat/',
+      icon: 'star',
+      external: true,
+    },
+    {
       name: '类目销售',
       link: '/statistics/sales',
       icon: 'pay-circle-o',
