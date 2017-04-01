@@ -266,8 +266,8 @@ class List extends Component {
               </Form.Item>
             </Col>
             <Col sm={3}>
-              <Form.Item label="编码" {...this.formItemLayout()} >
-                <Input {...getFieldProps('modelIds')} placeholder="输入售品ID(多个以,分隔)" {...this.getFilterSelectValue('modelIds')} labelInValue />
+              <Form.Item label="售品ID" {...this.formItemLayout()} >
+                <Input {...getFieldProps('modelIds')} placeholder="输入款式ID(多个以,分隔)" {...this.getFilterSelectValue('modelIds')} labelInValue />
               </Form.Item>
             </Col>
             <Col sm={2}>

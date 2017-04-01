@@ -91,9 +91,10 @@ class Supply extends Component {
       title: this.props.product.name,
       productLink: this.props.product.refLink,
     });
-    if (saleProduct.updated) {
+    if (saleProduct.updated || saleProduct.setMainSaleProduct) {
         message.success('保存成功！');
         saleProduct.updated = false;
+        saleProduct.setMainSaleProduct = false;
         this.setState({ saleProduct: saleProduct });
         this.props.getSaleProducts(this.props.product.id);
         return;

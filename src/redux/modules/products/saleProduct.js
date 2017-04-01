@@ -65,5 +65,5 @@ export const updateSaleProduct = (id, params) => ({
 export const setMainSaleProduct = (id) => ({
   url: `${apisBase.supply}saleproduct/${id}/set_main_sale_product  `,
   method: 'post',
-  type: 'SETMAIN_${name}',
+  type: `SETMAIN_${name}`,
 });
