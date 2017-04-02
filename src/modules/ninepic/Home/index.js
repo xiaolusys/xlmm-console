@@ -166,7 +166,7 @@ class List extends Component {
       width: 300,
       render: (picArry, record) => (
         <div>
-          {picArry.map((pic) => (
+          {map(picArry || [], (pic) => (
             <Popover placement="right" content={<img src={pic} role="presentation"></img>} trigger="hover">
               <img style={{ width: '50px', height: '60px' }} src={pic} role="presentation" />
             </Popover>
