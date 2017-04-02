@@ -246,13 +246,13 @@ class ProductsWithForm extends Component {
           for (let i = 0; i < sheet1.length; i++) {
             // data[i]=i
             data = {};
-            if(sheet1[i]['规格'] == "" && sheet1[i]['尺码'] == "" && sheet1[i]['颜色'] == ""){
-              alert("规格,尺码和颜色都不存在,导入失败");
+            if (sheet1[i]['规格'] === '' && sheet1[i]['尺码'] === '' && sheet1[i]['颜色'] === '') {
+              // alert('规格,尺码和颜色都不存在,导入失败');
               dataList = [];
               break;
             }
-            if(sheet1[i]['规格'] != '' && (sheet1[i]['尺码'] != '' || sheet1[i]['颜色'])){
-              alert("规格不能尺码或颜色同时存在,导入失败");
+            if (sheet1[i]['规格'] !== '' && (sheet1[i]['尺码'] !== '' || sheet1[i]['颜色'])) {
+              // alert('规格不能尺码或颜色同时存在,导入失败');
               dataList = [];
               break;
             }
@@ -263,32 +263,32 @@ class ProductsWithForm extends Component {
             data.sale_category_name = sheet1[i]['商品类型'];
             data.product_link = sheet1[i]['商品链接'];
             data.memo = sheet1[i]['备注'];
-            
             data.数量 = sheet1[i]['数量'];
             data.sale_category_1 = sheet1[i]['类一'];
             data.sale_category_2 = sheet1[i]['类二'];
             data.sale_category_3 = sheet1[i]['类三'];
-
             data.规格 = sheet1[i]['规格'];
             data.remainNum = sheet1[i]['数量'];
             data.cost = sheet1[i]['采购价'];
-            data.stdSalePrice  = sheet1[i]['售价'];
+            data.stdSalePrice = sheet1[i]['售价'];
             data.agentPrice = sheet1[i]['吊牌价'];
             data.supplier_skucode = sheet1[i]['商家编码'];
-
             data.size = sheet1[i]['尺码'];
             data.color = sheet1[i]['颜色'];
-            if(data.规格 != ''){
+            let productSku = {};
+            if (data.规格 !== '') {
+              productSku = {
               properties_name: '经典',
-              propertiesAlias: '',
+              propertiesAlias: ' 321',
               color: '统一规格',
               remainNum: sheet1[i]['预留数'],
               cost: sheet1[i]['采购价'],
               agentPrice: sheet1[i]['吊牌价'],
               stdSalePrice: sheet1[i]['售价'],
               supplierSkucode: sheet1[i]['商家编码'],
-            }else
-            { 
+              };
+            } else {
+              productSku = {
               propertiesAlias: '',
               properties_name: sheet1[i]['尺码'] || '经典',
               color: sheet1[i]['颜色'] || '经典',
@@ -297,6 +297,7 @@ class ProductsWithForm extends Component {
               agentPrice: sheet1[i]['吊牌价'],
               stdSalePrice: sheet1[i]['售价'],
               supplierSkucode: sheet1[i]['商家编码'],
+              };
              }
             data.supplier_sku = sheet1[i]['货号'];
             data.source_type = sheet1[i]['货物来源'];
