@@ -122,11 +122,11 @@ export default [{
       external: true,
     },
     {
-      name:"包裹列表",
-      link:"/packageorder",
-      icon:'star',
-      external:false,
-    }
+       name: '包裹列表',
+       link: '/packageorder',
+       icon: 'star',
+       external: false,
+     },
   ],
 }, {
   name: '采购管理',

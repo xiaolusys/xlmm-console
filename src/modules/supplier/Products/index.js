@@ -8,7 +8,7 @@ import Modals from 'modules/Modals';
 import moment from 'moment';
 import stringcase from 'stringcase';
 import { assign, isEmpty, isNaN, map, noop } from 'lodash';
-import * as xlsx from "xlsx";
+import * as xlsx from 'xlsx';
 import * as constants from 'constants';
 import { fetchProducts, deleteProduct } from 'redux/modules/supplyChain/products';
 import { saveProduct, updateProduct, batchCreateProduct } from 'redux/modules/supplyChain/product';
@@ -89,7 +89,6 @@ class ProductsWithForm extends Component {
     }
     this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
-    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -132,46 +131,42 @@ class ProductsWithForm extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
-  onHandleExcel = (e)  =>{
-        var files = e.target.files;
-        console.log(e.target.files[0]);
-        var f = e.target.files[0];
-        var reader = new FileReader();
-        var name = f.name;
-        reader.readAsBinaryString(f); 
-        reader.onabort = function(e){
-          console.log("onbort");
-        }
-                reader.onloadstart = function(e){
-          console.log("onloadstart");
-        }
-                reader.onprogress = function(e){
-          console.log("onprogress");
-        }
-                reader.onload = function(e){
-          console.log("onload");
-                    console.log("zheli2");
-          var data = e.target.result;
-          var workbook = xlsx.read(data,{type:"binary"})
-          var sheet_list = workbook.SheetNames;
-          console.log(sheet_list[0]);
-          var sheet1 = workbook.Sheets[sheet_list[0]];
-          xlsx.utils.sheet_to_json(sheet1);
-          console.log(sheet2);
-          console.log(xlsx.utils.sheet_to_json(sheet1));
-          this.props.saveProduct();
-          console.log("finish saveProduct");
-
-        }
-                reader.onloadend = function(e){
-          console.log("onloadend");
-        }
-                  reader.onerror = function(e){
-          console.log("onerror");
-        }
-
-
-  }
+  // onHandleExcel = (e) => {
+  //   const files = e.target.files;
+  //   console.log(e.target.files[0]);
+  //   const f = e.target.files[0];
+  //   const reader = new FileReader();
+  //   const name = f.name;
+  //   reader.readAsBinaryString(f);
+  //   reader.onabort = function(re) {
+  //     console.log('onbort');
+  //   };
+  //   reader.onloadstart = function(re) {
+  //     console.log('onloadstart');
+  //   };
+  //   reader.onprogress = function(re) {
+  //     console.log('onprogress');
+  //   };
+  //   reader.onload = function(re) {
+  //     console.log('onload');
+  //     console.log('zheli2');
+  //     const data = e.target.result;
+  //     const workbook = xlsx.read(data, { type: 'binary' });
+  //     const sheetList = workbook.SheetNames;
+  //     console.log(sheetList[0]);
+  //     const sheet1 = workbook.Sheets[sheetList[0]];
+  //     xlsx.utils.sheet_to_json(sheet1);
+  //     console.log(xlsx.utils.sheet_to_json(sheet1));
+  //     this.props.saveProduct();
+  //     console.log('finish saveProduct');
+  //   }
+  //   reader.onloadend = function(e){
+  //     console.log('onloadend');
+  //   }
+  //   reader.onerror = function(e){
+  //     console.log('onerror');
+  //   }
+  // }
   onTableChange = (pagination, filters, sorter) => {
     let ordering = this.state.filters.ordering;
     switch (sorter.order) {
@@ -189,77 +184,6 @@ class ProductsWithForm extends Component {
     this.props.fetchProducts(this.getFilters());
   }
 
-  beforeUpload = (file) => {
-       self = this;
-        var f = file;
-        var reader = new FileReader();
-        reader.readAsBinaryString(f); 
-        reader.onabort = function(e)
-        {
-          console.log("onbort");
-        }
-        reader.onloadstart = function(e)
-        {
-          console.log("onloadstart");
-        }
-        reader.onprogress = function(e)
-        {
-          console.log("onprogress");
-        }
-        reader.onload = function(e)
-        {
-          console.log("onload");
-          console.log("zheli");
-          var data = e.target.result;
-          var workbook = xlsx.read(data,{type:"binary"})
-          var sheet_list = workbook.SheetNames;
-          // console.log(sheet_list[0]);
-          var sheet1 = workbook.Sheets[sheet_list[0]];
-          xlsx.utils.sheet_to_json(sheet1);
-          // console.log(sheet1);
-          var data_list = [];
-          sheet1=xlsx.utils.sheet_to_json(sheet1);
-          for(var i=0;i<sheet1.length;i++){
-            // data[i]=i
-            data  = {};
-            data["supplier_name"] = sheet1[i]["供应商名称"];
-            console.log(data["supplier_name"]);
-            data["title"] = sheet1[i]["商品名称"];
-            data["sale_category_name"] = sheet1[i]["商品类型"];
-            data["product_link"] = sheet1[i]["商品链接"];
-            data["memo"] = sheet1[i]["备注"];
-            data["尺码"] = sheet1[i]["尺码"];
-            data["数量"] = sheet1[i]["数量"];
-            data["sale_category_1"] = sheet1[i]["类一"];
-            data["sale_category_2"] = sheet1[i]["类二"];
-            data["sale_category_3"]  = sheet1[i]["类三"];
-            data["规格"] = sheet1[i]["规格"];
-            data["supplier_sku"] = sheet1[i]["货号"];
-            data["source_type"] = sheet1[i]["货物来源"];
-            data["price"] = sheet1[i]["进价"];
-            data["color"] = sheet1[i]["颜色"];
-            data_list.push(data);
-          }
-            console.log(data_list);
-          
-          // console.log(xlsx.utils.sheet_to_json(sheet1));
-
-          self.props.batchCreateProduct({"products_list":data_list});
-
-          console.log("finish deleteProduct");
-        }
-        reader.onloadend = function(e)
-        {
-          console.log("onloadend");
-        }
-        reader.onerror = function(e)
-        {
-          console.log("onerror");
-        }
-         history.go(0) ;
-        return false
-
-  }
   onDeleteConfirm = (e) => {
     const delSaleProductId = this.state.delSaleProductId;
     if (delSaleProductId) {
@@ -291,6 +215,111 @@ class ProductsWithForm extends Component {
   getFilterSelectValue = (field) => {
     const fieldValue = this.state.filters[field];
     return fieldValue ? { value: fieldValue } : {};
+  }
+
+  beforeUpload = (file) => {
+       const self = this;
+        const f = file;
+        const reader = new FileReader();
+        reader.readAsBinaryString(f);
+        reader.onabort = function(e) {
+          console.log('onbort');
+        };
+        reader.onloadstart = function(e) {
+          console.log('onloadstart');
+        };
+        reader.onprogress = function(e) {
+          console.log('onprogress');
+        };
+        reader.onload = function(e) {
+          console.log('onload');
+          console.log('zheli');
+          let data = e.target.result;
+          const workbook = xlsx.read(data, { type: 'binary' });
+          const sheetList = workbook.SheetNames;
+          // console.log(sheetList[0]);
+          let sheet1 = workbook.Sheets[sheetList[0]];
+          xlsx.utils.sheet_to_json(sheet1);
+          // console.log(sheet1);
+          let dataList = [];
+          sheet1 = xlsx.utils.sheet_to_json(sheet1);
+          for (let i = 0; i < sheet1.length; i++) {
+            // data[i]=i
+            data = {};
+            if(sheet1[i]['规格'] == "" && sheet1[i]['尺码'] == "" && sheet1[i]['颜色'] == ""){
+              alert("规格,尺码和颜色都不存在,导入失败");
+              dataList = [];
+              break;
+            }
+            if(sheet1[i]['规格'] != '' && (sheet1[i]['尺码'] != '' || sheet1[i]['颜色'])){
+              alert("规格不能尺码或颜色同时存在,导入失败");
+              dataList = [];
+              break;
+            }
+
+            data.supplier_name = sheet1[i]['供应商名称'];
+            console.log(data.supplier_name);
+            data.title = sheet1[i]['商品名称'];
+            data.sale_category_name = sheet1[i]['商品类型'];
+            data.product_link = sheet1[i]['商品链接'];
+            data.memo = sheet1[i]['备注'];
+            
+            data.数量 = sheet1[i]['数量'];
+            data.sale_category_1 = sheet1[i]['类一'];
+            data.sale_category_2 = sheet1[i]['类二'];
+            data.sale_category_3 = sheet1[i]['类三'];
+
+            data.规格 = sheet1[i]['规格'];
+            data.remainNum = sheet1[i]['数量'];
+            data.cost = sheet1[i]['采购价'];
+            data.stdSalePrice  = sheet1[i]['售价'];
+            data.agentPrice = sheet1[i]['吊牌价'];
+            data.supplier_skucode = sheet1[i]['商家编码'];
+
+            data.size = sheet1[i]['尺码'];
+            data.color = sheet1[i]['颜色'];
+            if(data.规格 != ''){
+              properties_name: '经典',
+              propertiesAlias: '',
+              color: '统一规格',
+              remainNum: sheet1[i]['预留数'],
+              cost: sheet1[i]['采购价'],
+              agentPrice: sheet1[i]['吊牌价'],
+              stdSalePrice: sheet1[i]['售价'],
+              supplierSkucode: sheet1[i]['商家编码'],
+            }else
+            { 
+              propertiesAlias: '',
+              properties_name: sheet1[i]['尺码'] || '经典',
+              color: sheet1[i]['颜色'] || '经典',
+              remainNum: sheet1[i]['预留数'],
+              cost: sheet1[i]['采购价'],
+              agentPrice: sheet1[i]['吊牌价'],
+              stdSalePrice: sheet1[i]['售价'],
+              supplierSkucode: sheet1[i]['商家编码'],
+             }
+            data.supplier_sku = sheet1[i]['货号'];
+            data.source_type = sheet1[i]['货物来源'];
+            data.price = sheet1[i]['进价'];
+
+            dataList.push(data);
+          }
+            console.log(dataList);
+          // console.log(xlsx.utils.sheet_to_json(sheet1));
+          const productList = { productsList: dataList };
+          self.props.batchCreateProduct(productList);
+
+          console.log('finish deleteProduct');
+        };
+        reader.onloadend = function(e) {
+          console.log('onloadend');
+        };
+        reader.onerror = function(e) {
+          console.log('onerror');
+        };
+         // history.go(0);
+        return false;
+
   }
 
   formItemLayout = () => ({
@@ -440,38 +469,15 @@ class ProductsWithForm extends Component {
     };
   };
 
- uploadProps = () => {
-  return {
-  name: 'file',
-  action: '/trades/package_order/push_excel',
-  headers: {
-    authorization: 'authorization-text',
-  },
-}
-
-
-  // onChange(info) {
-  //   console.log(this.props);
-  //   var i;
-  //   console.log(info.file.originFileObj);
-    // var excelParser = require('excel-parser');
-    // const workSheetsFromBuffer = xlsx.parse(info.file);
-    // for(var i=0;i!=info.files.length;i++)
-    // {
-    //   var reader = new FileReader();
-    //   console.log(f);
-    // }
-    // if (info.file.status !== 'uploading') {
-    //   console.log(info.file, info.fileList);
-    // }
-    // if (info.file.status === 'done') {
-    //   message.success(`${info.file.name} file uploaded successfully`);
-    // } else if (info.file.status === 'error') {
-    //   message.error(`${info.file.name} file upload failed.`);
-    // }
-  // },
-};
-
+  uploadProps = () => {
+    const self = this;
+    return {
+      name: 'file',
+      headers: {
+        authorization: 'authorization-text',
+      },
+    };
+  };
 
   render() {
     const { prefixCls, filters, products } = this.props;

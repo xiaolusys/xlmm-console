@@ -11,7 +11,7 @@ import apppushmsgRoutes from 'modules/apppushmsg/routes';
 import activitiesRoutes from 'modules/activity/routes';
 import operationsRoutes from 'modules/operations/routes';
 import statisticsRoutes from 'modules/statistics/routes';
-import packageorderRoutes2 from 'modules/packageOrder/routes'
+import packageorderRoutes2 from 'modules/packageOrder/routes';
 
 export default (
   <Route path="/" component={App}>
