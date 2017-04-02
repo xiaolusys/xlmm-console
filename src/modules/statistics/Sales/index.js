@@ -166,6 +166,14 @@ class SaleWithForm extends Component {
             sorter: (a, b) => (a.serialData.exchgAmount - b.serialData.exchgAmount),
             render: (data) => ((data * 0.01).toFixed(2)),
           },
+          {
+            title: '销售成本',
+            dataIndex: 'serialData.totalCost',
+            key: 'serialData.totalCost',
+            width: 50,
+            sorter: (a, b) => (a.serialData.totalCost - b.serialData.totalCost),
+            render: (data) => ((data * 0.01).toFixed(2)),
+          },
         ],
       }, {
         title: '精品券(按天)',
@@ -207,13 +215,6 @@ class SaleWithForm extends Component {
             key: 'serialData.modelSaleNum',
             width: 50,
             sorter: (a, b) => (a.serialData.modelSaleNum - b.serialData.modelSaleNum),
-          }, {
-            title: '销售成本',
-            dataIndex: 'serialData.totalCost',
-            key: 'serialData.totalCost',
-            width: 50,
-            sorter: (a, b) => (a.serialData.totalCost - b.serialData.totalCost),
-            render: (data) => ((data * 0.01).toFixed(2)),
           }, {
             title: '退款(货)数',
             dataIndex: 'serialData.modelRefundNum',
