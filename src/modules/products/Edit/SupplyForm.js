@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { connect } from 'react-redux';
-import { If } from 'jsx-control-statements';
+import { If, Else } from 'jsx-control-statements';
 import { replaceAllKeys, toErrorMsg } from 'utils/object';
 import moment from 'moment';
 import { Alert, Button, Col, Form, Input, Row, Select, Table, message, Checkbox, Tag, Popconfirm, AutoComplete } from 'antd';
@@ -68,6 +68,7 @@ class Supply extends Component {
   }
 
   state = {
+    edit: false,
     nowMainSpId: '',
     saleProductId: '',
     table: [],
@@ -95,6 +96,13 @@ class Supply extends Component {
         message.success('保存成功！');
         saleProduct.updated = false;
         saleProduct.setMainSaleProduct = false;
+        this.setState({ saleProduct: saleProduct });
+        this.props.getSaleProducts(this.props.product.id);
+        return;
+    }
+    if (saleProduct.deleteSaleProduct) {
+        message.success('删除成功，不再从此供应商购入此商品！');
+        saleProduct.deleteSaleProduct = false;
         this.setState({ saleProduct: saleProduct });
         this.props.getSaleProducts(this.props.product.id);
         return;
@@ -130,7 +138,15 @@ class Supply extends Component {
     this.setState({ nowMainSpId: e.target.dataset.spid });
   }
   onSaveCancel = () => {
-    message.success('待做功能');
+    const state = {
+      edit: false,
+      nowMainSpId: '',
+      saleProductId: '',
+      table: [],
+      supplierId: '',
+      supplierNames: [],
+    };
+    this.setState(state);
   }
 
   onSaveClick = () => {
@@ -157,7 +173,8 @@ class Supply extends Component {
   onClickEdit = (e) => {
     const { spid, supplierid, suppliersku, productlink, producttitle, suppliername, memo, isbatchmgt, isexpiremgt, isvendormgt, shelflifedays } = e.target.dataset;
     const kwargs = {
-      supplierId: suppliername,
+      supplierId: supplierid,
+      supplierName: suppliername,
       supplierSku: suppliersku,
       productLink: productlink,
       title: producttitle,
@@ -168,7 +185,9 @@ class Supply extends Component {
       shelfLifeDays: shelflifedays,
     };
     this.setState({
+      supplierName: suppliername,
       saleProductId: spid,
+      edit: true,
     });
     this.props.form.getFieldProps('shelfLifeDays');
     this.props.form.setFieldsValue(kwargs);
@@ -315,16 +334,14 @@ class Supply extends Component {
     return (
       <div>
         <div>
-          <Row style={{ marginTop: 10 }}>
-            <Col offset="10" span="2">
-              <a href="/#/supplier/edit">前往供应商新增页</a>
-            </Col>
-          </Row>
-        </div>
-        <div>
           <Form>
             <Form.Item {...this.formItemLayout()} label="供应商" required>
-              <AutoComplete dataSource={this.state.supplierNames} style={{ width: 600, height: 25 }} onChange={this.handleChange} onSelect={this.onSelectSupplier} placeholder="输入供应商名称" />
+              <If condition={!this.state.edit}>
+                <AutoComplete dataSource={this.state.supplierNames} style={{ width: 600, height: 25 }} onChange={this.handleChange} onSelect={this.onSelectSupplier} placeholder="输入供应商名称" />
+              </If>
+              <If condition={this.state.edit}>
+                <p>{this.state.supplierName}</p>
+              </If>
             </Form.Item>
             <Form.Item {...this.formItemLayout()} label="商品名称">
               <Input type="text" {...getFieldProps('title')} value={getFieldValue('title')} placeholder="输供应商那边的叫法" />
@@ -347,10 +364,13 @@ class Supply extends Component {
             </If>
           </Form>
           <Row style={{ marginTop: 10 }}>
-            <Col offset="4" span="2">
+            <Col offset="8" span="4">
+              <a href="/#/supplier/edit">前往供应商新增页</a>
+            </Col>
+            <Col span="2">
               <Button onClick={this.onSaveCancel}>重设</Button>
             </Col>
-            <Col offset="4" span="2">
+            <Col span="2">
               <Button onClick={this.onSaveClick}>确认</Button>
             </Col>
           </Row>
