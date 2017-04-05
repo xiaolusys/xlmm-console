@@ -8,6 +8,7 @@ import operations from './modules/operations';
 import statistics from './modules/statistics';
 import mproducts from './modules/products';
 import packageOrder from './modules/packageOrder';
+import packageSkuItem from './modules/packageSkuItem';
 
 const reducer = combineReducers({
   ...supplyChain,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   ...statistics,
   ...mproducts,
   ...packageOrder,
+  ...packageSkuItem,
 });
 
 export default reducer;

@@ -68,7 +68,7 @@ class List extends Component {
   componentWillMount() {
     const { filters } = this.state;
     this.props.setStateFilters(propsFiltersName, filters);
-    this.props.fetchProducts(this.getFilters())
+    this.props.fetchProducts(this.getFilters());
   }
 
   componentWillReceiveProps(nextProps) {

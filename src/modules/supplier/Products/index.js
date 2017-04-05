@@ -237,74 +237,75 @@ class ProductsWithForm extends Component {
           let data = e.target.result;
           const workbook = xlsx.read(data, { type: 'binary' });
           const sheetList = workbook.SheetNames;
-          // console.log(sheetList[0]);
           let sheet1 = workbook.Sheets[sheetList[0]];
-          xlsx.utils.sheet_to_json(sheet1);
-          // console.log(sheet1);
           let dataList = [];
           sheet1 = xlsx.utils.sheet_to_json(sheet1);
+          console.log(sheet1, 'excel');
           for (let i = 0; i < sheet1.length; i++) {
             // data[i]=i
             data = {};
-            if (sheet1[i]['规格'] === '' && sheet1[i]['尺码'] === '' && sheet1[i]['颜色'] === '') {
+            if (!sheet1[i]['规格'] && !sheet1[i]['尺码'] && !sheet1[i]['颜色']) {
               // alert('规格,尺码和颜色都不存在,导入失败');
               dataList = [];
               break;
             }
-            if (sheet1[i]['规格'] !== '' && (sheet1[i]['尺码'] !== '' || sheet1[i]['颜色'])) {
-              // alert('规格不能尺码或颜色同时存在,导入失败');
+            if (sheet1[i]['规格'] && (sheet1[i]['尺码'] || sheet1[i]['颜色'])) {
+              // alert('规格不能和尺码或颜色同时存在,导入失败');
               dataList = [];
               break;
             }
-
             data.supplier_name = sheet1[i]['供应商名称'];
-            console.log(data.supplier_name);
             data.title = sheet1[i]['商品名称'];
-            data.sale_category_name = sheet1[i]['商品类型'];
             data.product_link = sheet1[i]['商品链接'];
+            data.supplier_sku = sheet1[i]['货号'];
             data.memo = sheet1[i]['备注'];
-            data.数量 = sheet1[i]['数量'];
+            data.source_type = sheet1[i]['货物来源'];
+            data.sale_category_name = sheet1[i]['商品类型'];
             data.sale_category_1 = sheet1[i]['类一'];
             data.sale_category_2 = sheet1[i]['类二'];
             data.sale_category_3 = sheet1[i]['类三'];
             data.规格 = sheet1[i]['规格'];
-            data.remainNum = sheet1[i]['数量'];
+            data.size = sheet1[i]['尺码'];
+            data.color = sheet1[i]['颜色'];
+            let skuExtras = {};
+            if (data.规格) {
+              skuExtras = {
+              properties_name: '经典',
+              propertiesAlias: '',
+              color: '统一规格',
+              };
+            } else {
+              skuExtras = {
+              propertiesAlias: '',
+              properties_name: sheet1[i]['尺码'] || '经典',
+              color: sheet1[i]['颜色'] || '经典',
+              };
+             }
+            data.skuExtras = [];
+            data.skuExtras.push(skuExtras);
+            data.数量 = sheet1[i]['数量'];
+            data.remainNum = sheet1[i]['预留数'];
             data.cost = sheet1[i]['采购价'];
             data.stdSalePrice = sheet1[i]['售价'];
             data.agentPrice = sheet1[i]['吊牌价'];
             data.supplier_skucode = sheet1[i]['商家编码'];
-            data.size = sheet1[i]['尺码'];
-            data.color = sheet1[i]['颜色'];
-            let productSku = {};
-            if (data.规格 !== '') {
-              productSku = {
-              properties_name: '经典',
-              propertiesAlias: ' 321',
-              color: '统一规格',
-              remainNum: sheet1[i]['预留数'],
-              cost: sheet1[i]['采购价'],
-              agentPrice: sheet1[i]['吊牌价'],
-              stdSalePrice: sheet1[i]['售价'],
-              supplierSkucode: sheet1[i]['商家编码'],
-              };
-            } else {
-              productSku = {
-              propertiesAlias: '',
-              properties_name: sheet1[i]['尺码'] || '经典',
-              color: sheet1[i]['颜色'] || '经典',
-              remainNum: sheet1[i]['预留数'],
-              cost: sheet1[i]['采购价'],
-              agentPrice: sheet1[i]['吊牌价'],
-              stdSalePrice: sheet1[i]['售价'],
-              supplierSkucode: sheet1[i]['商家编码'],
-              };
-             }
-            data.supplier_sku = sheet1[i]['货号'];
-            data.source_type = sheet1[i]['货物来源'];
-            data.price = sheet1[i]['进价'];
-
-            dataList.push(data);
+            let sameSku = false;
+            for (let j = 0; j < dataList.length; j++) {
+              if (dataList[j].title === data.title) {
+                console.log('需要合并');
+                console.log(dataList[j].skuExtras);
+                console.log(data.skuExtras);
+                dataList[j].skuExtras = dataList[j].skuExtras.concat(data.skuExtras);
+                console.log(dataList[j].skuExtras);
+                sameSku = true;
+                break;
+              }
+            }
+            if (!sameSku) {
+              dataList.push(data);
+            }
           }
+            console.log('nihao');
             console.log(dataList);
           // console.log(xlsx.utils.sheet_to_json(sheet1));
           const productList = { productsList: dataList };
