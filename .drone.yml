@@ -21,7 +21,7 @@ publish:
 deploy:
   ssh:
     host: 
-      - staging.xiaolumm.com
+      - sale2.xiaolumm.com
     when:
       branch: [staging,master]
     user: root
