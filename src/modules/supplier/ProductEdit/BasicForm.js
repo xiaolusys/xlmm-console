@@ -81,18 +81,22 @@ class Basic extends Component {
       const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
       const skuItems = this.findSkuItems(product.skuExtras, sku);
       const categoryComb = [];
+      const picList = [];
       if (product.saleCategory) {
         each(product.saleCategory.cid.split('-'), (c) => {
           categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
         });
       }
-      this.props.form.setFieldsInitialValue({
-        fileList: [{
+      if (product.picUrl) {
+        picList.push({
           uid: product.picUrl,
           url: product.picUrl,
           name: product.picUrl,
           status: 'done',
-        }],
+        });
+      }
+      this.props.form.setFieldsInitialValue({
+        fileList: picList,
         productLink: product.productLink,
         title: product.title,
         supplierSku: product.supplierSku,
