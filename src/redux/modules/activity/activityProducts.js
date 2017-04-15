@@ -19,6 +19,10 @@ export default createReducer({
     items: payload.data,
     count: payload.data.length,
   }),
+  [`UPDATE_POSITION_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -36,6 +40,18 @@ export const deleteActivityProduct = (id, params) => ({
   method: 'delete',
   type: `DELETE_${name}`,
   data: params,
+  success: (resp, dispatch) => {
+    dispatch(fetchActivityProducts(id));
+  },
+});
+
+export const updateActivityProductPosition = (id, params) => ({
+  url: `${apisBase.promotion}activity/${id}/change_activitygoods_position`,
+  method: 'post',
+  type: `UPDATE_POSITION_${name}`,
+  data: {
+    ...params,
+  },
   success: (resp, dispatch) => {
     dispatch(fetchActivityProducts(id));
   },

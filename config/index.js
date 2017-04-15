@@ -24,4 +24,9 @@ module.exports = {
     apiPort: 8001,
     port: 7070,
   },
+  denghui: {
+    apiHost: '192.168.1.65',
+    apiPort: 8006,
+    port: 7072,
+  },
 };
