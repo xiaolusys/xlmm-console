@@ -201,6 +201,9 @@ class EditWithForm extends Component {
               {district.districts.map((item) => (<Select.Option value={item.name}>{item.name}</Select.Option>))}
             </Select>
           </Form.Item>
+          <Form.Item {...this.formItemLayout()} label="地址">
+            <Input {...getFieldProps('address', { rules: [{ required: true, message: '请输入地址！' }] })} value={getFieldValue('address')} placeholder="请输入地址" />
+          </Form.Item>
           <Form.Item {...this.formItemLayout()} label="仓库">
             <Select {...getFieldProps('wareBy', { rules: [{ required: true, type: 'number', message: '请选择仓库！' }] })} value={getFieldValue('wareBy')} placeholder="请选择仓库">
               {filters.wareBy.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
@@ -210,9 +213,6 @@ class EditWithForm extends Component {
             <Select {...getFieldProps('stockingMode', { rules: [{ required: true, type: 'number', message: '请选择存货模式！' }] })} value={getFieldValue('stockingMode')} placeholder="请选择存货模式">
               {filters.stockingMode.map((item) => (<Select.Option value={item[0]}>{item[1]}</Select.Option>))}
             </Select>
-          </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="地址">
-            <Input {...getFieldProps('address', { rules: [{ required: true, message: '请输入地址！' }] })} value={getFieldValue('address')} placeholder="请输入地址" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="联系人">
             <Input {...getFieldProps('contact', { rules: [{ required: true, message: '请输入联系人！' }] })} value={getFieldValue('contact')} placeholder="请输入联系人" />
