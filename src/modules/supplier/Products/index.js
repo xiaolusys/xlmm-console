@@ -233,14 +233,12 @@ class ProductsWithForm extends Component {
         };
         reader.onload = function(e) {
           console.log('onload');
-          console.log('zheli');
           let data = e.target.result;
           const workbook = xlsx.read(data, { type: 'binary' });
           const sheetList = workbook.SheetNames;
           let sheet1 = workbook.Sheets[sheetList[0]];
           let dataList = [];
           sheet1 = xlsx.utils.sheet_to_json(sheet1);
-          console.log(sheet1, 'excel');
           for (let i = 0; i < sheet1.length; i++) {
             // data[i]=i
             data = {};
@@ -292,11 +290,7 @@ class ProductsWithForm extends Component {
             let sameSku = false;
             for (let j = 0; j < dataList.length; j++) {
               if (dataList[j].title === data.title) {
-                console.log('需要合并');
-                console.log(dataList[j].skuExtras);
-                console.log(data.skuExtras);
                 dataList[j].skuExtras = dataList[j].skuExtras.concat(data.skuExtras);
-                console.log(dataList[j].skuExtras);
                 sameSku = true;
                 break;
               }
@@ -305,13 +299,10 @@ class ProductsWithForm extends Component {
               dataList.push(data);
             }
           }
-            console.log('nihao');
-            console.log(dataList);
           // console.log(xlsx.utils.sheet_to_json(sheet1));
           const productList = { productsList: dataList };
           self.props.batchCreateProduct(productList);
 
-          console.log('finish deleteProduct');
         };
         reader.onloadend = function(e) {
           console.log('onloadend');
