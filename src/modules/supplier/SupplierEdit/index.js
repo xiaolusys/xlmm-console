@@ -201,7 +201,7 @@ class EditWithForm extends Component {
               {district.districts.map((item) => (<Select.Option value={item.name}>{item.name}</Select.Option>))}
             </Select>
           </Form.Item>
-          <Form.Item {...this.formItemLayout()} label="地址">
+          <Form.Item {...this.formItemLayout()} label="详细地址">
             <Input {...getFieldProps('address', { rules: [{ required: true, message: '请输入地址！' }] })} value={getFieldValue('address')} placeholder="请输入地址" />
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="仓库">

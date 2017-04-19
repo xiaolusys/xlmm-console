@@ -662,7 +662,7 @@ class Basic extends Component {
           </Form.Item>
           <Form.Item {...this.formItemLayout()} label="货物来源">
             <Row style={{ marginTop: 16 }}>
-              <Col >
+              <Col span="16">
                 <Radio.Group
                   {...getFieldProps('sourceType')}
                   value={this.state.sourceType}
