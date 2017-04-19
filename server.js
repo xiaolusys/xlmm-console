@@ -33,6 +33,7 @@ app.use('/admin', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/ad
 app.use('/sale', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/sale`)));
 app.use('/coupon', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/coupon`)));
 app.use('/mm', proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/mm`)));
+app.use('/trades',proxy(url.parse(`http://${config.apiHost}:${config.apiPort}/trades`)))
 app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });

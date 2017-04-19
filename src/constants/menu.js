@@ -121,6 +121,18 @@ export default [{
       icon: 'star',
       external: true,
     },
+    {
+       name: '包裹列表',
+       link: '/packageorder',
+       icon: 'star',
+       external: false,
+     },
+    {
+       name: '包裹商品列表',
+       link: '/admin/trades/packageskuitem/',
+       icon: 'star',
+       external: true,
+     },
   ],
 }, {
   name: '采购管理',

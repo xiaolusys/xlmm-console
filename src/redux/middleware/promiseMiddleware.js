@@ -11,6 +11,7 @@ export default (config = {}) => {
     const { dispatch } = ref;
     return next => action => {
       if (action.payload) {
+        // console.log(action.payload);
         if (!isPromise(action.payload) && !isPromise(action.payload.promise)) {
           return next(action);
         }

@@ -46,3 +46,12 @@ export const deleteProduct = (id, filters) => ({
     dispatch(fetchProducts(filters));
   },
 });
+
+export const batchCreateProduct = (params) => ({
+  url: `${apisBase.supply}saleproduct/batch_create`,
+  method: 'post',
+  type: `UPDATE_${name}`,
+  data: {
+    ...params,
+  },
+});
