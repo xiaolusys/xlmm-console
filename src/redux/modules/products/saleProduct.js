@@ -30,6 +30,11 @@ export default createReducer({
     ...status,
     setMainSaleProduct: true,
   }),
+  [`DELETE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    deleteSaleProduct: true,
+  }),
 }, initialState);
 
 export const fetchSaleProduct = (id) => ({

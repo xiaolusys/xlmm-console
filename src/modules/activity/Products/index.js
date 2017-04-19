@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message, Popconfirm } from 'antd';
+import { Row, Col, Icon, Select, Menu, Button, DatePicker, Table, Popover, Form, message, Popconfirm, Input } from 'antd';
 import * as constants from 'constants';
-import { fetchActivityProducts, deleteActivityProduct } from 'redux/modules/activity/activityProducts';
+import { fetchActivityProducts, deleteActivityProduct, updateActivityProductPosition } from 'redux/modules/activity/activityProducts';
 import { assign, isEmpty, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
@@ -15,6 +15,7 @@ const actionCreators = {
   fetchActivitProductFilters,
   fetchActivityProducts,
   deleteActivityProduct,
+  updateActivityProductPosition,
 };
 
 @connect(
@@ -35,6 +36,7 @@ class ActivityProductsList extends Component {
     filters: React.PropTypes.object,
     deleteActivityProduct: React.PropTypes.func,
     activityProducts: React.PropTypes.object,
+    updateActivityProductPosition: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -56,6 +58,7 @@ class ActivityProductsList extends Component {
       page: 1,
       ordering: '-id',
     },
+    distance: 1,
   }
 
   componentWillMount() {
@@ -90,10 +93,53 @@ class ActivityProductsList extends Component {
       this.setState({ deleteid: null });
     }
   }
+
   onDeleteAcProCancel = (e) => {
     this.setState({ deleteid: null });
   }
+  onUpdatePositionClick = (e) => {
+    const { id } = this.props.location.query;
+    const { direction, activityproductid } = e.currentTarget.dataset;
+    const params = { direction: direction, activityProductId: activityproductid, distance: this.state.distance };
+    this.props.updateActivityProductPosition(id, params);
+    console.log(id, direction, activityproductid, this.state.distance);
+  }
+  setDistance = (e) => {
+    console.log(e.target.value);
+    this.setState({ distance: e.target.value });
+  }
+  ajustPositionPopover = (activityProductId, direction) => {
+    const directions = {
+      minus: {
+        icon: 'arrow-up',
+        addonBefore: '向上移动',
+      },
+      plus: {
+        icon: 'arrow-down',
+        addonBefore: '向下移动',
+      },
+    };
+    const buttonProps = {
+      'data-activityProductId': activityProductId,
+      'data-direction': direction,
+      className: 'pull-right',
+      style: { marginTop: 10 },
+      size: 'small',
+      type: 'primary',
+    };
+    const content = (
+      <div className="clearfix" style={{ width: 200 }}>
+        <Input type="number" addonBefore={directions[direction].addonBefore} addonAfter="个位置" defaultValue={1} onChange={this.setDistance} />
+        <Button {...buttonProps} onClick={this.onUpdatePositionClick}>确认</Button>
+      </div>
+    );
 
+    return (
+      <Popover trigger="click" content={content} title="调整位置">
+        <Button size="small" type="primary" shape="circle" icon={directions[direction].icon} />
+      </Popover>
+    );
+  }
   columns = () => {
     const self = this;
     return [{
@@ -127,6 +173,21 @@ class ActivityProductsList extends Component {
       dataIndex: 'locationId',
       key: 'locationId',
     }, {
+      title: '调整位置',
+      dataIndex: 'orderWeight',
+      key: 'orderWeight',
+      render: (orderWeight, record) => (
+        <div style={{ width: 60, textAlign: 'center' }}>
+          <div className="pull-left">
+            {this.ajustPositionPopover(record.id, 'plus')}
+          </div>
+          <div className="pull-right">
+            {this.ajustPositionPopover(record.id, 'minus')}
+          </div>
+        </div>
+      ),
+    },
+     {
       title: '操作',
       dataIndex: 'id',
       key: 'operation',
