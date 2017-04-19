@@ -20,8 +20,8 @@ module.exports = {
     port: 7070,
   },
   yanhuang: {
-    apiHost: '192.168.1.56',
-    apiPort: 8001,
+    apiHost: 'localhost',
+    apiPort: 8000,
     port: 7070,
   },
   denghui: {

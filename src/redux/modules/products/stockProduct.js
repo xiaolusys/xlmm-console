@@ -5,13 +5,14 @@ import { fetchSku } from 'redux/modules/products/sku';
 const initialState = {
 };
 
-const name = 'PRODUCT';
+const name = 'STOCKPRODUCT';
 
 export default createReducer({
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     ...payload.data,
+    firstLoadUpdate: true,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,
@@ -20,13 +21,15 @@ export default createReducer({
   [`CREATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
-    updated: true,
-    created: true,
+    ...payload.data,
+    lastUpdated: true,
+    lastCreated: true,
   }),
   [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-    updated: true,
+      ...state,
+      ...status,
+      ...payload.data,
+      lastUpdated: true,
   }),
   [`CRAWL_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
@@ -35,6 +38,9 @@ export default createReducer({
     title: payload.data.title,
     picUrl: payload.data.picUrl,
     productLink: payload.data.fetchUrl,
+  }),
+  [`RESET_${name}`]: (state, { payload, status }) => ({
+    ...initialState,
   }),
 }, initialState);
 

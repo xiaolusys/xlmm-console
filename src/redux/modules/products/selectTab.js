@@ -7,7 +7,7 @@ const initialState = {
 const name = 'SELECTTAB';
 
 export default createReducer({
-  [`CHANGETAB_${name}_SUCCESS`]: (state, { payload, status }) => {
+  [`CHANGETAB_${name}`]: (state, { payload, status }) => {
     const resp = {
       ...state,
       ...status,

@@ -19,7 +19,7 @@ const actionCreators = {
 @connect(
   state => ({
     modelProduct: state.modelProduct,
-    product: state.product,
+    stockProduct: state.stockProduct,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -30,7 +30,7 @@ class Pictures extends Component {
   static propTypes = {
     form: React.PropTypes.object,
     location: React.PropTypes.object,
-    product: React.PropTypes.object,
+    stockProduct: React.PropTypes.object,
     modelProduct: React.PropTypes.object,
     material: React.PropTypes.object,
     uptoken: React.PropTypes.object,
@@ -54,8 +54,8 @@ class Pictures extends Component {
   }
 
   componentWillMount() {
-    if (this.props.product && this.props.product.modelId && this.props.product.modelId > 0) {
-      this.props.fetchModelProduct(this.props.product.modelId);
+    if (this.props.stockProduct && this.props.stockProduct.modelId && this.props.stockProduct.modelId > 0) {
+      this.props.fetchModelProduct(this.props.stockProduct.modelId);
     }
   }
 
@@ -92,7 +92,7 @@ class Pictures extends Component {
       message.error('请上传详情图');
       return;
     }
-    const { product, modelProduct } = this.props;
+    const { stockProduct, modelProduct } = this.props;
     let mainPic = '';
     let detailFirstImg = '';
     const detailPics = [];
@@ -162,7 +162,7 @@ class Pictures extends Component {
   }
 
   amountProps(nextProps) {
-    const { modelProduct, product } = nextProps;
+    const { modelProduct, stockProduct } = nextProps;
     const { setFieldsInitialValue, getFieldProps, getFieldsValue, setFieldsValue } = this.props.form;
     if (modelProduct.success && !isEmpty(modelProduct.headImgs)) {
       getFieldProps('mainPic');
@@ -234,7 +234,7 @@ class Pictures extends Component {
   })
 
   render() {
-    const { uptoken, product, material, modelProduct } = this.props;
+    const { uptoken, stockProduct, material, modelProduct } = this.props;
     const { getFieldProps, getFieldValue, getFieldsValue } = this.props.form;
     map(modelProduct.respectiveImgs, (value, key) => {
       getFieldProps(key);
@@ -243,7 +243,7 @@ class Pictures extends Component {
       <Form>
         <Form.Item label="备注提醒：">
           <Alert
-            message={product.memo}
+            message={stockProduct.memo}
             type="warning"
             />
         </Form.Item>

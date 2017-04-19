@@ -119,6 +119,9 @@ export class ProductEdit extends Component {
     if (selectTab.activeTabKey) {
       state.activeTabKey = selectTab.activeTabKey;
     }
+    if (stockProduct && stockProduct.id) {
+      state.productId = stockProduct.id;
+    }
     this.setState(state);
   }
 
@@ -144,7 +147,7 @@ export class ProductEdit extends Component {
   }
   render() {
       const { prefixCls, product, supplier, categories, location, uptoken, material, supply } = this.props;
-      const { productId } = this.props.location.query;
+      const { productId } = this.state;
       const crawlProductModalProps = {
         title: '抓取商品',
         okText: '抓取商品',
@@ -160,10 +163,10 @@ export class ProductEdit extends Component {
             <Tabs.TabPane tab="基本信息" key="basic">
               <BasicForm product={product} supplier={supplier} categories={categories} location={location} uptoken={uptoken} />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="供应信息" key="supply" disabled={!productId || !product.success}>
+            <Tabs.TabPane tab="供应信息" key="supply" disabled={!productId}>
               <SupplyForm product={product} supply={supply} location={location} />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="售卖信息" key="material" disabled={!productId || !product.success}>
+            <Tabs.TabPane tab="售卖信息" key="material" disabled={!productId}>
               <MaterialForm product={product} material={material} location={location} />
             </Tabs.TabPane>
             <Tabs.TabPane tab="商品图片" key="images" disabled={!productId || product.modelId === '0'}>

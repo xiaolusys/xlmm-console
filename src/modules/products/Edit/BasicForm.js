@@ -78,9 +78,14 @@ export class Basic extends Component {
     }
 
     state = {
-        skus: {},
-        productType: '0',
-        skuPropsUpdated: false,
+      sku: [],
+      skus: {},
+      productType: '0',
+      skuPropsUpdated: false,
+      categories: [],
+      stockProduct: null,
+      skuItems: [],
+      uptoken: '',
     }
 
     componentWillMount() {
@@ -94,64 +99,41 @@ export class Basic extends Component {
       getFieldProps('skus-0');
       getFieldProps('skus-1');
       getFieldProps('skus-2');
-      if (stockProduct && stockProduct.crawl) {
-        this.props.form.setFieldsInitialValue({
-          fileList: [{
-            uid: stockProduct.picUrl,
-            url: stockProduct.picUrl,
-            name: stockProduct.picUrl,
-            status: 'done',
-          }],
-          refLink: stockProduct.productLink,
-          name: stockProduct.title,
+      if (stockProduct && stockProduct.firstLoadUpdate) {
+        const { skus } = stockProduct.skuExtras;
+        if (stockProduct.picPath) {
+          this.props.form.setFieldsInitialValue({
+            fileList: [{
+              uid: stockProduct.picPath,
+              url: stockProduct.picPath,
+              name: stockProduct.picPath,
+              status: 'done',
+            }],
+            refLink: stockProduct.refLink,
+            name: stockProduct.name,
+            memo: stockProduct.memo,
+          });
+        }
+        stockProduct.firstLoadUpdate = false;
+        assign(this.state, {
+          skuItems: stockProduct.skuExtras,
+          productType: stockProduct.type,
+          stockProduct: stockProduct,
         });
+        const { saleCategory } = stockProduct;
+        if (saleCategory) {
+          this.props.fetchSku(saleCategory.id);
+        }
         return;
       }
-      if (product.id && product.success && !product.update && !stockProduct.crawl) {
-        if (product.picPath) {
-          this.props.form.setFieldsInitialValue({
-            fileList: [{
-              uid: product.picPath,
-              url: product.picPath,
-              name: product.picPath,
-              thumbUrl: product.picPath,
-              status: 'done',
-            }],
-          });
-        }
-        this.props.form.setFieldsInitialValue({
-          refLink: product.refLink,
-          name: product.name,
-          memo: product.memo,
-          productType: product.type,
-        });
-        if (product.created) {
-          this.props.changeTabProduct('supply');
-        }
-      }
-      const { saleCategory } = product;
-      if (saleCategory && !this.state.skuPropsUpdated) {
-        this.props.fetchSku(saleCategory.id);
-        this.state.skuPropsUpdated = true;
-      }
-      if (product.id && product.success && (sku.success || !product.id) && !stockProduct.crawl && !this.state.firstLoadUpdate) {
-        const selected = this.findAndUnionSkuValues(product.skuExtras, sku);
-        const skuItems = this.findSkuItems(product.skuExtras, sku);
+      if (stockProduct && stockProduct.saleCategory && sku && sku.success && !sku.skuPropsUpdated) {
+        sku.skuPropsUpdated = true;
         const categoryComb = [];
-        each(product.saleCategory.cid.split('-'), (c) => {
+        each(stockProduct.saleCategory.cid.split('-'), (c) => {
           categoryComb.push(categoryComb.length > 0 ? `${categoryComb[categoryComb.length - 1]}-${c}` : c);
         });
-        if (product.picPath) {
-          this.props.form.setFieldsInitialValue({
-            fileList: [{
-              uid: product.picPath,
-              url: product.picPath,
-              name: product.name,
-              status: 'done',
-              thumbUrl: product.picPath,
-            }],
-          });
-        }
+        const selected = this.findAndUnionSkuValues(stockProduct.skuExtras, sku);
+        const skuItems = this.findSkuItems(stockProduct.skuExtras, sku);
         this.props.form.setFieldsInitialValue({
           saleCategory: categoryComb,
           skuItems: skuItems,
@@ -159,18 +141,54 @@ export class Basic extends Component {
         });
         assign(this.state, {
           skus: selected,
-          skuItems: product.skuExtras,
-          productType: product.type,
+          sku: sku,
+        });
+        return;
+      }
+      if (stockProduct && stockProduct.crawl) {
+        this.props.form.setFieldsInitialValue({
+          fileList: [{
+            uid: stockProduct.picPath,
+            url: stockProduct.picPath,
+            name: stockProduct.picPath,
+            status: 'done',
+          }],
+          refLink: stockProduct.productLink,
+          name: stockProduct.title,
+        });
+        return;
+      }
+      if (stockProduct.id && stockProduct.success && !stockProduct.update && !stockProduct.crawl) {
+        if (stockProduct.picPath) {
+          this.props.form.setFieldsInitialValue({
+            fileList: [{
+              uid: stockProduct.picPath,
+              url: stockProduct.picPath,
+              name: stockProduct.picPath,
+              thumbUrl: stockProduct.picPath,
+              status: 'done',
+            }],
+          });
+        }
+        this.props.form.setFieldsInitialValue({
+          refLink: stockProduct.refLink,
+          name: stockProduct.name,
+          memo: stockProduct.memo,
+          productType: stockProduct.type,
         });
       }
-
-      if (product.updated) {
-        message.success('保存成功！');
-        product.updated = false;
-        this.setState({ product: product });
+      if (stockProduct.lastCreated) {
+        this.props.changeTabProduct('supply');
+        stockProduct.lastCreated = false;
+        this.setState({ stockProduct: stockProduct });
       }
-      if (product.failure) {
-        message.error(`请求错误: ${toErrorMsg(product.error) || ''}`);
+      if (stockProduct.lastUpdated) {
+        message.success('保存成功！');
+        stockProduct.lastUpdated = false;
+        this.setState({ stockProduct: stockProduct });
+      }
+      if (stockProduct.failure) {
+        message.error(`请求错误: ${toErrorMsg(stockProduct.error) || ''}`);
       }
       if (sku.failure) {
         message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
@@ -228,9 +246,9 @@ export class Basic extends Component {
         } else {
           this.props.createProduct(params);
         }
-        this.setState({
-          skuItems: changeCaseKeys(skuItems, 'camelize', 10),
-        });
+        // this.setState({
+        //   skuItems: changeCaseKeys(skuItems, 'camelize', 10),
+        // });
       }
 
   onInput = (e) => {
@@ -590,13 +608,10 @@ export class Basic extends Component {
 
     render() {
       const { product, categories, supplier, sku, uptoken } = this.props;
-      // const { prefixCls, product, supplier, categories, location, uptoken, material } = this.props;
       const { productId } = this.props.location.query;
       let options = replaceAllKeys(categories.items, 'name', 'label');
       options = replaceAllKeys(options, 'cid', 'value');
-      // const { product, categories, supplier, sku, uptoken } = this.props;
       const { getFieldProps, getFieldValue, setFieldsValue } = this.props.form;
-
       return (
         <div>
           <Form horizontal>

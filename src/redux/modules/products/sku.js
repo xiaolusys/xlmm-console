@@ -76,6 +76,7 @@ export default createReducer({
     ...state,
     ...status,
     items: Immutable.fromJS(transformSku(payload.data)),
+    fetchSkuSuccess: true,
   }),
   [`FETCH_${name}_FAILURE`]: (state, { payload, status }) => ({
     ...state,

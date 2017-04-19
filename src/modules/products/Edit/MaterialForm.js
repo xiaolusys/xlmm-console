@@ -23,7 +23,7 @@ const actionCreators = {
   state => ({
     preference: state.preference,
     modelProduct: state.modelProduct,
-    product: state.product,
+    stockProduct: state.stockProduct,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -35,7 +35,7 @@ class Material extends Component {
     form: React.PropTypes.object,
     location: React.PropTypes.object,
     preference: React.PropTypes.object,
-    product: React.PropTypes.object,
+    stockProduct: React.PropTypes.object,
     modelProduct: React.PropTypes.object,
     material: React.PropTypes.object,
     isBoutique: React.PropTypes.object,
@@ -62,14 +62,14 @@ class Material extends Component {
   componentWillMount() {
     this.props.fetchPreference();
     this.props.form.getFieldProps('尺码对照参数');
-    if (this.props.product && this.props.product.modelId && this.props.product.modelId > 0) {
-      this.props.fetchModelProduct(this.props.product.modelId);
+    if (this.props.stockProduct && this.props.stockProduct.modelId && this.props.stockProduct.modelId > 0) {
+      this.props.fetchModelProduct(this.props.stockProduct.modelId);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { getFieldValue, getFieldProps } = this.props.form;
-    const { product, preference, modelProduct } = nextProps;
+    const { stockProduct, preference, modelProduct } = nextProps;
     preference.items.map((item) => (
       this.props.form.getFieldProps(item.name)
     ));
@@ -99,18 +99,18 @@ class Material extends Component {
       this.setState({
         modelProduct: modelProduct,
         preference: preference,
-        product: product,
+        stockProduct: stockProduct,
       });
       this.props.form.setFieldsInitialValue(kwargs);
     }
-    if (this.isSkuSizeTableSelected() && isEmpty(this.state.table) && product.success) {
+    if (this.isSkuSizeTableSelected() && isEmpty(this.state.table) && stockProduct.success) {
       this.dataSource(null, null);
     }
     if (modelProduct.updated) {
       message.success('保存成功！');
       modelProduct.updated = false;
       this.setState({ modelProduct: modelProduct });
-      this.props.fetchProduct(product.id);
+      this.props.fetchProduct(stockProduct.id);
       return;
     }
   }
@@ -168,8 +168,11 @@ class Material extends Component {
 
   onSaveClick = () => {
     const { getFieldsValue, getFieldValue } = this.props.form;
-    const { product } = this.props;
-    const { productId } = this.props.location.query;
+    const { stockProduct } = this.props;
+    let { productId } = this.props.location.query;
+    if (!productId) {
+      productId = stockProduct.id;
+    }
     const values = getFieldsValue();
     const newProperties = [];
     delete values.materials;
@@ -206,7 +209,7 @@ class Material extends Component {
       },
     };
     const params = {
-      id: product.modelId,
+      id: stockProduct.modelId,
       productId: productId,
       extras: extras,
       isBoutique: getFieldValue('isBoutique'),
@@ -216,8 +219,8 @@ class Material extends Component {
       isRecommend: getFieldValue('isRecommend'),
       isOutside: getFieldValue('isOutside'),
     };
-    if (product.modelId && product.modelId > 0) {
-      this.props.updateModelProduct(product.modelId, params);
+    if (stockProduct.modelId && stockProduct.modelId > 0) {
+      this.props.updateModelProduct(stockProduct.modelId, params);
       return;
     }
     this.props.createModelProduct(params);
@@ -367,9 +370,9 @@ class Material extends Component {
 
   dataSource = (params, origin) => {
     const { getFieldValue, setFieldsInitialValue } = this.props.form;
-    const { product, material } = this.props;
+    const { stockProduct, material } = this.props;
     let data = this.state.table || [];
-    map(groupBy(product.skuExtras, 'propertiesName'), (value, key) => {
+    map(groupBy(stockProduct.skuExtras, 'propertiesName'), (value, key) => {
       const item = {};
       item['尺码'] = key;
       data.push(item);
@@ -389,7 +392,7 @@ class Material extends Component {
   }
 
   render() {
-    const { preference, product, material, modelProduct } = this.props;
+    const { preference, stockProduct, material, modelProduct } = this.props;
     const { getFieldProps, getFieldValue, getFieldsValue, getFieldDecorator } = this.props.form;
     const showSizeTable = this.isSkuSizeTableSelected();
     return (

@@ -26,7 +26,7 @@ const actionCreators = {
 
 @connect(
   state => ({
-    product: state.product,
+    stockProduct: state.stockProduct,
     saleProducts: state.saleProducts,
     saleProduct: state.saleProduct,
     suppliers: state.suppliers,
@@ -42,7 +42,7 @@ class Supply extends Component {
     saleProductId: React.PropTypes.object,
     dateSource: React.PropTypes.object,
     nowMainSupplierId: React.PropTypes.string,
-    product: React.PropTypes.object,
+    stockProduct: React.PropTypes.object,
     saleProduct: React.PropTypes.object,
     suppliers: React.PropTypes.object,
     saleProducts: React.PropTypes.object,
@@ -81,30 +81,30 @@ class Supply extends Component {
   }
 
   componentWillMount() {
-    if (this.props.product.id) {
-      this.props.getSaleProducts(this.props.product.id);
+    if (this.props.stockProduct.id) {
+      this.props.getSaleProducts(this.props.stockProduct.id);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { saleProduct, suppliers, product, saleProducts } = nextProps;
+    const { saleProduct, suppliers, stockProduct, saleProducts } = nextProps;
     this.props.form.setFieldsInitialValue({
-      title: this.props.product.name,
-      productLink: this.props.product.refLink,
+      title: this.props.stockProduct.name,
+      productLink: this.props.stockProduct.refLink,
     });
     if (saleProduct.updated || saleProduct.setMainSaleProduct) {
         message.success('保存成功！');
         saleProduct.updated = false;
         saleProduct.setMainSaleProduct = false;
         this.setState({ saleProduct: saleProduct });
-        this.props.getSaleProducts(this.props.product.id);
+        this.props.getSaleProducts(this.props.stockProduct.id);
         return;
     }
     if (saleProduct.deleteSaleProduct) {
         message.success('删除成功，不再从此供应商购入此商品！');
         saleProduct.deleteSaleProduct = false;
         this.setState({ saleProduct: saleProduct });
-        this.props.getSaleProducts(this.props.product.id);
+        this.props.getSaleProducts(this.props.stockProduct.id);
         return;
     }
     if (saleProduct.failure) {
@@ -117,8 +117,8 @@ class Supply extends Component {
       });
       this.setState({ supplierNames: supplierNames });
     }
-    if (product && saleProducts.initial) {
-      this.props.getSaleProducts(this.props.product.id);
+    if (stockProduct && saleProducts.initial) {
+      this.props.getSaleProducts(this.props.stockProduct.id);
     }
   }
   onSelectSupplier = (value) => {
@@ -152,7 +152,7 @@ class Supply extends Component {
   onSaveClick = () => {
     const { getFieldValue } = this.props.form;
     const params = {
-      productId: this.props.product.id,
+      productId: this.props.stockProduct.id,
       supplierSku: getFieldValue('supplierSku'),
       title: getFieldValue('title'),
       productLink: getFieldValue('productLink'),
@@ -287,7 +287,7 @@ class Supply extends Component {
           }
         return (
           <span>
-            <Popconfirm placement="left" title={`确认修改(${this.props.product.name})的主供应商吗？此操作会修改商品的草稿态订货单（已审核的不变）`} onConfirm={this.onClickSetSaleProduct} okText="修改" cancelText="取消">
+            <Popconfirm placement="left" title={`确认修改(${this.props.stockProduct.name})的主供应商吗？此操作会修改商品的草稿态订货单（已审核的不变）`} onConfirm={this.onClickSetSaleProduct} okText="修改" cancelText="取消">
               <a data-spid={record.id} onClick={this.onClickSetSpId}>设为主供应商</a>
             </Popconfirm>
             <span className="ant-divider"></span>
@@ -329,7 +329,7 @@ class Supply extends Component {
 
 
   render() {
-    const { product, saleProducts, suppliers, supplierId } = this.props;
+    const { stockProduct, saleProducts, suppliers, supplierId } = this.props;
     const { getFieldProps, getFieldValue, getFieldsValue, getFieldDecorator } = this.props.form;
     return (
       <div>
