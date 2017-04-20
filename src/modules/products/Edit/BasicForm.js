@@ -334,6 +334,23 @@ export class Basic extends Component {
       skuItems: this.generateSkuTable(skus),
     });
   }
+  onAddSkuValueClick = (e) => {
+    const { id, name } = e.currentTarget.dataset;
+    const value = this.state[`sku-value-${id}`];
+    const { skus } = this.state;
+    const skuValue = this.generateSkuValue(id, name, value);
+    const values = union(skus[`skus-${id}`], [skuValue.value]);
+    this.props.addSku(id, skuValue);
+    this.props.form.setFieldsValue({
+      [`skus-${id}`]: values,
+    });
+    skus[`skus-${id}`] = values;
+    this.setState({
+      skus: skus,
+      skuItems: this.generateSkuTable(skus),
+    });
+  }
+
   getSkuByName = (sku, key) => {
     let value;
     sku = JSON.parse(sku);

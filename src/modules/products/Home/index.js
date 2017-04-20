@@ -192,7 +192,7 @@ class List extends Component {
       <div>
         <p><span>售价：￥</span><span>{record.priceDict.agentPrice}</span></p>
         <p><span>吊牌价：￥</span><span>{record.priceDict.stdSalePrice}</span></p>
-        <p><span>采购价：￥</span><span>{record.priceDict.stdPurchasePrice}</span></p>
+        <p><span>采购价：￥</span><span>{record.priceDict.cost}</span></p>
       </div>
     ),
   }, {
@@ -216,7 +216,12 @@ class List extends Component {
     title: '状态',
     key: 'status',
     dataIndex: 'status',
-    width: 60,
+    width: 30,
+  }, {
+    title: '上架',
+    key: 'shelfStatus',
+    dataIndex: 'shelfStatus',
+    width: 30,
   }, {
     title: '类目',
     key: 'saleCategory',
