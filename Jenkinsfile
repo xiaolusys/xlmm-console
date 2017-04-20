@@ -5,8 +5,15 @@ node {
   }
   sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm install')
   sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm run build:production')
-  sh("docker build -t xiaolusys-ui:console .")
-  sh("docker tag xiaolusys-ui:console registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console")
-  sh("docker push registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console")
+  sh("docker build -t xiaolusys-ui:console-k8s .")
+  sh("docker tag xiaolusys-ui:console registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console-k8s")
+  sh("docker push registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console-k8s")
+  
+  if (env.BRANCH_NAME == "k8s") {
+    stage('Deploy to kubenetes:'){
+      gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+      build job: 'nginx/ui'
+    }
+  }
 }
 
