@@ -420,7 +420,7 @@ class ProductsWithForm extends Component {
     render: (id, record) => (
       <ul style={{ display: 'block' }}>
         <li>
-          <Link to={`/stockproduct/edit?productId=${record.productId}`} >编辑</Link>
+          <Link to={`/supplier/product/edit?productId=${id}&supplierId=${this.props.location.query.supplierId}`}>编辑</Link>
         </li>
         <li>
           <Popconfirm placement="left" title={`确认删除(${record.title})吗？`} onConfirm={this.onDeleteConfirm} okText="删除" cancelText="取消">
@@ -495,9 +495,6 @@ class ProductsWithForm extends Component {
             </Col>
           </Row>
           <Row type="flex" justify="start" align="middle">
-            <Col span={2}>
-              <Button type="primary" onClick={this.onCreateProductClick}>新增商品</Button>
-            </Col>
             <Upload {...this.uploadProps()} beforeUpload={this.beforeUpload}>
               <Button>
                 <Icon type="upload" /> 货物excel上传
