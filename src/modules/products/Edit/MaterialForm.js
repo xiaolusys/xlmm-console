@@ -88,6 +88,8 @@ class Material extends Component {
         materials: this.findSelectedMaterials(newProperties, preference),
         isBoutique: modelProduct.isBoutique,
         isTeambuy: modelProduct.isTeambuy,
+        teambuyPrice: modelProduct.teambuyPrice,
+        teambuyPersonNum: modelProduct.teambuyPersonNum,
         isOnsale: modelProduct.isOnsale,
         isFlatten: modelProduct.isFlatten,
         isWatermark: modelProduct.isWatermark,
@@ -180,7 +182,7 @@ class Material extends Component {
       if (typeof(value) === 'undefined') {
          return;
       }
-      if (['isBoutique', 'isTeambuy', 'isFlatten', 'isWatermark', 'isRecommend', 'isOutside', 'isOnsale', 'sourceType'].indexOf(key) >= 0) {
+      if (['isBoutique', 'isTeambuy', 'isFlatten', 'isWatermark', 'isRecommend', 'isOutside', 'isOnsale', 'sourceType', 'teambuyPrice', 'teambuyPersonNum'].indexOf(key) >= 0) {
         return;
       }
       if (key === '尺码对照参数') {
@@ -218,6 +220,8 @@ class Material extends Component {
       isWatermark: getFieldValue('isWatermark'),
       isRecommend: getFieldValue('isRecommend'),
       isOutside: getFieldValue('isOutside'),
+      teambuyPrice: getFieldValue('teambuyPrice'),
+      teambuyPersonNum: getFieldValue('teambuyPersonNum'),
     };
     if (stockProduct.modelId && stockProduct.modelId > 0) {
       this.props.updateModelProduct(stockProduct.modelId, params);
@@ -274,7 +278,7 @@ class Material extends Component {
   generateInitial = (newProperties) => {
     const initilal = {};
     each(newProperties, (property) => {
-      if (property.name !== '尺码表') {
+      if (property.name !== '尺码表' && property.name != "teambuyPrice" && property.name != "teambuyPersonNum") {
         initilal[property.name] = property.value;
       }
       if (property.name === '尺码表') {
