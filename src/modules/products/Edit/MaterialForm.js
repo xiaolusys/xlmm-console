@@ -278,7 +278,7 @@ class Material extends Component {
   generateInitial = (newProperties) => {
     const initilal = {};
     each(newProperties, (property) => {
-      if (property.name !== '尺码表' && property.name != "teambuyPrice" && property.name != "teambuyPersonNum") {
+      if (property.name !== '尺码表' && property.name !== 'teambuyPrice' && property.name !== 'teambuyPersonNum') {
         initilal[property.name] = property.value;
       }
       if (property.name === '尺码表') {
