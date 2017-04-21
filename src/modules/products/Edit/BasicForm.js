@@ -148,9 +148,9 @@ export class Basic extends Component {
       if (stockProduct && stockProduct.crawl) {
         this.props.form.setFieldsInitialValue({
           fileList: [{
-            uid: stockProduct.picPath,
-            url: stockProduct.picPath,
-            name: stockProduct.picPath,
+            uid: stockProduct.picUrl,
+            url: stockProduct.picUrl,
+            name: stockProduct.picUrl,
             status: 'done',
           }],
           refLink: stockProduct.productLink,
