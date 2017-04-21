@@ -97,20 +97,18 @@ class Pictures extends Component {
     let detailFirstImg = '';
     const detailPics = [];
     const respectiveImgs = [];
-    if (getFieldValue('mainPic')[0].response) {
+    if (getFieldValue('mainPic') && getFieldValue('mainPic')[0] && getFieldValue('mainPic')[0].response) {
       mainPic = `${imageUrlPrefixs}${getFieldValue('mainPic')[0].response.key}`;
     } else {
       mainPic = getFieldValue('mainPic')[0].url;
     }
-
-    if (getFieldValue('detailFirstImg')) {
+    if (getFieldValue('detailFirstImg') && !isEmpty(getFieldValue('detailFirstImg'))) {
       if (getFieldValue('detailFirstImg')[0].response) {
         detailFirstImg = `${imageUrlPrefixs}${getFieldValue('detailFirstImg')[0].response.key}`;
       } else {
         detailFirstImg = getFieldValue('detailFirstImg')[0].url;
       }
     }
-
     each(getFieldValue('detailPics'), (file) => {
       if (file.response) {
         detailPics.push(`${imageUrlPrefixs}${file.response.key}`);

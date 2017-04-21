@@ -145,19 +145,6 @@ export class Basic extends Component {
         });
         return;
       }
-      if (stockProduct && stockProduct.crawl) {
-        this.props.form.setFieldsInitialValue({
-          fileList: [{
-            uid: stockProduct.picUrl,
-            url: stockProduct.picUrl,
-            name: stockProduct.picUrl,
-            status: 'done',
-          }],
-          refLink: stockProduct.productLink,
-          name: stockProduct.title,
-        });
-        return;
-      }
       if (stockProduct.id && stockProduct.success && !stockProduct.update && !stockProduct.crawl) {
         if (stockProduct.picPath) {
           this.props.form.setFieldsInitialValue({
@@ -192,6 +179,18 @@ export class Basic extends Component {
       }
       if (sku.failure) {
         message.error(`请求错误: ${toErrorMsg(sku.error) || ''}`);
+      }
+      if (stockProduct && stockProduct.crawl) {
+        this.props.form.setFieldsInitialValue({
+          fileList: [{
+            uid: stockProduct.picUrl,
+            url: stockProduct.picUrl,
+            name: stockProduct.picUrl,
+            status: 'done',
+          }],
+          refLink: stockProduct.productLink,
+          name: stockProduct.title,
+        });
       }
   }
 

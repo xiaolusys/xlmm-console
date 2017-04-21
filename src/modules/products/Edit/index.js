@@ -115,6 +115,8 @@ export class ProductEdit extends Component {
     };
     if (stockProduct.crawl) {
       state.crawlProductModalVisible = false;
+      stockProduct.crawl = false;
+      this.setState({ stockProduct: stockProduct });
     }
     if (selectTab.activeTabKey) {
       state.activeTabKey = selectTab.activeTabKey;
