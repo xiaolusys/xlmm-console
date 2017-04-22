@@ -12,7 +12,7 @@ axios.defaults = assign(axios.defaults, {
     delete: { 'Content-Type': 'application/json' },
   },
   validateStatus: function (status) {
-    return status === 403 || status < 400;
+    return status >= 200;
   },
   transformRequest: [(data) => (data ? JSON.stringify(changeCaseKeys(data, 'underscored', 10)) : {})],
   transformResponse: [(data) => {
@@ -26,7 +26,7 @@ axios.defaults = assign(axios.defaults, {
     return payload;
   }],
   paramsSerializer: (params) => Qs.stringify(changeCaseKeys(params, 'underscored', 10)),
-  timeout: 1000 * 10,
+  timeout: 1000 * 30,
   maxRedirects: 3,
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'csrfmiddlewaretoken',
