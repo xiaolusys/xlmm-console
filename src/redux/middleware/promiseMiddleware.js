@@ -62,12 +62,19 @@ export default (config = {}) => {
       return promise
         .then((resolved = null) => {
           if (resolved.status === 403) {
-            window.location.replace(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
+            // window.location.replace(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
+            console.log(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
           }
-          const resolvedAction = getAction(resolved, false);
-          dispatch(resolvedAction);
-          action.success(resolved, dispatch);
-          return { resolved, action: resolvedAction };
+          if (resolved.status === 200) {
+            const resolvedAction = getAction(resolved, false);
+            dispatch(resolvedAction);
+            action.success(resolved, dispatch);
+            return { resolved, action: resolvedAction };
+          }
+          const rejectedAction = getAction(resolved, true);
+          dispatch(rejectedAction);
+          action.error(resolved, dispatch);
+          return { resolved, action: rejectedAction };
         })
         .catch((rejected) => {
           const rejectedAction = getAction(rejected, true);
