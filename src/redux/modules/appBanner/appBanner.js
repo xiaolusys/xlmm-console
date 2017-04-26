@@ -89,7 +89,7 @@ export const fetchAppBanners = (filters) => ({
 });
 
 export const fetchAppBanner = (id) => ({
-  url: `rest/v2/poster/${id}`,
+  url: `/rest/v2/poster/${id}`,
   method: 'get',
   type: `FETCH_${singleName}`,
 });
