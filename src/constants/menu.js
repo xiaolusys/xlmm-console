@@ -17,6 +17,12 @@ export default [{
       external: false,
     },
     {
+      name: 'App海报',
+      link: '/appbanners',
+      icon: 'star',
+      external: false,
+    },
+    {
       name: '九张图',
       link: '/ninepics',
       icon: 'pay-circle-o',
