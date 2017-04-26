@@ -49,6 +49,9 @@ class AppBanner extends Component {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
+      render: (id) => (
+        <span><Link to={`appbanners/edit?id=${id}`}>{id}</Link></span>
+      ),
     },
     {
       title: '标题',
