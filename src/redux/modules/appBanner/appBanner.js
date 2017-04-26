@@ -95,14 +95,14 @@ export const fetchAppBanner = (id) => ({
 });
 
 export const updateAppBanner = (id, params) => ({
-  url: `rest/v2/poster/${id}`,
+  url: `/rest/v2/poster/${id}`,
   method: 'put',
   type: `UPDATE_${singleName}`,
   data: params,
 });
 
 export const createAppBanner = (params) => ({
-  url: 'rest/v2/poster',
+  url: '/rest/v2/poster',
   method: 'post',
   type: `CREATE_${singleName}`,
   data: params,

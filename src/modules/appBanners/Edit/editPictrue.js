@@ -7,7 +7,7 @@ import { assign, noop, map, each, isEmpty } from 'lodash';
 import moment from 'moment';
 import { imageUrlPrefixs } from 'constants';
 import stringcase from 'stringcase';
-import { updateAppBanner, resetAppBanner } from 'redux/modules/appBanner/appBanner';
+import { updateAppBanner, resetAppBanner, fetchAppBanner } from 'redux/modules/appBanner/appBanner';
 import { Uploader } from 'components/Uploader';
 import { fetchUptoken } from 'redux/modules/supplyChain/uptoken';
 
@@ -15,6 +15,7 @@ const actionCreators = {
   updateAppBanner,
   fetchUptoken,
   resetAppBanner,
+  fetchAppBanner,
 };
 
 @connect(
@@ -34,6 +35,7 @@ class EditBannerPic extends Component {
     resetAppBanner: React.PropTypes.func,
     fetchUptoken: React.PropTypes.func,
     location: React.PropTypes.object,
+    fetchAppBanner: React.PropTypes.func,
   }
   static contextTypes = {
     router: React.PropTypes.object,
@@ -44,6 +46,8 @@ class EditBannerPic extends Component {
   }
   componentWillMount() {
     this.props.fetchUptoken();
+    const id = this.props.location.query.id;
+    this.props.fetchAppBanner(id);
   }
   componentWillReceiveProps(nextProps) {
     const picList = [];
@@ -74,7 +78,10 @@ class EditBannerPic extends Component {
         });
       }
     const id = this.props.location.query.id;
-    const items = { items: [{ picLink: detailPics[0], itemLink: detailPics[1], appLink: detailPics[2] }] };
+    const picId = this.props.location.query.picId;
+    const item = this.props.appBanner.item;
+    item[picId].picLink = detailPics[0];
+    const items = { items: item };
     this.props.updateAppBanner(id, items);
   }
   onPicRemove = (file) => {
