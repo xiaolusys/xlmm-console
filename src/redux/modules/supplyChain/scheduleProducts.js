@@ -60,7 +60,7 @@ export const addProduct = (scheduleId, productIds, filters) => ({
   method: 'post',
   type: `ADD_${name}`,
   data: {
-    saleProductId: productIds,
+    modelProductId: productIds,
   },
   success: (resp, dispatch) => {
     dispatch(fetchProducts(scheduleId, filters));

@@ -15,10 +15,6 @@ const initialState = {
 const name = 'SUPPLIERS_FILTERS';
 
 export default createReducer({
-  [`FETCH_${name}_REQUEST`]: (state, { payload, status }) => ({
-    ...state,
-    ...status,
-  }),
   [`FETCH_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
