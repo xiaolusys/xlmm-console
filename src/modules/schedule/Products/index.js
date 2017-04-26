@@ -379,8 +379,8 @@ class ProductsWithForm extends Component {
       },
     }, {
       title: '名称',
-      dataIndex: 'productName',
-      key: 'productName',
+      dataIndex: 'name',
+      key: 'name',
       width: 200,
       render: (productName, record) => (
         <div>
