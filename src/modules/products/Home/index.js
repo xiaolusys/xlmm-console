@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Row, Col, Icon, Input, Select, Menu, Button, DatePicker, Table, Popover, Popconfirm, Form } from 'antd';
+import { Row, Col, Icon, Input, Select, Menu, Button, DatePicker, Table, Popover, Popconfirm, Form, AutoComplete } from 'antd';
 import * as constants from 'constants';
 import { fetchProducts, deleteProduct, getStateFilters, setStateFilters } from 'redux/modules/products/stockProducts';
-import { assign, map } from 'lodash';
+import { fetchSuppliers } from 'redux/modules/supplyChain/suppliers.js';
+import { assign, map, trim } from 'lodash';
 import moment from 'moment';
 
 const propsFiltersName = 'productList';
@@ -15,12 +16,14 @@ const actionCreators = {
   deleteProduct,
   getStateFilters,
   setStateFilters,
+  fetchSuppliers,
 };
 
 @connect(
   state => ({
     products: state.products,
     filters: state.supplierFilters,
+    suppliers: state.suppliers,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -29,6 +32,7 @@ class List extends Component {
   static propTypes = {
     prefixCls: React.PropTypes.string,
     deleteid: React.PropTypes.object,
+    suppliers: React.PropTypes.object,
     children: React.PropTypes.any,
     location: React.PropTypes.any,
     filters: React.PropTypes.object,
@@ -38,6 +42,7 @@ class List extends Component {
     deleteProduct: React.PropTypes.func,
     getStateFilters: React.PropTypes.func,
     setStateFilters: React.PropTypes.func,
+    fetchSuppliers: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -62,7 +67,9 @@ class List extends Component {
       status: 'normal',
       ordering: '-created',
       modelIds: '',
+      supplierId: null,
     },
+    supplierNames: [],
   }
 
   componentWillMount() {
@@ -75,6 +82,14 @@ class List extends Component {
     if (this.state.filters) {
       this.props.form.setFieldsInitialValue(this.state.filters);
     }
+    const { suppliers } = nextProps;
+    if (suppliers) {
+      const supplierNames = [];
+      map(suppliers.items, (v, k) => {
+        supplierNames.push(v.supplierName);
+      });
+      this.setState({ supplierNames: supplierNames });
+    }
   }
 
   onCreateProductClick = (e) => {
@@ -82,7 +97,9 @@ class List extends Component {
   }
 
   onSearchClick = (e) => {
-    const filters = this.props.form.getFieldsValue();
+    // const filters = this.props.form.getFieldsValue();
+    const filters = this.getFilters();
+    console.log(filters);
     this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
   }
@@ -93,6 +110,18 @@ class List extends Component {
 
   onDeleteIdSet = (e) => {
     this.setState({ deleteid: e.target.dataset.deleteid });
+  }
+
+  onSelectSupplier = (value) => {
+    let supplierId;
+    map(this.props.suppliers.items, (v, k) => {
+      if (v.supplierName === value) {
+        supplierId = v.id;
+      }
+    });
+    const filters = this.getFilters();
+    filters.supplierId = supplierId;
+    this.setFilters(filters);
   }
 
   setFilters = (filters) => {
@@ -111,6 +140,7 @@ class List extends Component {
       modelId: filters.modelId || '',
       outerId: filters.outerId || '',
       wareBy: filters.wareBy || '',
+      supplierId: filters.supplierId || '',
       status: filters.status || 'normal',
       type: filters.type || '0',
       name__contains: filters.name || '',
@@ -121,6 +151,13 @@ class List extends Component {
   getFilterSelectValue = (field) => {
     const fieldValue = this.props.form.getFieldValue(field);
     return fieldValue ? { value: fieldValue } : {};
+  }
+
+  handleChange = (e) => {
+    console.log('e', e);
+    if (e && trim(e) !== '') {
+      this.props.fetchSuppliers({ supplierName: e });
+    }
   }
 
   formItemLayout = () => ({
@@ -273,6 +310,12 @@ class List extends Component {
             <Col sm={3}>
               <Form.Item label="售品ID" {...this.formItemLayout()} >
                 <Input {...getFieldProps('modelIds')} placeholder="输入款式ID(多个以,分隔)" {...this.getFilterSelectValue('modelIds')} labelInValue />
+              </Form.Item>
+            </Col>
+            <Col sm={5}>
+              <Form.Item label="供应商名称" {...this.formItemLayout()} >
+                <AutoComplete dataSource={this.state.supplierNames} style={{ width: 200, height: 25 }} onChange={this.handleChange} onSelect={this.onSelectSupplier} placeholder="输入供应商名称" />
+                <Input type="hidden" name="supplierId" value={this.state.supplierId} />
               </Form.Item>
             </Col>
             <Col sm={2}>

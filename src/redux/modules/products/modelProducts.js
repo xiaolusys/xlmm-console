@@ -22,6 +22,12 @@ export default createReducer({
     ...state,
     ...status,
   }),
+  [`FETCHSCHEDULE_${name}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    results: payload.data.results,
+    count: payload.data.count,
+  }),
 }, initialState);
 
 export const fetchModelProducts = () => ({
@@ -29,11 +35,21 @@ export const fetchModelProducts = () => ({
   method: 'get',
   type: `FETCH_${name}`,
 });
+
 export const deleteModelProducts = (id) => ({
   url: `${apisBase.item}model_product/${id}`,
   method: 'delete',
   type: `DELETE_${name}`,
   success: (resp, dispatch) => {
     dispatch(fetchModelProducts());
+  },
+});
+
+export const fetchScheduleProducts = (filters) => ({
+  url: `${apisBase.supply}schedule/modelproducts`,
+  method: 'get',
+  type: `FETCHSCHEDULE_${name}`,
+  params: {
+    ...filters,
   },
 });

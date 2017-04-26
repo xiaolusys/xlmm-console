@@ -482,10 +482,10 @@ class ProductsWithForm extends Component {
         <div>
           <ul style={{ display: 'block' }}>
             <li>
-              <Link disabled={schedule.lockStatus} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=basic`}>资料录入</Link>
+              <Link disabled={schedule.lockStatus} to={`/stockproduct/edit?productId=${record.productId}`}>资料录入</Link>
             </li>
             <li>
-              <Link disabled={schedule.lockStatus || !record.modelId} to={`/supplier/product/edit?productId=${record.saleProductId}&supplierId=${record.supplierId}&tabKey=images`}>上传图片</Link>
+              <Link disabled={schedule.lockStatus || !record.modelId} to={`/stockproduct/edit?productId=${record.productId}`}>上传图片</Link>
             </li>
             <li >
               <a target="_blank" href={`/apis/items/v1/product?supplier_id=${record.supplierId}&saleproduct=${record.saleProductId}`} disabled={schedule.lockStatus || record.inProduct}>OLD资料录入</a>
@@ -606,9 +606,7 @@ class ProductsWithForm extends Component {
           </Row>
         </Form>
         <Table {...this.tableProps()} columns={this.columns()} />
-        <If condition={schedule.success}>
-          <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} scheduleId={id} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
-        </If>
+        <Modals.ProductLib visible={this.state.modalVisible} suppliers={this.suppliers()} scheduleId={id} onOk={this.onOkClick} onCancel={this.toggleModalVisible} />
         <Modals.Preview visible={this.state.previewModalVisible} url={this.state.previewLink} onCancel={this.togglePreviewModalVisible} title="商品预览" />
       </div>
     );

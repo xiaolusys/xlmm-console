@@ -7,15 +7,15 @@ import { assign, isEmpty, isNaN, map, noop } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
 import * as constants from 'constants';
-import { fetchProducts } from 'redux/modules/supplyChain/products';
+import { fetchScheduleProducts } from 'redux/modules/products/modelProducts';
 import { fetchFilters } from 'redux/modules/supplyChain/supplierFilters';
 
-const actionCreators = { fetchProducts: fetchProducts, fetchFilters: fetchFilters };
+const actionCreators = { fetchScheduleProducts, fetchFilters };
 
 @connect(
   state => ({
     filters: state.supplierFilters,
-    products: state.products,
+    modelProducts: state.modelProducts,
   }),
   dispatch => bindActionCreators(actionCreators, dispatch),
 )
@@ -30,9 +30,9 @@ class ProductLib extends Component {
     onOk: React.PropTypes.func,
     suppliers: React.PropTypes.array,
     fetchFilters: React.PropTypes.func,
-    fetchProducts: React.PropTypes.func,
+    fetchScheduleProducts: React.PropTypes.func,
     filters: React.PropTypes.object,
-    products: React.PropTypes.object,
+    modelProducts: React.PropTypes.object,
     form: React.PropTypes.object,
   };
 
@@ -52,18 +52,30 @@ class ProductLib extends Component {
   }
 
   state = {
+    firstLoad: true,
     filters: {
       pageSize: 10,
       page: 1,
       scheduleId: this.props.scheduleId,
     },
     selectedRowKeys: [],
+    modelProducts: {
+      results: [],
+      count: 0,
+    },
   }
 
   componentWillMount() {
     this.setFilters({ saleSupplier: this.supplierIds() });
-    this.props.fetchProducts(this.getFilters());
     this.props.fetchFilters();
+    this.props.fetchScheduleProducts(this.getFilters());
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { modelProducts } = nextProps;
+    if (modelProducts) {
+      this.setState({ modelProducts: modelProducts });
+    }
   }
 
   onSubmitClick = (e) => {
@@ -90,13 +102,13 @@ class ProductLib extends Component {
     delete filters.priceRange;
 
     this.setFilters(filters);
-    this.props.fetchProducts(this.getFilters());
+    this.props.fetchScheduleProducts(this.getFilters());
   }
 
   onOk = (e) => {
     this.props.onOk(this.state.selectedRowKeys);
     this.setState({ selectedRowKeys: [] });
-    this.props.fetchProducts(this.getFilters());
+    this.props.fetchScheduleProducts(this.getFilters());
   }
 
   onTableChange = (pagination, filters, sorter) => {
@@ -113,7 +125,7 @@ class ProductLib extends Component {
         break;
     }
     this.setFilters({ ordering: ordering });
-    this.props.fetchProducts(this.getFilters());
+    this.props.fetchScheduleProducts(this.getFilters());
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -138,8 +150,8 @@ class ProductLib extends Component {
 
   columns = () => ([{
     title: '图片',
-    key: 'picUrl',
-    dataIndex: 'picUrl',
+    key: 'picPath',
+    dataIndex: 'picPath',
     width: 100,
     render: (productPic, record) => {
       const conetnt = (<img style={{ height: '360px' }} src={productPic} role="presentation" />);
@@ -150,9 +162,15 @@ class ProductLib extends Component {
       );
     },
   }, {
+    title: '售卖ID',
+    key: 'ID',
+    dataIndex: 'id',
+    width: 200,
+    render: (title, record) => (<a>{record.id}</a>),
+  }, {
     title: '商品名称',
-    key: 'title',
-    dataIndex: 'title',
+    key: 'name',
+    dataIndex: 'name',
     width: 200,
     render: (title, record) => (<a target="_blank" href={record.productLink}>{title}</a>),
   }, {
@@ -162,9 +180,9 @@ class ProductLib extends Component {
     width: 200,
     render: (text, record) => (
       <div>
-        <p><span>售价：￥</span><span>{record.onSalePrice}</span></p>
+        <p><span>售价：￥</span><span>{record.agentPrice}</span></p>
         <p><span>吊牌价：￥</span><span>{record.stdSalePrice}</span></p>
-        <p><span>采购价：￥</span><span>{record.salePrice}</span></p>
+        <p><span>采购成本：￥</span><span>{record.cost}</span></p>
       </div>
     ),
   }, {
@@ -226,7 +244,7 @@ class ProductLib extends Component {
 
   tableProps = () => {
     const self = this;
-    const { products } = this.props;
+    const { modelProducts } = this.state;
     const { selectedRowKeys, page } = this.state;
     return {
       rowKey: (record) => (record.id),
@@ -238,33 +256,36 @@ class ProductLib extends Component {
         }),
       },
       pagination: {
-        total: products.count,
+        total: modelProducts.count,
         current: page,
-        showTotal: total => `共 ${total} 条`,
+        showTotal: total => `共 ${modelProducts.count} 条`,
         showSizeChanger: true,
         onShowSizeChange(current, pageSize) {
           self.setFilters({ pageSize: pageSize, page: current });
-          self.props.fetchProducts(self.getFilters());
         },
         onChange(current) {
           self.setFilters({ page: current });
-          self.props.fetchProducts(self.getFilters());
         },
       },
       scroll: { y: 500 },
       className: 'margin-top-sm',
-      dataSource: products.items,
+      dataSource: modelProducts.results,
       onChange: this.onTableChange,
     };
   }
 
   render() {
-    const { visible, filters, products, onCancel, suppliers } = this.props;
+    const { visible, filters, onCancel, suppliers } = this.props;
     const { getFieldProps } = this.props.form;
     return (
       <Modal title="商品" width="1200" closable visible={visible} onOk={this.onOk} onCancel={onCancel}>
         <Form horizontal className="ant-advanced-search-form">
           <Row type="flex" justify="start" align="middle">
+            <Col sm={8}>
+              <Form.Item label="售卖名称" {...this.formItemLayout()} >
+                <Input {...getFieldProps('productName')} placeholder="输入模糊商品名称" labelInValue />
+              </Form.Item>
+            </Col>
             <Col sm={8}>
               <Form.Item label="类目" {...this.formItemLayout()} >
                 <Select {...getFieldProps('saleCategory')} allowClear placeholder="请选择类目" notFoundContent="无可选项">
