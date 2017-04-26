@@ -51,30 +51,33 @@ class AppBannerPic extends Component {
     const self = this;
     return [
     {
+      title: 'picId',
+      dataIndex: 'picId',
+      key: 'picId',
+    },
+    {
       title: '图片',
       dataIndex: 'picLink',
       key: 'picLink',
       render: (picLink) => (<span><img src={picLink} role="presentation" /></span>),
     },
     {
-      title: '跳转链接图片',
+      title: '跳转链接',
       dataIndex: 'itemLink',
       key: 'itemLink',
-      render: (itemLink) => (<span><img style={{ width: '100px', height: '120px' }} src={itemLink} role="presentation" /></span>),
     },
     {
-      title: 'APP跳转链接图片',
+      title: 'APP跳转链接',
       dataIndex: 'appLink',
       key: 'appLink',
-      render: (appLink) => (<span><img style={{ width: '100px', height: '120px' }} src={appLink} role="presentation" /></span>),
     },
     {
       title: '操作',
       dataIndex: 'id',
       key: 'operation',
-      render: (id, record) => (
+      render: (id, record, picId) => (
         <span>
-          <Link to={`/appbanners/picture/edit?id=${self.props.location.query.id}`}>编辑图片</Link>
+          <Link to={`/appbanners/picture/edit?id=${self.props.location.query.id}&picId=${picId}`}>编辑图片</Link>
         </span>
       ),
     }];
@@ -84,6 +87,9 @@ class AppBannerPic extends Component {
     const self = this;
     const count = this.props.appBanner.count;
     const item = this.props.appBanner.item;
+    for (let i = 0; i < item.length; i++) {
+      item[i].picId = i;
+    }
     function onChange(pageNumber) {
       const pageNum = { page: pageNumber };
       const params = { page: pageNumber };
