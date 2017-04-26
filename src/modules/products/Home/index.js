@@ -97,9 +97,7 @@ class List extends Component {
   }
 
   onSearchClick = (e) => {
-    // const filters = this.props.form.getFieldsValue();
-    const filters = this.getFilters();
-    console.log(filters);
+    const filters = this.props.form.getFieldsValue();
     this.setFilters(filters);
     this.props.fetchProducts(this.getFilters());
   }
@@ -315,7 +313,7 @@ class List extends Component {
             <Col sm={5}>
               <Form.Item label="供应商名称" {...this.formItemLayout()} >
                 <AutoComplete dataSource={this.state.supplierNames} style={{ width: 200, height: 25 }} onChange={this.handleChange} onSelect={this.onSelectSupplier} placeholder="输入供应商名称" />
-                <Input type="hidden" name="supplierId" value={this.state.supplierId} />
+                <Input type="hidden" {...getFieldProps('supplierId')} name="supplierId" value={this.state.supplierId} />
               </Form.Item>
             </Col>
             <Col sm={2}>
