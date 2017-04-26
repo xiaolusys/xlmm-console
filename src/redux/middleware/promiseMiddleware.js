@@ -65,7 +65,7 @@ export default (config = {}) => {
             // window.location.replace(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
             console.log(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
           }
-          if (resolved.status === 200) {
+          if (resolved.status >= 200 && resolved.status < 400) {
             const resolvedAction = getAction(resolved, false);
             dispatch(resolvedAction);
             action.success(resolved, dispatch);

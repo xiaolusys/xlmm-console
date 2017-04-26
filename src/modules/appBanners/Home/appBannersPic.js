@@ -108,8 +108,10 @@ class AppBannerPic extends Component {
   }
   render() {
     const self = this;
+    const id = this.props.location.query.id;
     return (
       <div>
+        <Button type="primary"><Link to={`/appbanners/picture/builditem?id=${id}`}>新建海报项</Link></Button>
         <Table {...this.tableProps()} columns={this.colums()} />
       </div>
     );
