@@ -12,6 +12,7 @@ import activitiesRoutes from 'modules/activity/routes';
 import operationsRoutes from 'modules/operations/routes';
 import statisticsRoutes from 'modules/statistics/routes';
 import packageorderRoutes from 'modules/packageOrder/routes';
+import appbannerRoutes from 'modules/appBanners/routes';
 
 export default (
   <Route path="/" component={App}>
@@ -26,5 +27,6 @@ export default (
     {operationsRoutes}
     {statisticsRoutes}
     {packageorderRoutes}
+    {appbannerRoutes}
   </Route>
 );
