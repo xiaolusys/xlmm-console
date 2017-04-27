@@ -12,14 +12,16 @@ const name = 'APPBANNERS';
 const singleName = 'APPBANNER';
 export default createReducer({
   [`FETCH_${singleName}_REQUEST`]: (state, { payload, status }) => {
-    console.log('正在请求获取');
+    const data = payload.data;
+    // console.log('正在请求获取');
     return {
     ...state,
     ...status,
     };
   },
   [`FETCH_${singleName}_SUCCESS`]: (state, { payload, status }) => {
-    console.log('获取成功');
+    const data = payload.data;
+    // console.log('获取成功');
     return {
     ...state,
     ...status,
@@ -32,7 +34,8 @@ export default createReducer({
     };
   },
   [`FETCH_${singleName}_FAILURE`]: (state, { payload, status }) => {
-    console.log('获取失败');
+    const data = payload.data;
+    // console.log('获取失败');
     return {
     ...state,
     ...status,
@@ -50,14 +53,16 @@ export default createReducer({
     create: true,
   }),
   [`CREATE_${singleName}_FAILURE`]: (state, { payload, status }) => {
-    console.log('创建失败');
+    const data = payload.data;
+    // console.log('创建失败');
     return {
     ...state,
     ...status,
     };
   },
   [`UPDATE_${singleName}_REQUEST`]: (state, { payload, status }) => {
-    console.log('正在请求更新');
+    const data = payload.data;
+    // console.log('正在请求更新');
     return {
     ...state,
     ...status,
@@ -65,7 +70,8 @@ export default createReducer({
     };
   },
   [`UPDATE_${singleName}_SUCCESS`]: (state, { payload, status }) => {
-    console.log('更新成功');
+    const data = payload.data;
+    // console.log('更新成功');
     return {
       ...state,
       ...status,
@@ -75,7 +81,8 @@ export default createReducer({
     };
   },
   [`UPDATE_${singleName}_FAILURE`]: (state, { payload, status }) => {
-    console.log('更新失败');
+    const data = payload.data;
+    // console.log('更新失败');
     return {
     ...state,
     ...status,
