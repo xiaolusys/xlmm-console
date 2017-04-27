@@ -7,7 +7,6 @@ node {
      [$class: 'ArbitraryFileCache', excludes: '', includes: '**/*', path: '${WORKSPACE}/node_modules']
   ]) {
     sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm install')
-    sleep time: 1, unit: 'HOURS'
     sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm run build:production')
   }
   
