@@ -4,7 +4,7 @@ node {
     sh("docker login -u ${env.DOCKER_USERNAME} -p ${env.DOCKER_PASSWORD} registry.aliyuncs.com")
   }
   cache(maxCacheSize: 250, caches: [
-     [$class: 'ArbitraryFileCache', excludes: '', includes: '**/*', path: '${HOME}/node_modules']
+     [$class: 'ArbitraryFileCache', excludes: '', includes: '**/*', path: '${WORKSPACE}/node_modules']
   ]) {
     sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm install')
     sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm run build:production')
