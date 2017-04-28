@@ -162,7 +162,7 @@ class ProductLib extends Component {
       );
     },
   }, {
-    title: '售卖ID',
+    title: '售品ID',
     key: 'ID',
     dataIndex: 'id',
     width: 200,

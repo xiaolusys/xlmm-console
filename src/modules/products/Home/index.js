@@ -207,6 +207,12 @@ class List extends Component {
        );
     },
   }, {
+    title: '售品ID',
+    key: 'modelId',
+    dataIndex: 'modelId',
+    width: 200,
+    render: (title, record) => (<a>{record.modelId}</a>),
+  }, {
     title: '商品名称',
     key: 'name',
     dataIndex: 'name',

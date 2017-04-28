@@ -203,7 +203,7 @@ class Pictures extends Component {
     }
     if (modelProduct.success && !isEmpty(modelProduct.respectiveImgs)) {
       map(modelProduct.respectiveImgs, (value, key) => {
-        if (this.state.respectiveKeys.indexOf(key) < 0 && value != '') {
+        if (this.state.respectiveKeys.indexOf(key) < 0 && value !== '') {
           getFieldProps(key);
           setFieldsInitialValue({
             [key]: [{
@@ -272,7 +272,7 @@ class Pictures extends Component {
                 onRemove={this.onRemove}
                 onChange={this.onDetailFieldChange(key)}
                 uptoken={uptoken.token}
-              />
+                />
             </Form.Item>
           ))}
         </If>
