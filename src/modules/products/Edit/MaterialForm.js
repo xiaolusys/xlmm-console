@@ -405,12 +405,12 @@ class Material extends Component {
     return (
       <Form>
         <Form.Item {...this.formItemLayout()} label="售品名称" required>
-            <Input
-              {...getFieldProps('name', { rules: [{ required: true, message: '请输入售品名称！' }] })}
-              value={getFieldValue('name')}
-              placeholder="输入售品名称（显示在APP上的名称）"
-              />
-          </Form.Item>
+          <Input
+            {...getFieldProps('name', { rules: [{ required: true, message: '请输入售品名称！' }] })}
+            value={getFieldValue('name')}
+            placeholder="输入售品名称（显示在APP上的名称）"
+            />
+        </Form.Item>
         <Form.Item {...this.formItemLayout()} label="货物来源">
           <Row style={{ marginTop: 16 }}>
             <Col span="10">
