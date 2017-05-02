@@ -86,6 +86,7 @@ class Material extends Component {
       }
       const kwargs = {
         materials: this.findSelectedMaterials(newProperties, preference),
+        name: modelProduct.name,
         isBoutique: modelProduct.isBoutique,
         isTeambuy: modelProduct.isTeambuy,
         teambuyPrice: modelProduct.teambuyPrice,
@@ -182,7 +183,7 @@ class Material extends Component {
       if (typeof(value) === 'undefined') {
          return;
       }
-      if (['isBoutique', 'isTeambuy', 'isFlatten', 'isWatermark', 'isRecommend', 'isOutside', 'isOnsale', 'sourceType', 'teambuyPrice', 'teambuyPersonNum'].indexOf(key) >= 0) {
+      if (['name', 'isBoutique', 'isTeambuy', 'isFlatten', 'isWatermark', 'isRecommend', 'isOutside', 'isOnsale', 'sourceType', 'teambuyPrice', 'teambuyPersonNum'].indexOf(key) >= 0) {
         return;
       }
       if (key === '尺码对照参数') {
@@ -214,6 +215,7 @@ class Material extends Component {
       id: stockProduct.modelId,
       productId: productId,
       extras: extras,
+      name: getFieldValue('name'),
       isBoutique: getFieldValue('isBoutique'),
       isTeambuy: getFieldValue('isTeambuy'),
       isFlatten: getFieldValue('isFlatten'),
@@ -402,6 +404,13 @@ class Material extends Component {
     const showSizeTable = this.isSkuSizeTableSelected();
     return (
       <Form>
+        <Form.Item {...this.formItemLayout()} label="售品名称" required>
+            <Input
+              {...getFieldProps('name', { rules: [{ required: true, message: '请输入售品名称！' }] })}
+              value={getFieldValue('name')}
+              placeholder="输入售品名称（显示在APP上的名称）"
+              />
+          </Form.Item>
         <Form.Item {...this.formItemLayout()} label="货物来源">
           <Row style={{ marginTop: 16 }}>
             <Col span="10">
