@@ -58,6 +58,22 @@ export default createReducer({
     updated: false,
     error: action.status.error,
   }),
+  [`CHANGEWULIU_${singleName}_REQUEST`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: false,
+  }),
+  [`CHANGEWULIU_${singleName}_SUCCESS`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+    updated: true,
+  }),
+  [`CHANGEWULIU_${singleName}_FAILURE`]: (state, action) => ({
+    ...state,
+    ...action.status,
+    updated: false,
+    error: action.status.error,
+  }),
   [`RESET_${singleName}`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -112,6 +128,13 @@ export const changeToPrepare = (params) => ({
   url: '/trades/package_order/change_to_prepare',
   method: 'post',
   type: `CHANGETOPREPARE_${singleName}`,
+  data: params,
+});
+
+export const changeWuliu = (id, params) => ({
+  url: `/trades/package_order/${id}/change_wuliu`,
+  method: 'post',
+  type: `CHANGEWULIU_${singleName}`,
   data: params,
 });
 
