@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Col, Input, Form, Formitem, Row, Select, Table, message, Modal } from 'antd';
-import { fetchPackageOrder, updatePackageOrder, resetPackageOrder, changeToPrepare } from 'redux/modules/packageOrder/packageOrder';
+import { fetchPackageOrder, updatePackageOrder, resetPackageOrder, changeToPrepare, changeWuliu } from 'redux/modules/packageOrder/packageOrder';
 import { fetchPackageOrderFilters } from 'redux/modules/packageOrder/packageOrderFilter';
 import { fetchPackageSkuItem } from 'redux/modules/packageSkuItem/packageSkuItem';
 import { assign, noop, map, find, isEmpty, each, last } from 'lodash';
@@ -15,6 +15,7 @@ const actionCreators = {
   changeToPrepare,
   fetchPackageOrderFilters,
   fetchPackageSkuItem,
+  changeWuliu,
 };
 
 @connect(
@@ -39,6 +40,7 @@ class EditWithForm extends Component {
     fetchPackageOrderFilters: React.PropTypes.func,
     resetPackageOrder: React.PropTypes.func,
     changeToPrepare: React.PropTypes.func,
+    changeWuliu: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -159,7 +161,7 @@ class EditWithForm extends Component {
       outSid: this.state.outSid };
     const { pid } = this.props.location.query;
     if (pid) {
-      this.props.updatePackageOrder(pid, params);
+      this.props.changeWuliu(pid, params);
     }
   }
   handleChangePrepare = () => {
