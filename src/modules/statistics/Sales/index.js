@@ -3,7 +3,7 @@ import wrapReactLifecycleMethodsWithTryCatch from 'react-component-errors';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Button, Col, DatePicker, Input, Form, Row, Radio, Select, Table, Popconfirm, message } from 'antd';
+import { Alert, Button, Col, DatePicker, Input, Form, Row, Radio, Select, Table, Popconfirm, message } from 'antd';
 import { assign, noop, map } from 'lodash';
 import moment from 'moment';
 import stringcase from 'stringcase';
@@ -167,7 +167,7 @@ class SaleWithForm extends Component {
             render: (data) => ((data * 0.01).toFixed(2)),
           },
           {
-            title: '销售成本',
+            title: '采购成本',
             dataIndex: 'serialData.totalCost',
             key: 'serialData.totalCost',
             width: 50,
@@ -233,6 +233,14 @@ class SaleWithForm extends Component {
     return (
       <div className={`${prefixCls}`} >
         <Form inline horizontal className="ant-advanced-search-form">
+          <Row type="flex" justify="start" align="middle">
+            <Form.Item label="提示：">
+              <Alert
+                message="销售额=直接支付+券支付 / 直接支付:包含现金和钱包付款 / 券支付:是券实际购买付款金额 / 兑券价差:券兑出价值-券支付价值"
+                type="Informational"
+                />
+            </Form.Item>
+          </Row>
           <Row type="flex" justify="start" align="middle">
             <Col >
               <Form.Item label="日期" >
