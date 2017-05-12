@@ -126,7 +126,7 @@ export class Basic extends Component {
         }
         return;
       }
-      if (stockProduct && stockProduct.saleCategory && sku && sku.success && !sku.skuPropsUpdated) {
+      if (stockProduct.success && stockProduct.saleCategory && sku && sku.success && !sku.skuPropsUpdated) {
         sku.skuPropsUpdated = true;
         const categoryComb = [];
         each(stockProduct.saleCategory.cid.split('-'), (c) => {

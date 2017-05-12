@@ -10,6 +10,7 @@ import { saveMaterial, updateMaterial } from 'redux/modules/supplyChain/material
 import { fetchProduct } from 'redux/modules/products/stockProduct';
 import { createModelProduct, updateModelProduct, fetchModelProduct } from 'redux/modules/products/modelProduct';
 import { sizeSortCursor, sourceTypes } from 'constants';
+import { toErrorMsg } from 'utils/object';
 
 const actionCreators = {
   fetchPreference,
@@ -115,6 +116,12 @@ class Material extends Component {
       this.setState({ modelProduct: modelProduct });
       this.props.fetchProduct(stockProduct.id);
       return;
+    }
+    if (stockProduct.failure) {
+      message.error(`请求错误: ${toErrorMsg(stockProduct.error) || ''}`);
+    }
+    if (modelProduct.failure) {
+      message.error(`请求错误: ${toErrorMsg(modelProduct.error) || ''}`);
     }
   }
 

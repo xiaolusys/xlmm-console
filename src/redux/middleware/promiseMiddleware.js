@@ -62,8 +62,8 @@ export default (config = {}) => {
       return promise
         .then((resolved = null) => {
           if (resolved.status === 403) {
-            // window.location.replace(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
-            console.log(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
+            // console.log(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
+            window.location.replace(`/admin/login/?next=${window.location.pathname}${window.location.hash}`);
           }
           if (resolved.status >= 200 && resolved.status < 400) {
             const resolvedAction = getAction(resolved, false);

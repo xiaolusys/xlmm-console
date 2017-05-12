@@ -10,6 +10,8 @@ import { updateProduct } from 'redux/modules/supplyChain/product';
 import { updateMaterial } from 'redux/modules/supplyChain/material';
 import { createModelProduct, updateModelProduct, fetchModelProduct, setPictures } from 'redux/modules/products/modelProduct';
 import { fetchProduct } from 'redux/modules/products/stockProduct';
+import { toErrorMsg } from 'utils/object';
+
 const actionCreators = {
   updateProduct,
   updateMaterial,
@@ -62,6 +64,13 @@ class Pictures extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.amountProps(nextProps);
+    const { stockProduct, modelProduct } = nextProps;
+    if (stockProduct.failure) {
+      message.error(`请求错误: ${toErrorMsg(stockProduct.error) || ''}`);
+    }
+    if (modelProduct.failure) {
+      message.error(`请求错误: ${toErrorMsg(modelProduct.error) || ''}`);
+    }
   }
 
   onRemove = (file) => {
