@@ -110,26 +110,28 @@ class Pictures extends Component {
     if (getFieldValue('mainPic') && getFieldValue('mainPic')[0] && getFieldValue('mainPic')[0].response) {
       mainPic = `${imageUrlPrefixs}${getFieldValue('mainPic')[0].response.key}`;
     } else {
-      mainPic = getFieldValue('mainPic')[0].url;
+      mainPic = getFieldValue('mainPic')[0].url || '';
     }
     if (getFieldValue('detailFirstImg') && !isEmpty(getFieldValue('detailFirstImg'))) {
       if (getFieldValue('detailFirstImg')[0].response) {
         detailFirstImg = `${imageUrlPrefixs}${getFieldValue('detailFirstImg')[0].response.key}`;
       } else {
-        detailFirstImg = getFieldValue('detailFirstImg')[0].url;
+        detailFirstImg = getFieldValue('detailFirstImg')[0].url || '';
       }
     }
     each(getFieldValue('detailPics'), (file) => {
       if (file.response) {
         detailPics.push(`${imageUrlPrefixs}${file.response.key}`);
       } else {
-        detailPics.push(file.url);
+        if (file.url) {
+          detailPics.push(file.url);
+        }
       }
     });
     map(modelProduct.respectiveImgs, (value, key) => {
       const file = getFieldValue(key) && getFieldValue(key)[0];
       if (file) {
-        respectiveImgs.push([key, file.url]);
+        respectiveImgs.push([key, file.url || '']);
       } else {
         message.error(`请上传头图（${key}）`);
       }
