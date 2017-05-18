@@ -80,6 +80,7 @@ export class Basic extends Component {
     state = {
       sku: [],
       skus: {},
+      isBoutique: false,
       productType: '0',
       skuPropsUpdated: false,
       categories: [],
@@ -114,9 +115,11 @@ export class Basic extends Component {
             memo: stockProduct.memo,
           });
         }
+        const isBoutique = this.checkIsBoutique(stockProduct.skuExtras);
         stockProduct.firstLoadUpdate = false;
         assign(this.state, {
           skuItems: stockProduct.skuExtras,
+          isBoutique: isBoutique,
           productType: stockProduct.type,
           stockProduct: stockProduct,
         });
@@ -304,10 +307,24 @@ export class Basic extends Component {
     this.props.form.setFieldsValue({ skuItems: values });
   }
 
-  onClickProductType = (e) => {
-    const productType = e.target.value;
-    this.setState({ productType: productType });
+  onClickAddBoutique = (e) => {
+    const isBoutique = e.target.checked;
+    const productType = this.state.productType;
+    this.setState({
+      isBoutique: isBoutique,
+    });
+    this.updateBoutiqueSkus(productType, isBoutique);
   }
+
+  onClickProductType = (e) => {
+    const isBoutique = this.state.isBoutique;
+    const productType = e.target.value;
+    this.setState({
+      productType: productType,
+    });
+    this.updateBoutiqueSkus(productType, isBoutique);
+  }
+
   onSkuValueInput = (e) => {
     const { dataset, value } = e.target;
     this.setState({
@@ -362,6 +379,19 @@ export class Basic extends Component {
     const categorys = catgoryIds[catgoryIds.length - 1].split('-');
     return categorys[categorys.length - 1];
   }
+
+  checkIsBoutique = (skuExtras) => {
+    if (skuExtras.length !== 5) {
+      return false;
+    }
+    for (let i = 0; i < skuExtras.length(); i++) {
+      if ((skuExtras[i].name.indexOf('Associate') > 0) || (skuExtras[i].name.indexOf('Director') > 0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   formItemLayout = () => ({
     labelCol: { span: 4 },
     wrapperCol: { span: 18 },
@@ -535,6 +565,37 @@ export class Basic extends Component {
   isVirtualCoupon = (productType, isBoutique) => (
     isBoutique && productType.toString() === '1'
   )
+
+  updateBoutiqueSkus = (productType, isBoutique) => {
+    const { getFieldValue } = this.props.form;
+    const { product, sku } = this.props;
+    if (isEmpty(product.skuExtras) && toInteger(productType) === 1 && isBoutique === true) {
+      const selected = this.findAndUnionSkuValues(boutiqueSkuTpl, sku);
+      const skuItems = this.findSkuItems(boutiqueSkuTpl, sku);
+      this.props.form.setFieldsInitialValue({
+        skuItems: skuItems,
+        ...selected,
+      });
+      assign(this.state, {
+        skus: selected,
+        skuItems: boutiqueSkuTpl,
+      });
+    }
+
+    if (isEmpty(product.skuExtras) && isBoutique === false) {
+      const selected = this.findAndUnionSkuValues([], sku);
+      const skuItems = this.findSkuItems([], sku);
+      this.props.form.setFieldsInitialValue({
+        skuItems: skuItems,
+        ...selected,
+      });
+      assign(this.state, {
+        skus: selected,
+        skuItems: [],
+      });
+    }
+  }
+
   columnTitle = (text, type) => {
     const content = (
       <div className="clearfix">
@@ -672,6 +733,14 @@ export class Basic extends Component {
                     onChange={this.onClickProductType}>
                     {map(productTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
                   </Radio.Group>
+                </Col>
+                <Col span="4">
+                  <Checkbox
+                    {...getFieldProps('isBoutique')}
+                    checked={this.state.isBoutique}
+                    onChange={this.onClickAddBoutique}>
+                    精品券
+                  </Checkbox>
                 </Col>
               </Row>
             </Form.Item>
