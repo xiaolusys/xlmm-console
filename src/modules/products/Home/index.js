@@ -61,7 +61,7 @@ class List extends Component {
   state = {
     deleteid: '',
     filters: {
-      type: '0',
+      type: '',
       pageSize: 10,
       page: 1,
       status: 'normal',
@@ -140,7 +140,7 @@ class List extends Component {
       wareBy: filters.wareBy || '',
       supplierId: filters.supplierId || '',
       status: filters.status || 'normal',
-      type: filters.type || '0',
+      type: filters.type || '',
       name__contains: filters.name || '',
       model_id__in: filters.modelIds,
     };
