@@ -215,7 +215,7 @@ class Material extends Component {
     const extras = {
       newProperties: newProperties,
       sources: {
-        sourceType: getFieldValue('sourceType'),
+        sourceType: Number(getFieldValue('sourceType')),
       },
     };
     const params = {
