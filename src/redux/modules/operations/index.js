@@ -3,6 +3,7 @@ import giftTransferCoupon from './giftTransferCoupon';
 import sendTransferEliteScore from './sendTransferEliteScore';
 import sendEnvelopUserBudget from './sendEnvelopUserBudget';
 import giveXiaoluCoin from './giveXiaoluCoin';
+import createMama from './createMama';
 
 export default {
   changeUpperMama,
@@ -10,4 +11,5 @@ export default {
   sendTransferEliteScore,
   sendEnvelopUserBudget,
   giveXiaoluCoin,
+  createMama,
 };
