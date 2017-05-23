@@ -25,12 +25,23 @@ export default createReducer({
     lastUpdated: true,
     lastCreated: true,
   }),
+  [`CREATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
       ...state,
       ...status,
       ...payload.data,
       lastUpdated: true,
   }),
+  [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => {
+    console.log(payload);
+    return ({
+      ...state,
+      ...status,
+    });
+  },
   [`CRAWL_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
@@ -38,6 +49,10 @@ export default createReducer({
     title: payload.data.title,
     picUrl: payload.data.picUrl,
     productLink: payload.data.fetchUrl,
+  }),
+  [`CRAWL_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
   }),
   [`RESET_${name}`]: (state, { payload, status }) => ({
     ...initialState,

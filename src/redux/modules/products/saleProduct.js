@@ -25,15 +25,27 @@ export default createReducer({
     ...status,
     updated: true,
   }),
+  [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`SETMAIN_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     setMainSaleProduct: true,
   }),
+  [`SETMAIN_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`DELETE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     deleteSaleProduct: true,
+  }),
+  [`DELETE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
   }),
 }, initialState);
 

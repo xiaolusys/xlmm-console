@@ -28,6 +28,10 @@ export default createReducer({
     results: payload.data.results,
     count: payload.data.count,
   }),
+  [`FETCHSCHEDULE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
 }, initialState);
 
 export const fetchModelProducts = () => ({

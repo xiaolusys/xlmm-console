@@ -384,8 +384,8 @@ export class Basic extends Component {
     if (skuExtras.length !== 5) {
       return false;
     }
-    for (let i = 0; i < skuExtras.length(); i++) {
-      if ((skuExtras[i].name.indexOf('Associate') > 0) || (skuExtras[i].name.indexOf('Director') > 0)) {
+    for (let i = 0; i < skuExtras.length; i++) {
+      if ((skuExtras[i].color.indexOf('Associate') > 0) || (skuExtras[i].color.indexOf('Director') > 0)) {
         return true;
       }
     }
