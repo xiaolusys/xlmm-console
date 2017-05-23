@@ -71,6 +71,7 @@ class Material extends Component {
   componentWillReceiveProps(nextProps) {
     const { getFieldValue, getFieldProps } = this.props.form;
     const { stockProduct, preference, modelProduct } = nextProps;
+
     preference.items.map((item) => (
       this.props.form.getFieldProps(item.name)
     ));

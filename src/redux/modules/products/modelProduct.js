@@ -42,15 +42,27 @@ export default createReducer({
       created: true,
       updated: true,
   }),
+  [`CREATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`UPDATE_${name}_SUCCESS`]: (state, { payload, status }) => ({
       ...state,
       ...status,
       updated: true,
   }),
+  [`UPDATE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
+  }),
   [`PICTURE_${name}_SUCCESS`]: (state, { payload, status }) => ({
     ...state,
     ...status,
     updated: true,
+  }),
+  [`PICTURE_${name}_FAILURE`]: (state, { payload, status }) => ({
+    ...state,
+    ...status,
   }),
 }, initialState);
 
