@@ -6,8 +6,8 @@ node {
   cache(maxCacheSize: 250, caches: [
      [$class: 'ArbitraryFileCache', excludes: '', includes: '**/*', path: '${WORKSPACE}/node_modules']
   ]) {
-    sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm install')
-    sh('docker run --rm -v "$PWD":/workspace -w /workspace node npm run build:production')
+    sh('docker run --rm -v "$PWD":/workspace -w /workspace node:6.11 npm install')
+    sh('docker run --rm -v "$PWD":/workspace -w /workspace node:6.11 npm run build:production')
   }
   
   sh("docker build -t registry.aliyuncs.com/xiaolu-img/xiaolusys-ui:console-${env.BRANCH_NAME} .")
