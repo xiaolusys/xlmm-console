@@ -29,7 +29,16 @@ export class Sider extends Component {
         <Menu theme={theme} defaultOpenKeys={defaultOpenKeys} selectedKeys={selectedKeys} mode="inline" onClick={onMenuClick}>
           {menu.map((item) => {
             if (!item.sub) {
-              return (<Menu.Item key={item.link} ><Icon type={item.icon} /><span>{item.name}</span></Menu.Item>);
+              return (
+                <Menu.Item key={item.link} >
+                  <If condition={item.external || null}>
+                    <a target="_blank" href={item.link}><Icon type={item.icon} />{item.name}</a>
+                  </If>
+                  <If condition={!item.external}>
+                    <Icon type={item.icon} /><span>{item.name}</span>
+                  </If>
+                </Menu.Item>
+              );
             }
             return (
               <Menu.SubMenu key={item.link} title={<span><Icon type={item.icon} /><span>{item.name}</span></span>}>

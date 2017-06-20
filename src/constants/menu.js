@@ -1,4 +1,9 @@
 export default [{
+  name: '己美医学',
+  link: '/admin/jimay/',
+  icon: 'star',
+  external: true,
+}, {
   name: '商城运维',
   link: '/',
   icon: 'home',
