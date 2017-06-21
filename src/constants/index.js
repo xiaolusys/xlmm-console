@@ -3,6 +3,7 @@ export scheduleTypes from './scheduleTypes';
 export priceRanges from './priceRanges';
 export { productTypes, sourceTypes, boutiqueSkuTpl } from './product';
 export const apisBase = {
+  login: '/admin/login/',
   pay: '/apis/pay/',
   supply: '/apis/chain/v1/',
   trades: '/trades/',

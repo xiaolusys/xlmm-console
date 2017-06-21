@@ -13,9 +13,10 @@ import operationsRoutes from 'modules/operations/routes';
 import statisticsRoutes from 'modules/statistics/routes';
 import packageorderRoutes from 'modules/packageOrder/routes';
 import appbannerRoutes from 'modules/appBanners/routes';
+import { checkAuth } from 'utils/checkAuth';
 
 export default (
-  <Route path="/" component={App}>
+  <Route path="/" component={App} onEnter={checkAuth}>
     {scheduleRoutes}
     {supplierRoutes}
     {categoriesRoutes}

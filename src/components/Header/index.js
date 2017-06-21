@@ -14,8 +14,8 @@ export class Header extends Component {
     prefixCls: 'header-bar',
   };
 
-  loginClick = (e) => {
-    window.location.replace('/admin/login/?next=/#/');
+  loginoutClick = (e) => {
+    window.location.replace('/admin/logout/?next=/console/#/');
   }
 
   render() {
@@ -26,8 +26,8 @@ export class Header extends Component {
           <Col span="3">
             <div className={`${prefixCls}-logo`}><img src={logo} alt="小鹿美美" /></div>
           </Col>
-          <Col span="9">
-            <div className={`${prefixCls}-logo`}><button onClick={this.loginClick}>登录</button></div>
+          <Col span="21">
+            <div className={`${prefixCls}-logo pull-right`}><button onClick={this.loginoutClick}>退出</button></div>
           </Col>
         </Row>
       </header>
