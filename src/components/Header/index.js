@@ -27,7 +27,7 @@ export class Header extends Component {
             <div className={`${prefixCls}-logo`}><img src={logo} alt="小鹿美美" /></div>
           </Col>
           <Col span="21">
-            <div className={`${prefixCls}-logo pull-right`}><button onClick={this.loginoutClick}>退出</button></div>
+            <div className={`${prefixCls}-logo pull-right`}><button className="ant-btn ant-btn-dashed" onClick={this.loginoutClick}>退出</button></div>
           </Col>
         </Row>
       </header>
