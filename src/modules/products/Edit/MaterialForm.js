@@ -424,7 +424,7 @@ class Material extends Component {
             <Col span="10">
               <Radio.Group
                 {...getFieldProps('sourceType')}
-                value={getFieldValue('sourceType')}
+                value={getFieldValue('sourceType') && getFieldValue('sourceType').toString()}
                 onChange={this.onClickSourceType}>
                 {map(sourceTypes, (type) => (<Radio.Button value={type.id}>{type.lable}</Radio.Button>))}
               </Radio.Group>
